@@ -92,17 +92,6 @@ namespace AddressRegistry.Tests.BackOffice.Api
             return mockIfMatchHeaderValidator.Object;
         }
 
-        protected IIfMatchHeaderValidator MockIfMatchValidatorThrowsAddressIsNotFoundException()
-        {
-            var mockIfMatchHeaderValidator = new Mock<IIfMatchHeaderValidator>();
-
-            mockIfMatchHeaderValidator
-                .Setup(x => x.IsValid(It.IsAny<string>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
-                .Throws<AddressIsNotFoundException>();
-
-            return mockIfMatchHeaderValidator.Object;
-        }
-
         protected IIfMatchHeaderValidator MockIfMatchValidatorThrowsAggregateNotFoundException()
         {
             var mockIfMatchHeaderValidator = new Mock<IIfMatchHeaderValidator>();

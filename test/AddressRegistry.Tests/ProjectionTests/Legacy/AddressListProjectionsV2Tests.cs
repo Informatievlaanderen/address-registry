@@ -1,6 +1,7 @@
 namespace AddressRegistry.Tests.ProjectionTests.Legacy
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.DataStructures;
@@ -852,6 +853,45 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     boxNumberAddressDetailItemV2!.BoxNumber.Should().BeEquivalentTo(addressBoxNumberWasCorrectedV2.BoxNumber);
                     boxNumberAddressDetailItemV2.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
                     boxNumberAddressDetailItemV2.LastEventHash.Should().Be(addressBoxNumberWasCorrectedV2.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressBoxNumbersWereCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .AsBoxNumberAddress(_fixture.Create<AddressPersistentLocalId>(), new BoxNumber("1A"));
+
+            var addressBoxNumbersWereCorrected = new AddressBoxNumbersWereCorrected(
+                _fixture.Create<StreetNamePersistentLocalId>(),
+                new Dictionary<AddressPersistentLocalId, BoxNumber>
+                {
+                    { new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId), new BoxNumber("1B") }
+                });
+            ((ISetProvenance)addressBoxNumbersWereCorrected).SetProvenance(_fixture.Create<Provenance>());
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(
+                        addressWasProposedV2,
+                        new Dictionary<string, object>
+                        {
+                            { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+                        })),
+                    new Envelope<AddressBoxNumbersWereCorrected>(new Envelope(
+                        addressBoxNumbersWereCorrected,
+                        new Dictionary<string, object>
+                        {
+                            { AddEventHashPipe.HashMetadataKey, addressBoxNumbersWereCorrected.GetHash() }
+                        })))
+                .Then(async ct =>
+                {
+                    var (addressPersistentLocalId, boxNumber) = addressBoxNumbersWereCorrected.AddressBoxNumbers.Single();
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2!.BoxNumber.Should().Be(boxNumber);
+                    addressListItemV2.VersionTimestamp.Should().Be(addressBoxNumbersWereCorrected.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressBoxNumbersWereCorrected.GetHash());
                 });
         }
 

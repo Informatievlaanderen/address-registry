@@ -22,12 +22,29 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 public static TicketError ToTicketError() => new(Message, Code);
             }
 
+            public static class AddressRemovedWithId
+            {
+                public const string Code = "VerwijderdAdresId";
+                public static string Message(int persistentLocalId) => $"Verwijderd adres '{persistentLocalId}'.";
+
+                public static TicketError ToTicketError(int persistentLocalId) => new(Message(persistentLocalId), Code);
+            }
+
             public static class AddressNotFound
             {
                 public const string Code = "AdresIsOnbestaand";
                 public const string Message = "Onbestaand adres.";
 
                 public static TicketError ToTicketError() => new(Message, Code);
+            }
+
+            public static class AddressNotFoundWithId
+            {
+                public const string Code = "AdresIdIsOnbestaand";
+                public static string Message(string addressId) => $"Onbestaand adres '{addressId}'.";
+
+                public static TicketError ToTicketError(string addressId) => new(Message(addressId), Code);
+                public static TicketError ToTicketError(int persistentLocalId) => new(Message(persistentLocalId.ToString()), Code);
             }
 
             public static class AddressInconsistentHouseNumber
@@ -98,8 +115,10 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             {
                 public const string Code = "AdresOngeldigBusnummerformaat";
                 public const string Message = "Ongeldig busnummerformaat.";
+                public static string MessageWithBoxNumber(string boxNumber) => $"Ongeldig busnummerformaat: {boxNumber}.";
 
                 public static TicketError ToTicketError() => new(Message, Code);
+                public static TicketError ToTicketError(string boxNumber) => new(MessageWithBoxNumber(boxNumber), Code);
             }
 
             public static class Position

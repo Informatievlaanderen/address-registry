@@ -306,6 +306,51 @@ namespace AddressRegistry.StreetName
                     boxNumber));
         }
 
+        public void CorrectAddressBoxNumbers(IDictionary<AddressPersistentLocalId, BoxNumber> addressBoxNumbers)
+        {
+            GuardStreetNameStatusForChangeAndCorrection();
+
+            StreetNameAddress? houseNumberAddress = null;
+            var updatingAddressBoxNumbers = new Dictionary<AddressPersistentLocalId, BoxNumber>();
+
+            foreach (var addressBoxNumber in addressBoxNumbers)
+            {
+                var addressToCorrect = StreetNameAddresses.GetNotRemovedByPersistentLocalId(addressBoxNumber.Key);
+                if (addressToCorrect.IsHouseNumberAddress)
+                {
+                    throw new AddressHasNoBoxNumberException(addressToCorrect.AddressPersistentLocalId);
+                }
+
+                if (!addressToCorrect.IsActive)
+                {
+                    throw new AddressHasInvalidStatusException(addressToCorrect.AddressPersistentLocalId);
+                }
+
+                if (houseNumberAddress is null)
+                {
+                    houseNumberAddress = addressToCorrect.Parent;
+                }
+                else if (houseNumberAddress != addressToCorrect.Parent)
+                {
+                    throw new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException();
+                }
+
+                if (!addressToCorrect.BoxNumber!.EqualsCaseSensitive(addressBoxNumber.Value))
+                {
+                    updatingAddressBoxNumbers.Add(addressToCorrect.AddressPersistentLocalId, addressBoxNumber.Value);
+                }
+            }
+
+            if (updatingAddressBoxNumbers.Any())
+            {
+                ApplyChange(new AddressBoxNumbersWereCorrected(
+                    PersistentLocalId,
+                    updatingAddressBoxNumbers));
+
+                GuardUniqueBoxNumbers(houseNumberAddress!);
+            }
+        }
+
         public void CorrectAddressApproval(AddressPersistentLocalId addressPersistentLocalId)
         {
             GuardStreetNameStatusForChangeAndCorrection();
@@ -432,8 +477,8 @@ namespace AddressRegistry.StreetName
         public void Rename(IStreetNames streetNames, StreetNamePersistentLocalId sourceStreetNamePersistentLocalId, IPersistentLocalIdGenerator persistentLocalIdGenerator)
         {
             var sourceStreetName = streetNames
-                    .GetAsync(new StreetNameStreamId(sourceStreetNamePersistentLocalId))
-                    .GetAwaiter().GetResult();
+                .GetAsync(new StreetNameStreamId(sourceStreetNamePersistentLocalId))
+                .GetAwaiter().GetResult();
 
             var readdressItem = sourceStreetName.StreetNameAddresses.ActiveHouseNumberAddresses
                 .Select(x => new ReaddressAddressItem(
@@ -453,6 +498,23 @@ namespace AddressRegistry.StreetName
             }
 
             return address.LastEventHash;
+        }
+
+        private void GuardUniqueBoxNumbers(StreetNameAddress houseNumberAddress)
+        {
+            var boxNumbers = houseNumberAddress!.Children
+                .Where(x => x.IsActive)
+                .Select(x => x.BoxNumber)
+                .ToList();
+            var notUniqueBoxNumbers = boxNumbers
+                .GroupBy(x => x, x => x)
+                .Where(x => x.Count() > 1)
+                .Select(x => x.First())
+                .ToList();
+            if (notUniqueBoxNumbers.Any())
+            {
+                throw new AddressAlreadyExistsException(houseNumberAddress.HouseNumber, notUniqueBoxNumbers.First());
+            }
         }
 
         private void GuardActiveStreetName()

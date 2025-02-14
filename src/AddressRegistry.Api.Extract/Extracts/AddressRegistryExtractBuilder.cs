@@ -2,21 +2,24 @@ namespace AddressRegistry.Api.Extract.Extracts
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
+    using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using Consumer.Read.Municipality;
-    using Consumer.Read.Municipality.Projections;
     using Consumer.Read.StreetName;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Projections.Extract;
     using Projections.Extract.AddressExtract;
+    using MunicipalityLanguage = Consumer.Read.Municipality.Projections.MunicipalityLanguage;
 
     public static class AddressRegistryExtractBuilder
     {
-        public static IEnumerable<ExtractFile> CreateAddressFilesV2(
+        public static async IAsyncEnumerable<ExtractFile> CreateAddressFilesV2(
             ExtractContext context,
             StreetNameConsumerContext streetNameConsumerContext,
             MunicipalityConsumerContext municipalityConsumerContext)
@@ -26,14 +29,10 @@ namespace AddressRegistry.Api.Extract.Extracts
                 .AsNoTracking()
                 .OrderBy(m => m.AddressPersistentLocalId);
 
-            var addressProjectionState = context
-                .ProjectionStates
-                .AsNoTracking()
-                .Single(m => m.Name == typeof(AddressExtractProjectionsV2).FullName);
-
+            var feedPosition = await GetFeedPosition(context);
             var extractMetadata = new Dictionary<string, string>
             {
-                { ExtractMetadataKeys.LatestEventId, addressProjectionState.Position.ToString() }
+                { ExtractMetadataKeys.LatestEventId, feedPosition.ToString() }
             };
 
             var cachedMunicipalities = municipalityConsumerContext.MunicipalityLatestItems.AsNoTracking().ToList();
@@ -140,6 +139,47 @@ namespace AddressRegistry.Api.Extract.Extracts
             yield return ExtractBuilder.CreateProjectedCoordinateSystemFile(
                 ExtractFileNames.Address,
                 ProjectedCoordinateSystem.Belge_Lambert_1972);
+        }
+
+        private static async Task<long> GetFeedPosition(ExtractContext context)
+        {
+            var addressProjectionState = context
+                .ProjectionStates
+                .AsNoTracking()
+                .Single(m => m.Name == typeof(AddressExtractProjectionsV2).FullName);
+            var extractPosition = addressProjectionState.Position;
+
+            await using var connection = new SqlConnection(context.Database.GetConnectionString());
+
+            var query = $"""
+                         SELECT MAX(FeedPosition)
+                         FROM [{Schema.Legacy}].[AddressSyndication]
+                         WHERE Position = {extractPosition}
+                         """;
+            await using var getFeedPositionByExtractPosition = new SqlCommand(query, connection);
+            await connection.OpenAsync();
+
+            var feedPosition = await getFeedPositionByExtractPosition.ExecuteScalarAsync() as long?;
+
+            if (feedPosition.HasValue)
+            {
+                return feedPosition.Value;
+            }
+
+            // If feed projection lags behind, then we'll make an estimation of what the position will be once caught up.
+            query = $"""
+                     SELECT MAX(Position), MAX(FeedPosition)
+                     FROM [{Schema.Legacy}].[AddressSyndication]
+                     """;
+            await using var getMaxFeedPositions = new SqlCommand(query, connection);
+            var reader = await getMaxFeedPositions.ExecuteReaderAsync();
+            await reader.ReadAsync();
+
+            var maxPosition = reader.GetInt64(0);
+            var maxFeedPosition = reader.GetInt64(1);
+
+            var diff = extractPosition - maxPosition;
+            return maxFeedPosition + diff;
         }
     }
 }

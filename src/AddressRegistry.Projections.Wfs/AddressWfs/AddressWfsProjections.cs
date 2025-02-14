@@ -408,6 +408,21 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressBoxNumber in message.Message.AddressBoxNumbers)
+                {
+                    await context.FindAndUpdateAddressDetail(
+                        addressBoxNumber.Key,
+                        address =>
+                        {
+                            address.BoxNumber = addressBoxNumber.Value;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(

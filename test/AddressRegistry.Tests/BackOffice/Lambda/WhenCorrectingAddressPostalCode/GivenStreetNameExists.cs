@@ -201,7 +201,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object,
+                MockExceptionIdempotentCommandHandler(() => Fixture.Create<AddressHasInvalidStatusException>()).Object,
                 _postalConsumerContext,
                 _municipalityContext);
 

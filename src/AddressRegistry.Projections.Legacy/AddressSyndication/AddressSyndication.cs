@@ -1,17 +1,18 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
-    using StreetName;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using NodaTime;
+    using StreetName;
 
     public class AddressSyndicationItem
     {
+        public long FeedPosition { get; set; }
+
         [Obsolete("Guid identifiers are no longer used.")]
         public Guid? AddressId { get; set; }
         [Obsolete("Guid identifiers are no longer used.")]
@@ -132,11 +133,14 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         public void Configure(EntityTypeBuilder<AddressSyndicationItem> b)
         {
             b.ToTable(TableName, Schema.Legacy)
-                .HasKey(x => x.Position)
+                .HasKey(x => x.FeedPosition)
                 .IsClustered();
 
+            b.Property(x => x.FeedPosition).UseIdentityColumn();
+            b.HasIndex(x => x.FeedPosition).IsColumnStore($"CI_{TableName}_FeedPosition");
+
             b.Property(x => x.Position).ValueGeneratedNever();
-            b.HasIndex(x => x.Position).IsColumnStore($"CI_{TableName}_Position");
+            b.HasIndex(x => x.Position);
 
             b.Property(x => x.AddressId);
             b.Property(x => x.ChangeType);

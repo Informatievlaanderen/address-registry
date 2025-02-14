@@ -825,6 +825,18 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var (addressPersistentLocalId, boxNumber) in message.Message.AddressBoxNumbers)
+                {
+                    await context.CreateNewAddressSyndicationItem(
+                        addressPersistentLocalId,
+                        message,
+                        x => x.BoxNumber = boxNumber,
+                        ct);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

@@ -9,7 +9,6 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using Microsoft.EntityFrameworkCore.Metadata.Conventions;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using NodaTime;
@@ -551,6 +550,23 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                     houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: false,
                     updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+            });
+
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressBoxNumber in message.Message.AddressBoxNumbers)
+                {
+                    await context.FindAndUpdateAddressDetail(
+                        addressBoxNumber.Key,
+                        address =>
+                        {
+                            address.BoxNumber = addressBoxNumber.Value;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        },
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                }
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>

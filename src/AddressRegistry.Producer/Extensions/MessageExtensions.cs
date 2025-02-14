@@ -190,6 +190,12 @@ namespace AddressRegistry.Producer.Extensions
                 message.BoxNumber,
                 message.Provenance.ToContract());
 
+        public static Contracts.AddressBoxNumbersWereCorrected ToContract(this StreetNameAggregate.AddressBoxNumbersWereCorrected message) =>
+                    new Contracts.AddressBoxNumbersWereCorrected(
+                        message.StreetNamePersistentLocalId,
+                        message.AddressBoxNumbers,
+                        message.Provenance.ToContract());
+
         public static Contracts.AddressPositionWasChanged ToContract(this StreetNameAggregate.AddressPositionWasChanged message) =>
             new Contracts.AddressPositionWasChanged(
                 message.StreetNamePersistentLocalId,

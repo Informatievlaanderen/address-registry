@@ -102,7 +102,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
+                MockExceptionIdempotentCommandHandler(() => Fixture.Create<AddressHasInvalidStatusException>()).Object);
 
             // Act
             await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest

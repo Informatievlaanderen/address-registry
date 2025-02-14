@@ -1,7 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Abstractions.SqsRequests
 {
-    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
+    using Requests;
 
     public sealed class CorrectAddressBoxNumberSqsRequest : SqsRequest, IHasBackOfficeRequest<CorrectAddressBoxNumberRequest>
     {

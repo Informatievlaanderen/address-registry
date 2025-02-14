@@ -91,6 +91,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 case CorrectAddressBoxNumberSqsRequest request:
                     await mediator.Send(new CorrectAddressBoxNumberLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
+                case CorrectAddressBoxNumbersSqsRequest request:
+                    await mediator.Send(new CorrectAddressBoxNumbersLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                    break;
                 case CorrectAddressRegularizationSqsRequest request:
                     await mediator.Send(new CorrectAddressRegularizationLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;

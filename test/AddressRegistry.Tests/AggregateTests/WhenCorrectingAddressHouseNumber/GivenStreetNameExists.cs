@@ -193,7 +193,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
                     Fixture.Create<StreetNameWasImported>(),
                     addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(command.AddressPersistentLocalId)));
         }
 
         [Fact]

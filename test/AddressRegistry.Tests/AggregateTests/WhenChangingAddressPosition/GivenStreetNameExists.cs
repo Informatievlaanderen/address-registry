@@ -106,7 +106,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenChangingAddressPosition
             Assert(new Scenario()
                 .Given(_streamId, addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(command.AddressPersistentLocalId)));
         }
 
         [Fact]

@@ -226,6 +226,18 @@ namespace AddressRegistry.StreetName
                     streetName.CorrectAddressBoxNumber(message.Command.AddressPersistentLocalId, message.Command.BoxNumber);
                 });
 
+            For<CorrectAddressBoxNumbers>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectAddressBoxNumbers, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectAddressBoxNumbers(message.Command.AddressBoxNumbers);
+                });
+
             For<CorrectAddressApproval>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<CorrectAddressApproval, StreetName>(getUnitOfWork)

@@ -2,13 +2,13 @@
 {
     using System;
     using AddressRegistry.Infrastructure;
-    using AddressRegistry.StreetName;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.Utilities;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using NetTopologySuite.Geometries;
     using NodaTime;
+    using StreetName;
 
     public sealed class AddressVersion
     {

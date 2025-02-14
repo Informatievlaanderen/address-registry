@@ -171,7 +171,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRejection
                     Fixture.Create<StreetNameWasImported>(),
                     addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(command.AddressPersistentLocalId)));
         }
 
         [Theory]
@@ -225,7 +225,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRejection
                 .When(correctChildAddressRejection)
                 .Throws(new ParentAddressHasInvalidStatusException()));
         }
-        
+
         [Fact]
         public void WithRemovedParentAddress_ThenThrowsParentAddressIsRemovedException()
         {

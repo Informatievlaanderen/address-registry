@@ -44,7 +44,8 @@ namespace AddressRegistry.Api.Extract.Extracts
         {
             return new IsolationExtractArchive(ExtractFileNames.GetAddressZip(), context)
                 {
-                    AddressRegistryExtractBuilder.CreateAddressFilesV2(context, streetNameConsumerContext, municipalityConsumerContext)
+                   AddressRegistryExtractBuilder.CreateAddressFilesV2(context, streetNameConsumerContext, municipalityConsumerContext)
+                       .ToBlockingEnumerable(cancellationToken: cancellationToken)
                 }
                 .CreateFileCallbackResult(cancellationToken);
         }

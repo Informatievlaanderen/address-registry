@@ -398,6 +398,18 @@
                     ct);
             });
 
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var (addressPersistentLocalId, boxNumber) in message.Message.AddressBoxNumbers)
+                {
+                    await context.CreateNewAddressVersion(
+                        new PersistentLocalId(addressPersistentLocalId),
+                        message,
+                        boxNumberItem => { boxNumberItem.BoxNumber = boxNumber; },
+                        ct);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());

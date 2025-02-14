@@ -291,8 +291,11 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
             modelBuilder.Entity("AddressRegistry.Projections.Legacy.AddressSyndication.AddressSyndicationItem", b =>
                 {
-                    b.Property<long>("Position")
+                    b.Property<long>("FeedPosition")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("FeedPosition"));
 
                     b.Property<Guid?>("AddressId")
                         .HasColumnType("uniqueidentifier");
@@ -337,6 +340,9 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.Property<byte[]>("PointPosition")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<long>("Position")
+                        .HasColumnType("bigint");
+
                     b.Property<int?>("PositionMethod")
                         .HasColumnType("int");
 
@@ -365,17 +371,19 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.Property<DateTimeOffset>("SyndicationItemCreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.HasKey("Position");
+                    b.HasKey("FeedPosition");
 
-                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Position"));
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("FeedPosition"));
 
                     b.HasIndex("AddressId");
 
+                    b.HasIndex("FeedPosition")
+                        .HasDatabaseName("CI_AddressSyndication_FeedPosition")
+                        .HasAnnotation("SqlServer:ColumnStoreIndex", "");
+
                     b.HasIndex("PersistentLocalId");
 
-                    b.HasIndex("Position")
-                        .HasDatabaseName("CI_AddressSyndication_Position")
-                        .HasAnnotation("SqlServer:ColumnStoreIndex", "");
+                    b.HasIndex("Position");
 
                     b.ToTable("AddressSyndication", "AddressRegistryLegacy");
                 });

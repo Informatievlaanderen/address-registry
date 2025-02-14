@@ -355,7 +355,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                     streetNameWasImported,
                     migrateAddressWithStatusCurrent)
                 .When(approveAddress)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(approveAddress.AddressPersistentLocalId)));
         }
 
         [Fact]

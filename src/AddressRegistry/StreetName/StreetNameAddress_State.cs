@@ -68,6 +68,7 @@ namespace AddressRegistry.StreetName
             Register<AddressPostalCodeWasCorrectedV2>(When);
             Register<AddressHouseNumberWasCorrectedV2>(When);
             Register<AddressBoxNumberWasCorrectedV2>(When);
+            Register<AddressBoxNumbersWereCorrected>(When);
             Register<AddressRegularizationWasCorrected>(When);
             Register<AddressDeregulationWasCorrected>(When);
             Register<AddressRemovalWasCorrected>(When);
@@ -280,6 +281,12 @@ namespace AddressRegistry.StreetName
         private void When(AddressBoxNumberWasCorrectedV2 @event)
         {
             BoxNumber = new BoxNumber(@event.BoxNumber);
+            _lastEvent = @event;
+        }
+
+        private void When(AddressBoxNumbersWereCorrected @event)
+        {
+            BoxNumber = new BoxNumber(@event.AddressBoxNumbers[AddressPersistentLocalId]);
             _lastEvent = @event;
         }
 

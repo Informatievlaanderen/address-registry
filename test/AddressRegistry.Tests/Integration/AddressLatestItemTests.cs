@@ -1,6 +1,7 @@
 ﻿namespace AddressRegistry.Tests.Integration
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
     using AutoFixture;
@@ -1031,6 +1032,46 @@
                     expectedLatestItem.Namespace.Should().Be(Namespace);
                     expectedLatestItem.PuriId.Should().Be($"{Namespace}/{addressBoxNumberWasCorrectedV2.AddressPersistentLocalId}");
                     expectedLatestItem.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressBoxNumbersWereCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .AsBoxNumberAddress(_fixture.Create<AddressPersistentLocalId>(), new BoxNumber("1A"));
+
+            var addressBoxNumbersWereCorrected = new AddressBoxNumbersWereCorrected(
+                _fixture.Create<StreetNamePersistentLocalId>(),
+                new Dictionary<AddressPersistentLocalId, BoxNumber>
+                {
+                    {_fixture.Create<AddressPersistentLocalId>(), new BoxNumber("1B")}
+                });
+            ((ISetProvenance)addressBoxNumbersWereCorrected).SetProvenance(_fixture.Create<Provenance>());
+
+            var position = _fixture.Create<long>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
+                { Envelope.PositionMetadataKey, position }
+            };
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position + 1 }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressBoxNumbersWereCorrected>(new Envelope(addressBoxNumbersWereCorrected, metadata)))
+                .Then(async ct =>
+                {
+                    var (addressPersistentLocalId, boxNumber) = addressBoxNumbersWereCorrected.AddressBoxNumbers.Single();
+                    var expectedLatestItem = await ct.AddressLatestItems.FindAsync(addressPersistentLocalId);
+                    expectedLatestItem.Should().NotBeNull();
+                    expectedLatestItem!.BoxNumber.Should().Be(boxNumber);
+                    expectedLatestItem.VersionTimestamp.Should().Be(addressBoxNumbersWereCorrected.Provenance.Timestamp);
                 });
         }
 

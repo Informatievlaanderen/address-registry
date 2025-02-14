@@ -14,9 +14,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
+    using global::AutoFixture;
+    using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using StreetName;
@@ -24,8 +25,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
-    using global::AutoFixture;
-    using Infrastructure;
 
     public class SqsLambdaHandlerTests : BackOfficeLambdaTest
     {

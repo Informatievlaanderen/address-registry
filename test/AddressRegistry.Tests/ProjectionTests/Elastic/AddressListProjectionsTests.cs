@@ -1233,6 +1233,38 @@
         }
 
         [Fact]
+        public async Task WhenAddressBoxNumbersWereCorrected()
+        {
+            var @event = _fixture.Create<AddressBoxNumbersWereCorrected>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressBoxNumbersWereCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    foreach (var (addressPersistentLocalId, boxNumber) in @event.AddressBoxNumbers)
+                    {
+                        _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
+                            addressPersistentLocalId,
+                            It.Is<AddressListPartialDocument>(doc =>
+                                doc.BoxNumber == boxNumber
+                                && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                                && doc.Status == null
+                                && doc.AddressPosition == null
+                                && doc.OfficiallyAssigned == null
+                            ),
+                            It.IsAny<CancellationToken>()));
+                    }
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressPositionWasChanged()
         {
             var expectedPosition = GeometryHelpers.ExampleExtendedWkb;

@@ -480,6 +480,20 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                     ct);
             });
 
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (_, message, ct) =>
+            {
+                foreach (var (addressPersistentLocalId, boxNumber) in message.Message.AddressBoxNumbers)
+                {
+                    await searchElasticClient.PartialUpdateDocument(
+                        addressPersistentLocalId,
+                        new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                        {
+                            BoxNumber = boxNumber,
+                        },
+                        ct);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (_, message, ct) =>
             {
                 await searchElasticClient.PartialUpdateDocument(

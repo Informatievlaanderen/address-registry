@@ -132,7 +132,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
+                MockExceptionIdempotentCommandHandler(() => Fixture.Create<AddressHasInvalidStatusException>()).Object);
 
             // Act
             await sut.Handle(new ApproveAddressLambdaRequest(Fixture.Create<int>().ToString(), new ApproveAddressSqsRequest

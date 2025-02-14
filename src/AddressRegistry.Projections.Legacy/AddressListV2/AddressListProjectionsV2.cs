@@ -491,6 +491,24 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                 UpdateHash(item, message);
             });
 
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
+            {
+
+                foreach (var (addressPersistentLocalId, boxNumber) in message.Message.AddressBoxNumbers)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressListItemV2(
+                        addressPersistentLocalId,
+                        boxNumberItem =>
+                        {
+                            boxNumberItem.BoxNumber = boxNumber;
+                            UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(boxNumberItem, message);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(

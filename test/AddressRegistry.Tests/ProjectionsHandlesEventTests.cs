@@ -42,16 +42,18 @@
     using Projections.Legacy.AddressSyndication;
     using Projections.Wfs;
     using Projections.Wfs.AddressWfs;
+    using Projections.Wfs.AddressWfsV2;
     using Projections.Wms;
     using Projections.Wms.AddressWmsItemV3;
     using SqlStreamStore;
     using StreetName.Events;
     using Xunit;
+    using HouseNumberLabelUpdater = Projections.Wms.AddressWmsItemV3.HouseNumberLabelUpdater;
     using ProducerContext = Producer.Snapshot.Oslo.ProducerContext;
 
     public sealed class ProjectionsHandlesEventsTests
     {
-        private readonly IEnumerable<Type> _eventsToExclude = new[] { typeof(StreetNameSnapshot), typeof(StreetNameSnapshotWasRequested) };
+        private readonly IEnumerable<Type> _eventsToExclude = [typeof(StreetNameSnapshot), typeof(StreetNameSnapshotWasRequested)];
         private readonly IList<Type> _eventTypes;
 
         public ProjectionsHandlesEventsTests()
@@ -99,6 +101,7 @@
 
             AssertHandleEvents(projectionsToTest, [
                 typeof(AddressBoxNumberWasCorrectedV2),
+                typeof(AddressBoxNumbersWereCorrected),
                 typeof(AddressDeregulationWasCorrected),
                 typeof(AddressHouseNumberWasCorrectedV2),
                 typeof(AddressHouseNumberWasReaddressed),
@@ -176,6 +179,7 @@
 
             AssertHandleEvents(projectionsToTest, [
                 typeof(AddressBoxNumberWasCorrectedV2),
+                typeof(AddressBoxNumbersWereCorrected),
                 typeof(AddressDeregulationWasCorrected),
                 typeof(AddressHouseNumberWasCorrectedV2),
                 typeof(AddressHouseNumberWasReaddressed),
@@ -246,7 +250,8 @@
 
             yield return [new List<ConnectedProjection<WfsContext>>
             {
-                new AddressWfsProjections(new WKBReader())
+                new AddressWfsProjections(new WKBReader()),
+                new AddressWfsV2Projections(new WKBReader(), new Projections.Wfs.AddressWfsV2.HouseNumberLabelUpdater())
             }];
 
             yield return [new List<ConnectedProjection<WmsContext>>

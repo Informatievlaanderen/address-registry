@@ -1,26 +1,27 @@
 namespace AddressRegistry.Tests.ProjectionTests.WmsV3
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.Projections.Wms;
-    using AddressRegistry.Projections.Wms.AddressWmsItemV3;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.DataStructures;
     using AddressRegistry.StreetName.Events;
-    using AddressRegistry.Tests.AutoFixture;
-    using AddressRegistry.Tests.EventExtensions;
+    using Api.BackOffice.Abstractions;
+    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
     using Moq;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using NodaTime;
+    using Projections.Wms;
+    using Projections.Wms.AddressWmsItemV3;
     using Xunit;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
@@ -1246,6 +1247,63 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     boxNumberAddressWmsItem.Should().NotBeNull();
                     boxNumberAddressWmsItem!.BoxNumber.Should().BeEquivalentTo(addressBoxNumberWasCorrectedV2.BoxNumber);
                     boxNumberAddressWmsItem.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
+                });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
+        }
+
+        [Fact]
+        public async Task WhenAddressBoxNumbersWereCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .WithParentAddressPersistentLocalId(null)
+                .WithHouseNumber(new HouseNumber("101"))
+                .WithBoxNumber(new BoxNumber("A1"));
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressBoxNumbersWereCorrected = new AddressBoxNumbersWereCorrected(
+                new StreetNamePersistentLocalId(2),
+                new Dictionary<AddressPersistentLocalId, BoxNumber>
+                {
+                    { new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId), new BoxNumber("1B") }
+                });
+            ((ISetProvenance)addressBoxNumbersWereCorrected).SetProvenance(_fixture.Create<Provenance>());
+
+            var boxNumberWasCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressBoxNumbersWereCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressBoxNumbersWereCorrected>(new Envelope(addressBoxNumbersWereCorrected, boxNumberWasCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var boxNumber = addressBoxNumbersWereCorrected.AddressBoxNumbers.First();
+                    var addressWmsItem = await ct.AddressWmsItemsV3.FindAsync(boxNumber.Key);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.BoxNumber.Should().Be(boxNumber.Value);
+                    addressWmsItem.VersionTimestamp.Should().Be(addressBoxNumbersWereCorrected.Provenance.Timestamp);
+
+                    var boxNumberAddressWmsItem = await ct.AddressWmsItemsV3.FindAsync(boxNumber.Key);
+                    boxNumberAddressWmsItem.Should().NotBeNull();
+                    boxNumberAddressWmsItem!.BoxNumber.Should().BeEquivalentTo(boxNumber.Value);
+                    boxNumberAddressWmsItem.VersionTimestamp.Should().Be(addressBoxNumbersWereCorrected.Provenance.Timestamp);
                 });
 
             _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(

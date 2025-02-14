@@ -131,7 +131,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
+                MockExceptionIdempotentCommandHandler(() => Fixture.Create<AddressHasInvalidStatusException>()).Object);
 
             // Act
             await sut.Handle(new DeregulateAddressLambdaRequest(Fixture.Create<int>().ToString(), new DeregulateAddressSqsRequest()

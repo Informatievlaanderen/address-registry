@@ -23,6 +23,9 @@
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public AddressPosition? AddressPosition { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public string? BoxNumber { get; set; }
+
         public AddressSearchPartialDocument(Instant versionTimestamp)
             : this(versionTimestamp.ToBelgianDateTimeOffset())
         {

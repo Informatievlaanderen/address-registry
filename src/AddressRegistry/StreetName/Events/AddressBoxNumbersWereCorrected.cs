@@ -16,7 +16,7 @@ namespace AddressRegistry.StreetName.Events
     {
         public const string EventName = "AddressBoxNumbersWereCorrected"; // BE CAREFUL CHANGING THIS!!
 
-        [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
+        [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke de adressen zijn toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
 
         [EventPropertyDescription("Objectidentificator van het adres met het nieuwe busnummer.")]

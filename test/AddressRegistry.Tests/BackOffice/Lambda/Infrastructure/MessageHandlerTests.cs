@@ -620,6 +620,38 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
+        public async Task WhenCorrectBoxNumbersRequest_ThenCorrectBoxNumbersRequestIsSent()
+        {
+            // Arrange
+            var mediator = new Mock<IMediator>();
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.Register(_ => mediator.Object);
+            var container = containerBuilder.Build();
+
+            var messageData = Fixture.Create<CorrectAddressBoxNumbersSqsRequest>();
+            var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
+
+            var sut = new MessageHandler(container);
+
+            // Act
+            await sut.HandleMessage(
+                messageData,
+                messageMetadata,
+                It.IsAny<CancellationToken>());
+
+            // Assert
+            mediator
+                .Verify(x => x.Send(It.Is<CorrectAddressBoxNumbersLambdaRequest>(request =>
+                    request.TicketId == messageData.TicketId
+                    && request.MessageGroupId == messageMetadata.MessageGroupId
+                    && request.Request == messageData.Request
+                    && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
+                    && request.Provenance == messageData.ProvenanceData.ToProvenance()
+                    && request.Metadata == messageData.Metadata
+                ), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
         public async Task WhenCorrectBoxNumberRequest_ThenCorrectBoxNumberRequestIsSent()
         {
             // Arrange

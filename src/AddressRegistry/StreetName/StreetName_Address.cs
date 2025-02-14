@@ -343,7 +343,6 @@ namespace AddressRegistry.StreetName
 
             if (updatingAddressBoxNumbers.Any())
             {
-                //TODO-rik for feeds flatten with own counter (identity) for position
                 ApplyChange(new AddressBoxNumbersWereCorrected(
                     PersistentLocalId,
                     updatingAddressBoxNumbers));

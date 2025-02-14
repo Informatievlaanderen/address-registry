@@ -19,7 +19,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 type: "bigint",
                 nullable: false,
                 defaultValue: -1L)
-                .Annotation("SqlServer:Identity", "1, 1");;
+                .Annotation("SqlServer:Identity", "1, 1");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_AddressSyndication",

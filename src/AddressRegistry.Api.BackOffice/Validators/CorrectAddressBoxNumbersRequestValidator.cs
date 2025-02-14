@@ -42,7 +42,8 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
                 .DependentRules(() =>
                 {
-                    RuleFor(x => x.Busnummers)
+                    When(x => x.Busnummers is not null, () =>
+                        RuleFor(x => x.Busnummers)
                         .Custom((busnummers, context) =>
                         {
                             var parsedBusnummers = busnummers
@@ -75,7 +76,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
                                     ErrorMessage = ValidationErrors.Common.AddressNotFoundWithId.Message(adresId)
                                 });
                             }
-                        });
+                        }));
                 });
         }
     }

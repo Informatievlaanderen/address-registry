@@ -1,5 +1,6 @@
 namespace AddressRegistry.Tests.BackOffice.Validators
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
@@ -20,12 +21,19 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             _sut = new CorrectAddressBoxNumbersRequestValidator(_backOfficeContext);
         }
 
-        [Fact]
-        public void WhenBoxNumbersIsEmpty_ThenReturnsExpectedFailure()
+        public static IEnumerable<object[]> EmptyBusnummers()
+        {
+            yield return [null];
+            yield return [new List<CorrectAddressBoxNumbersRequestItem>()];
+        }
+
+        [Theory]
+        [MemberData(nameof(EmptyBusnummers))]
+        public void WhenBoxNumbersIsEmpty_ThenReturnsExpectedFailure(List<CorrectAddressBoxNumbersRequestItem> items)
         {
             var result = _sut.TestValidate(new CorrectAddressBoxNumbersRequest
             {
-                Busnummers = []
+                Busnummers = items
             });
 
             result.Errors.Count.Should().Be(1);

@@ -38,7 +38,7 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
             var lastFeedUpdate = await _legacyContext
                 .AddressSyndication
                 .AsNoTracking()
-                .OrderByDescending(item => item.Position)
+                .OrderByDescending(item => item.FeedPosition)
                 .Select(item => item.SyndicationItemCreatedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 

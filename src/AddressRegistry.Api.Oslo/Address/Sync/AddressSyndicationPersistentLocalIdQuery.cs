@@ -33,7 +33,7 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
                 if (_embedEvent && _embedObject)
                     return x => new AddressSyndicationQueryResult(
                         x.AddressId.Value,
-                        x.Position,
+                        x.FeedPosition,
                         x.StreetNamePersistentLocalId,
                         x.PersistentLocalId,
                         x.HouseNumber,
@@ -56,7 +56,7 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
                 if (_embedEvent)
                     return x => new AddressSyndicationQueryResult(
                         x.AddressId.Value,
-                        x.Position,
+                        x.FeedPosition,
                         x.StreetNamePersistentLocalId,
                         x.PersistentLocalId,
                         x.ChangeType,
@@ -70,7 +70,7 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
                 if (_embedObject)
                     return x => new AddressSyndicationQueryResult(
                         x.AddressId.Value,
-                        x.Position,
+                        x.FeedPosition,
                         x.StreetNamePersistentLocalId,
                         x.PersistentLocalId,
                         x.HouseNumber,
@@ -91,7 +91,7 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
 
                 return x => new AddressSyndicationQueryResult(
                     x.AddressId.Value,
-                    x.Position,
+                    x.FeedPosition,
                     x.StreetNamePersistentLocalId,
                     x.PersistentLocalId,
                     x.ChangeType,
@@ -108,11 +108,11 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
             var addressSyndicationItems = _context
                 .AddressSyndication
                 .Where(x => x.PersistentLocalId == filtering.Filter.PersistentLocalId)
-                .OrderBy(x => x.Position)
+                .OrderBy(x => x.FeedPosition)
                 .AsNoTracking();
 
             if (filtering.Filter.Position.HasValue)
-                addressSyndicationItems = addressSyndicationItems.Where(m => m.Position >= filtering.Filter.Position);
+                addressSyndicationItems = addressSyndicationItems.Where(m => m.FeedPosition >= filtering.Filter.Position);
 
             return addressSyndicationItems;
         }

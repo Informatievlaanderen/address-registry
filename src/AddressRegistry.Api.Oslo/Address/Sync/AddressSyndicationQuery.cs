@@ -221,7 +221,7 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
                 if (_embedEvent && _embedObject)
                     return x => new AddressSyndicationQueryResult(
                         x.AddressId.Value,
-                        x.Position,
+                        x.FeedPosition,
                         x.StreetNamePersistentLocalId,
                         x.PersistentLocalId,
                         x.HouseNumber,
@@ -244,7 +244,7 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
                 if (_embedEvent)
                     return x => new AddressSyndicationQueryResult(
                         x.AddressId.Value,
-                        x.Position,
+                        x.FeedPosition,
                         x.StreetNamePersistentLocalId,
                         x.PersistentLocalId,
                         x.ChangeType,
@@ -258,7 +258,7 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
                 if (_embedObject)
                     return x => new AddressSyndicationQueryResult(
                         x.AddressId.Value,
-                        x.Position,
+                        x.FeedPosition,
                         x.StreetNamePersistentLocalId,
                         x.PersistentLocalId,
                         x.HouseNumber,
@@ -279,7 +279,7 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
 
                 return x => new AddressSyndicationQueryResult(
                     x.AddressId.Value,
-                    x.Position,
+                    x.FeedPosition,
                     x.StreetNamePersistentLocalId,
                     x.PersistentLocalId,
                     x.ChangeType,
@@ -295,14 +295,14 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
         {
             var addresses = _context
                 .AddressSyndication
-                .OrderBy(x => x.Position)
+                .OrderBy(x => x.FeedPosition)
                 .AsNoTracking();
 
             if (!filtering.ShouldFilter)
                 return addresses;
 
             if (filtering.Filter.Position.HasValue)
-                addresses = addresses.Where(m => m.Position >= filtering.Filter.Position);
+                addresses = addresses.Where(m => m.FeedPosition >= filtering.Filter.Position);
 
             return addresses;
         }

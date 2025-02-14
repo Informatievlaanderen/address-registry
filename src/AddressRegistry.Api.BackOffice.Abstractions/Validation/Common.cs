@@ -24,7 +24,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class AddressRemovedWithId
             {
-                public const string Code = "VerwijderdAdres"; //TODO-pr
+                public const string Code = "VerwijderdAdresId";
                 public static string Message(int persistentLocalId) => $"Verwijderd adres '{persistentLocalId}'.";
 
                 public static TicketError ToTicketError(int persistentLocalId) => new(Message(persistentLocalId), Code);
@@ -40,7 +40,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class AddressNotFoundWithId
             {
-                public const string Code = "AdresIsOnbestaand"; //TODO-pr
+                public const string Code = "AdresIdIsOnbestaand";
                 public static string Message(string addressId) => $"Onbestaand adres '{addressId}'.";
 
                 public static TicketError ToTicketError(string addressId) => new(Message(addressId), Code);

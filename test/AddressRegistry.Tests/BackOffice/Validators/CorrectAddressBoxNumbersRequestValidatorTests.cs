@@ -58,10 +58,10 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             result.Errors.Should().HaveCount(2);
             result.ShouldHaveValidationErrorFor("Busnummers[0]")
                 .WithErrorCode("AdresIdReedsInLijstBusnummers")
-                .WithErrorMessage("Het adresId zit reeds in lijst van busnummers: http://adres/1.");
+                .WithErrorMessage("Het adres 'http://adres/1' zit reeds in lijst van busnummers.");
             result.ShouldHaveValidationErrorFor("Busnummers[1]")
                 .WithErrorCode("AdresIdReedsInLijstBusnummers")
-                .WithErrorMessage("Het adresId zit reeds in lijst van busnummers: http://adres/1.");
+                .WithErrorMessage("Het adres 'http://adres/1' zit reeds in lijst van busnummers.");
         }
 
         [Fact]
@@ -89,10 +89,10 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             result.Errors.Should().HaveCount(2);
             result.ShouldHaveValidationErrorFor("Busnummers[0]")
                 .WithErrorCode("BusnummerReedsInLijstBusnummers")
-                .WithErrorMessage("Het busnummer zit reeds in lijst van busnummers: A.");
+                .WithErrorMessage("Het busnummer 'A' zit reeds in lijst van busnummers.");
             result.ShouldHaveValidationErrorFor("Busnummers[1]")
                 .WithErrorCode("BusnummerReedsInLijstBusnummers")
-                .WithErrorMessage("Het busnummer zit reeds in lijst van busnummers: A.");
+                .WithErrorMessage("Het busnummer 'A' zit reeds in lijst van busnummers.");
         }
 
         [Fact]

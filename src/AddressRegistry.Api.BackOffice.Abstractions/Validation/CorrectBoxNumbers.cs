@@ -38,7 +38,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class HasNoBoxNumber
             {
-                public const string Code = "AdresHuisnummerZonderBusnummer"; //TODO-pr
+                public const string Code = "AdresIdHuisnummerZonderBusnummer"; //TODO-pr
                 public static string MessageWithAdresId(string addressId) => $"Het adres '{addressId}' heeft geen te corrigeren busnummer.";
 
                 public static TicketError ToTicketError(int persistentLocalId) => new(MessageWithAdresId(persistentLocalId.ToString()), Code);
@@ -47,13 +47,13 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             public static class DuplicateAddressId
             {
                 public const string Code = "AdresIdReedsInLijstBusnummers";
-                public static string Message(string addressId) => $"Het adresId zit reeds in lijst van busnummers: {addressId}.";
+                public static string Message(string addressId) => $"Het adres '{addressId}' zit reeds in lijst van busnummers.";
             }
 
             public static class DuplicateBoxNumber
             {
                 public const string Code = "BusnummerReedsInLijstBusnummers";
-                public static string Message(string boxNumber) => $"Het busnummer zit reeds in lijst van busnummers: {boxNumber}.";
+                public static string Message(string boxNumber) => $"Het busnummer '{boxNumber}' zit reeds in lijst van busnummers.";
             }
         }
     }

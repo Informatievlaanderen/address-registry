@@ -44,7 +44,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 column: "FeedPosition")
                 .Annotation("SqlServer:Clustered", true);
 
-            migrationBuilder.Sql($"SET IDENTITY_INSERT {Schema.Legacy}.AddressSyndication OFF;");
+            migrationBuilder.Sql($"SET IDENTITY_INSERT {Schema.Legacy}.AddressSyndication ON;");
 
             migrationBuilder.Sql(
                 $"""
@@ -57,7 +57,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
             migrationBuilder.Sql($"DECLARE @maxId INT = ({maxIdSql});");
             migrationBuilder.Sql($"DBCC CHECKIDENT ('{Schema.Legacy}.AddressSyndication', RESEED, @maxId);");
 
-            migrationBuilder.Sql($"SET IDENTITY_INSERT {Schema.Legacy}.AddressSyndication ON;");
+            migrationBuilder.Sql($"SET IDENTITY_INSERT {Schema.Legacy}.AddressSyndication OFF;");
 
             migrationBuilder.CreateIndex(
                 name: "CI_AddressSyndication_FeedPosition",

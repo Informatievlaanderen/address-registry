@@ -27,7 +27,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
 
         protected override string? WithAggregateId(CorrectAddressBoxNumbersSqsRequest request)
         {
-            var addressPersistentLocalId = request.Request.Busnummers.First().AdresId.AsIdentifier().Map(int.Parse);
+            var addressPersistentLocalId = request.Request.Busnummers.First().AdresId.AsIdentifier().Map(int.Parse).Value;
 
             var relation = _backOfficeContext
                 .AddressPersistentIdStreetNamePersistentIds

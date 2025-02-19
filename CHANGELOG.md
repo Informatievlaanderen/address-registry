@@ -1,3 +1,10 @@
+## [4.36.2](https://github.com/informatievlaanderen/address-registry/compare/v4.36.1...v4.36.2) (2025-02-19)
+
+
+### Bug Fixes
+
+* **backoffice:** correct route correctboxnumbers ([3411135](https://github.com/informatievlaanderen/address-registry/commit/341113521aa1f4166fca3a67f81b40da8f2c4cfc))
+
 ## [4.36.1](https://github.com/informatievlaanderen/address-registry/compare/v4.36.0...v4.36.1) (2025-02-19)
 
 

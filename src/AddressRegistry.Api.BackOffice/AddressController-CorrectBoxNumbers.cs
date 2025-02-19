@@ -18,7 +18,7 @@ namespace AddressRegistry.Api.BackOffice
 
     public partial class AddressController
     {
-        [HttpPost("/acties/corrigeren/busnummers")]
+        [HttpPost("acties/corrigeren/busnummers")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]

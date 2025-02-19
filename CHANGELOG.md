@@ -1,3 +1,10 @@
+## [4.36.1](https://github.com/informatievlaanderen/address-registry/compare/v4.36.0...v4.36.1) (2025-02-19)
+
+
+### Bug Fixes
+
+* **backoffice:** fix correctboxnumbers aggregateid ([0e093fd](https://github.com/informatievlaanderen/address-registry/commit/0e093fded83e32d19687693630bed24a0715c7fc))
+
 # [4.36.0](https://github.com/informatievlaanderen/address-registry/compare/v4.35.1...v4.36.0) (2025-02-14)
 
 

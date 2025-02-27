@@ -310,12 +310,12 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
 
     internal class AddressSyndicationSorting : ISorting
     {
-        public IEnumerable<string> SortableFields { get; } = new[]
-        {
-            nameof(AddressSyndicationItem.Position)
-        };
+        public IEnumerable<string> SortableFields { get; } =
+        [
+            nameof(AddressSyndicationItem.FeedPosition)
+        ];
 
-        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(AddressSyndicationItem.Position), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(AddressSyndicationItem.FeedPosition), SortOrder.Ascending);
     }
 
     public class AddressSyndicationFilter

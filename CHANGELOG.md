@@ -1,3 +1,10 @@
+## [4.36.3](https://github.com/informatievlaanderen/address-registry/compare/v4.36.2...v4.36.3) (2025-02-27)
+
+
+### Bug Fixes
+
+* order feed by feedposition ([bfe7ffa](https://github.com/informatievlaanderen/address-registry/commit/bfe7ffa45a44222e6f45cf10aa87603e1c30471b))
+
 ## [4.36.2](https://github.com/informatievlaanderen/address-registry/compare/v4.36.1...v4.36.2) (2025-02-19)
 
 

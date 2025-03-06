@@ -34,7 +34,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
                     OsloPuriValidator.TryParseIdentifier(x.AdresId, out var addressId)
                     && int.TryParse(addressId, out _))
                 .WithMessage((_, x) => ValidationErrors.Common.AddressNotFoundWithId.Message(x.AdresId))
-                .WithErrorCode(ValidationErrors.Common.AddressNotFound.Code)
+                .WithErrorCode(ValidationErrors.Common.AddressNotFoundWithId.Code)
 
                 .Must(x => BoxNumber.HasValidFormat(x.Busnummer))
                 .WithMessage((_, x) => ValidationErrors.Common.BoxNumberInvalidFormat.MessageWithBoxNumber(x.Busnummer))
@@ -72,7 +72,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
                                 context.AddFailure(new ValidationFailure
                                 {
                                     PropertyName = $"{nameof(CorrectAddressBoxNumbersRequest.Busnummers)}[{index}]",
-                                    ErrorCode = ValidationErrors.Common.AddressNotFound.Code,
+                                    ErrorCode = ValidationErrors.Common.AddressNotFoundWithId.Code,
                                     ErrorMessage = ValidationErrors.Common.AddressNotFoundWithId.Message(adresId)
                                 });
                             }

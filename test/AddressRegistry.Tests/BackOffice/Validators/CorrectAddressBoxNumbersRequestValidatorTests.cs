@@ -119,7 +119,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
             result.Errors.Should().HaveCount(1);
             result.ShouldHaveValidationErrorFor("Busnummers[0]")
-                .WithErrorCode("AdresIsOnbestaand")
+                .WithErrorCode("AdresIdIsOnbestaand")
                 .WithErrorMessage("Onbestaand adres '1'.");
         }
 
@@ -166,10 +166,10 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
             result.Errors.Should().HaveCount(2);
             result.ShouldHaveValidationErrorFor("Busnummers[0]")
-                .WithErrorCode("AdresIsOnbestaand")
+                .WithErrorCode("AdresIdIsOnbestaand")
                 .WithErrorMessage("Onbestaand adres 'http://adres/1'.");
             result.ShouldHaveValidationErrorFor("Busnummers[1]")
-                .WithErrorCode("AdresIsOnbestaand")
+                .WithErrorCode("AdresIdIsOnbestaand")
                 .WithErrorMessage("Onbestaand adres 'http://adres/2'.");
         }
     }

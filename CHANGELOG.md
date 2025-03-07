@@ -1,3 +1,10 @@
+## [4.36.4](https://github.com/informatievlaanderen/address-registry/compare/v4.36.3...v4.36.4) (2025-03-07)
+
+
+### Bug Fixes
+
+* **backoffice:** correct errorcodes correct boxnumbers validation ([aa16536](https://github.com/informatievlaanderen/address-registry/commit/aa165363ba23b3bcd79de433c314794fea4ef061))
+
 ## [4.36.3](https://github.com/informatievlaanderen/address-registry/compare/v4.36.2...v4.36.3) (2025-02-27)
 
 

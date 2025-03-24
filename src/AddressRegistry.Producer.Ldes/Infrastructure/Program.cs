@@ -7,6 +7,8 @@ namespace AddressRegistry.Producer.Ldes.Infrastructure
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Consumer.Read.Municipality.Infrastructure.Modules;
+    using Consumer.Read.StreetName.Infrastructure.Modules;
     using Destructurama;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -112,10 +114,12 @@ namespace AddressRegistry.Producer.Ldes.Infrastructure
                     var services = new ServiceCollection();
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
-                    builder.RegisterModule(new ProducerModule(hostContext.Configuration, services, loggerFactory));
+                    builder
+                        .RegisterModule(new ProducerModule(hostContext.Configuration, services, loggerFactory))
+                        .RegisterModule(new StreetNameConsumerModule(hostContext.Configuration, services, loggerFactory));
 
                     builder
-                        .RegisterType<SnapshotProducer>()
+                        .RegisterType<LdesProducer>()
                         .As<IHostedService>()
                         .SingleInstance();
 

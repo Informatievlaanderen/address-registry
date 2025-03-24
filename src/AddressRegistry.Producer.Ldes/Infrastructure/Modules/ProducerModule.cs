@@ -2,14 +2,11 @@ namespace AddressRegistry.Producer.Ldes.Infrastructure.Modules
 {
     using System;
     using AddressRegistry.Infrastructure;
-    using Amazon.SimpleNotificationService;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
-    using Be.Vlaanderen.Basisregisters.GrAr.Notifications;
-    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
@@ -17,10 +14,12 @@ namespace AddressRegistry.Producer.Ldes.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
+    using Consumer.Read.StreetName;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using NodaTime;
 
     public class ProducerModule : Module
@@ -47,11 +46,6 @@ namespace AddressRegistry.Producer.Ldes.Infrastructure.Modules
 
             RegisterProjectionSetup(builder);
 
-            builder
-                .RegisterType<ProblemDetailsHelper>()
-                .AsSelf();
-
-            _services.AddOsloProxy(_configuration["OsloApiUrl"]);
             builder.Populate(_services);
         }
 
@@ -67,16 +61,14 @@ namespace AddressRegistry.Producer.Ldes.Infrastructure.Modules
                 .RegisterModule(new ProjectorModule(_configuration));
 
             RegisterProjections(builder);
-            RegisterReproducers();
         }
 
         private void RegisterProjections(ContainerBuilder builder)
         {
             var logger = _loggerFactory.CreateLogger<ProducerModule>();
-            var connectionString = _configuration.GetConnectionString("ProducerProjections");
+            var connectionString = _configuration.GetConnectionString("ProducerLdesProjections");
 
-            var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
-            if (hasConnectionString)
+            if (!string.IsNullOrWhiteSpace(connectionString))
             {
                 RunOnSqlServer(_services, _loggerFactory, connectionString);
             }
@@ -105,61 +97,34 @@ namespace AddressRegistry.Producer.Ldes.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<ProducerProjections, ProducerContext>(c =>
                     {
-                        var osloNamespace = _configuration["OsloNamespace"].TrimEnd('/');
+                        var osloNamespace = _configuration["OsloNamespace"]!.TrimEnd('/');
 
                         return new ProducerProjections(
                             new Producer(CreateProducerOptions()),
-                            new SnapshotManager(
-                                c.Resolve<ILoggerFactory>(),
-                                c.Resolve<IOsloProxy>(),
-                                SnapshotManagerOptions.Create(
-                                    _configuration["RetryPolicy:MaxRetryWaitIntervalSeconds"],
-                                    _configuration["RetryPolicy:RetryBackoffFactor"])),
-                            osloNamespace);
+                            osloNamespace,
+                            new JsonSerializerSettings().ConfigureDefaultForApi(),
+                            c.Resolve<IDbContextFactory<StreetNameConsumerContext>>());
                     },
                     connectedProjectionSettings);
-        }
-
-        private void RegisterReproducers()
-        {
-            _services.AddAWSService<IAmazonSimpleNotificationService>();
-            _services.AddSingleton<INotificationService>(sp =>
-                new NotificationService(sp.GetRequiredService<IAmazonSimpleNotificationService>(),
-                    _configuration.GetValue<string>("NotificationTopicArn")!));
-
-            var connectionString = _configuration.GetConnectionString("Integration");
-            var utcHourToRunWithin = _configuration.GetValue<int>("SnapshotReproducerUtcHour");
-
-            _services.AddHostedService<AddressSnapshotReproducer>(provider =>
-            {
-                var producerOptions = CreateProducerOptions();
-                return new AddressSnapshotReproducer(
-                    connectionString!,
-                    provider.GetRequiredService<IOsloProxy>(),
-                    new Producer(producerOptions),
-                    provider.GetRequiredService<IClock>(),
-                    provider.GetRequiredService<INotificationService>(),
-                    utcHourToRunWithin,
-                    _loggerFactory);
-            });
         }
 
         private ProducerOptions CreateProducerOptions()
         {
             var bootstrapServers = _configuration["Kafka:BootstrapServers"];
-            var topic = $"{_configuration[ProducerProjections.TopicKey]}" ?? throw new ArgumentException($"Configuration has no value for {ProducerProjections.TopicKey}");
+            var topic = _configuration[ProducerProjections.TopicKey]
+                        ?? throw new ArgumentException($"Configuration has no value for {ProducerProjections.TopicKey}");
             var producerOptions = new ProducerOptions(
                     new BootstrapServers(bootstrapServers),
                     new Topic(topic),
-                    true,
+                    useSinglePartition: false,
                     EventsJsonSerializerSettingsProvider.CreateSerializerSettings())
                 .ConfigureEnableIdempotence();
             if (!string.IsNullOrEmpty(_configuration["Kafka:SaslUserName"])
                 && !string.IsNullOrEmpty(_configuration["Kafka:SaslPassword"]))
             {
                 producerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
-                    _configuration["Kafka:SaslUserName"],
-                    _configuration["Kafka:SaslPassword"]));
+                    _configuration["Kafka:SaslUserName"]!,
+                    _configuration["Kafka:SaslPassword"]!));
             }
 
             return producerOptions;
@@ -176,7 +141,7 @@ namespace AddressRegistry.Producer.Ldes.Infrastructure.Modules
                     .UseSqlServer(producerConnectionString, sqlServerOptions =>
                     {
                         sqlServerOptions.EnableRetryOnFailure();
-                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.ProducerSnapshotOslo, Schema.ProducerSnapshotOslo);
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.ProducerLdes, Schema.ProducerLdes);
                     })
                     .UseExtendedSqlServerMigrations());
         }
@@ -189,7 +154,7 @@ namespace AddressRegistry.Producer.Ldes.Infrastructure.Modules
             services
                 .AddDbContext<ProducerContext>(options => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), _ => { }));
 
             logger.LogWarning("Running InMemory for {Context}!", nameof(ProducerContext));
         }

@@ -7,4 +7,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("AddressRegistry Producer Ldes")]
 
 [assembly: ComVisible(false)]
-[assembly: Guid("5722c41d-f128-4515-8ae8-aa85e9d1e940")]
+[assembly: Guid("88906e07-28e3-4f88-887e-31dc815aa337")]

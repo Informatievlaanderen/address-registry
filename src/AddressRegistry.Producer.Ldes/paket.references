@@ -2,7 +2,6 @@ Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.GrAr.Legacy
 Be.Vlaanderen.Basisregisters.GrAr.Notifications
-Be.Vlaanderen.Basisregisters.GrAr.Oslo
 Be.Vlaanderen.BasisRegisters.MessageHandling.Kafka.Producer
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac

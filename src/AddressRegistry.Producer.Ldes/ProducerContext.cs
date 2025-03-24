@@ -6,7 +6,9 @@ namespace AddressRegistry.Producer.Ldes
 
     public class ProducerContext : RunnerDbContext<ProducerContext>
     {
-        public override string ProjectionStateSchema => Schema.ProducerSnapshotOslo;
+        public override string ProjectionStateSchema => Schema.ProducerLdes;
+
+        public DbSet<AddressDetail> Addresses => Set<AddressDetail>();
 
         // This needs to be here to please EF
         public ProducerContext() { }

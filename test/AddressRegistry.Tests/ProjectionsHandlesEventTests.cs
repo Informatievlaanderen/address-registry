@@ -7,6 +7,7 @@
     using System.Runtime.CompilerServices;
     using System.Text;
     using Api.BackOffice.Abstractions;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
@@ -21,6 +22,7 @@
     using Microsoft.Extensions.Options;
     using Moq;
     using NetTopologySuite.IO;
+    using Newtonsoft.Json;
     using Producer;
     using Producer.Snapshot.Oslo;
     using Projections.AddressMatch;
@@ -280,6 +282,11 @@
                 new ProducerProjections(Mock.Of<IProducer>(), Mock.Of<ISnapshotManager>(), "")
             }];
 
+            yield return [new List<ConnectedProjection<AddressRegistry.Producer.Ldes.ProducerContext>>
+            {
+                new AddressRegistry.Producer.Ldes.ProducerProjections(Mock.Of<IProducer>(), "", new JsonSerializerSettings().ConfigureDefaultForApi(), Mock.Of<IDbContextFactory<StreetNameConsumerContext>>())
+            }];
+
             yield return [new List<ConnectedProjection<AddressRegistry.Producer.ProducerContext>>
             {
                 new ProducerMigrateReaddressFixProjections(Mock.Of<IProducer>(), Mock.Of<IStreamStore>()),
@@ -308,8 +315,9 @@
                 projection.Handlers.Should().NotBeEmpty();
                 foreach (var eventType in eventsToCheck)
                 {
-                    var messageType = projection.Handlers.Any(x => x.Message.GetGenericArguments().First() == eventType);
-                    messageType.Should().BeTrue($"The event {eventType.Name} is not handled by the projection {projection.GetType().Name}");
+                    var eventHandlersCount = projection.Handlers.Count(x => x.Message.GetGenericArguments().First() == eventType);
+                    eventHandlersCount.Should().BeGreaterThan(0, $"The event {eventType.Name} is not handled by the projection {projection.GetType().Name}");
+                    eventHandlersCount.Should().BeLessOrEqualTo(1, $"The event {eventType.Name} has multiple handlers in the projection {projection.GetType().Name}");
                 }
             }
         }

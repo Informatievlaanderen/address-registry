@@ -21,6 +21,7 @@ namespace AddressRegistry.Infrastructure
         public const string Wms = "wms.address";
         public const string Producer = "AddressRegistryProducer";
         public const string ProducerSnapshotOslo = "AddressRegistryProducerSnapshotOslo";
+        public const string ProducerLdes = "AddressRegistryProducerLdes";
         public const string Integration = "integration_address";
     }
 
@@ -43,6 +44,7 @@ namespace AddressRegistry.Infrastructure
         public const string Wms = "__EFMigrationsHistoryWmsAddress";
         public const string Producer = "__EFMigrationsHistoryProducer";
         public const string ProducerSnapshotOslo = "__EFMigrationsHistoryProducerSnapshotOslo";
+        public const string ProducerLdes = "__EFMigrationsHistoryProducerLdes";
         public const string Integration = "__EFMigrationsHistory";
     }
 }

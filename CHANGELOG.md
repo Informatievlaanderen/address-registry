@@ -1,3 +1,15 @@
+# [4.37.0](https://github.com/informatievlaanderen/address-registry/compare/v4.36.4...v4.37.0) (2025-03-24)
+
+
+### Bug Fixes
+
+* **ldes:** publish project ([163886e](https://github.com/informatievlaanderen/address-registry/commit/163886e23a68a043573d22974448b2cf2db6df95))
+
+
+### Features
+
+* GAWR-6786 add Ldes Producer ([f2f3180](https://github.com/informatievlaanderen/address-registry/commit/f2f31809750030ebaf47e957c2b100dc2c64480e))
+
 ## [4.36.4](https://github.com/informatievlaanderen/address-registry/compare/v4.36.3...v4.36.4) (2025-03-07)
 
 

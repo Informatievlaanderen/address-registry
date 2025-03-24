@@ -12,9 +12,7 @@ Microsoft.Extensions.DependencyInjection
 AWSSDK.Extensions.NETCore.Setup
 
 AspNetCore.HealthChecks.SqlServer
-AspNetCore.HealthChecks.NpgSql
 
-Npgsql.EntityFrameworkCore.PostgreSQL
 Dapper
 
 Datadog.Trace.Bundle

@@ -162,7 +162,7 @@
             Straatnaam = new ObjectIdObject(address.StreetNamePersistentLocalId.ToString());
             Huisnummer = address.HouseNumber;
             HuisnummerObject = address.ParentAddressPersistentLocalId is not null
-                ? new ObjectIdObject(address.ParentAddressPersistentLocalId.ToString())
+                ? new ObjectIdObject(address.ParentAddressPersistentLocalId.Value.ToString())
                 : null;
             Busnummer = address.BoxNumber;
             AdresPositie = AddressMapper.GetAdresPositie(address.Position, address.PositionMethod, address.PositionSpecification);

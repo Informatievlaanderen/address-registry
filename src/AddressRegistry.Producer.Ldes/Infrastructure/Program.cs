@@ -78,15 +78,6 @@ namespace AddressRegistry.Producer.Ldes.Infrastructure
                             tags: new[] { "db", "sql", "sqlserver" });
                     }
 
-                    foreach (var connectionString in connectionStrings
-                                 .Where(x => x.Value.Contains("host", StringComparison.OrdinalIgnoreCase)))
-                    {
-                        healthChecksBuilder.AddNpgSql(
-                            connectionString.Value,
-                            name: $"npgsql-{connectionString.Key.ToLowerInvariant()}",
-                            tags: new[] { "db", "sql", "npgsql" });
-                    }
-
                     healthChecksBuilder.AddDbContextCheck<ProducerContext>(
                         $"dbcontext-{nameof(ProducerContext).ToLowerInvariant()}",
                         tags: new[] { "db", "sql", "sqlserver" });

@@ -45,6 +45,15 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure.Modules
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerReadStreetName,
                             Schema.ConsumerReadStreetName);
                     }), serviceLifetime);
+
+            services.AddDbContextFactory<StreetNameConsumerContext>((provider, options) => options
+                .UseLoggerFactory(loggerFactory)
+                .UseSqlServer(consumerConnectionString,
+                    sqlServerOptions =>
+                    {
+                        sqlServerOptions.EnableRetryOnFailure();
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerReadStreetName, Schema.ConsumerReadStreetName);
+                    }), serviceLifetime);
         }
 
         private static void RunInMemoryDb(

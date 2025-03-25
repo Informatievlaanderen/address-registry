@@ -1,3 +1,10 @@
+## [4.37.1](https://github.com/informatievlaanderen/address-registry/compare/v4.37.0...v4.37.1) (2025-03-25)
+
+
+### Bug Fixes
+
+* **ldes:** register streetname consumer context dbfactory ([0750066](https://github.com/informatievlaanderen/address-registry/commit/0750066e809526716caae958562e91ff50f880e3))
+
 # [4.37.0](https://github.com/informatievlaanderen/address-registry/compare/v4.36.4...v4.37.0) (2025-03-24)
 
 

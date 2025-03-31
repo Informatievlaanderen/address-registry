@@ -1,35 +1,38 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch
 {
     using System;
+    using System.Threading;
     using Microsoft.Extensions.Caching.Memory;
 
     public abstract class CachedService
     {
-        private static readonly object CacheLock = new object();
         private readonly IMemoryCache _cache;
 
         protected CachedService(IMemoryCache memoryCache)
             => _cache = memoryCache;
 
-        protected T2 GetOrAdd<T, T2>(
+        protected T2? GetOrAdd<T, T2>(
             string key,
-            Func<T> getter,
+            Func<T?> getter,
             TimeSpan cacheDuration,
-            Func<T, T2> ifCacheHit,
-            Func<T2> ifCacheNotHit)
+            Func<T?, T2?> ifCacheHit,
+            Func<T2?> ifCacheNotAvailable,
+            object cacheLock)
             where T : class
         {
-            lock (CacheLock)
+            if (_cache.Get(key) is T cached)
+                return ifCacheHit(cached);
+
+            if (Monitor.IsEntered(cacheLock))
+                return ifCacheNotAvailable();
+
+            lock (cacheLock)
             {
-                if (_cache.Get(key) is T cached)
-                    return ifCacheHit(cached);
+                if (_cache.Get(key) is T cachedLock)
+                    return ifCacheHit(cachedLock);
 
-                cached = _cache.Get(key) as T;
-                if (cached != null)
-                    return ifCacheNotHit();
-
-                T item = getter();
-                if (item != null)
+                T? item = getter();
+                if (item is not null)
                     _cache.Set(
                         key,
                         item,
@@ -37,28 +40,28 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
                         {
                             AbsoluteExpiration = new DateTimeOffset(DateTime.Now.Add(cacheDuration))
                         });
-            }
 
-            return ifCacheNotHit();
+                return ifCacheHit(item);
+            }
         }
 
-        protected T GetOrAdd<T>(
+        protected T? GetOrAdd<T>(
             string key,
-            Func<T> getter,
-            TimeSpan cacheDuration)
+            Func<T?> getter,
+            TimeSpan cacheDuration,
+            object cacheLock)
             where T : class
         {
-            lock (CacheLock)
+            if (_cache.Get(key) is T cached)
+                return cached;
+
+            lock (cacheLock)
             {
-                if (_cache.Get(key) is T cached)
-                    return cached;
+                if (_cache.Get(key) is T lockedCache)
+                    return lockedCache;
 
-                cached = _cache.Get(key) as T;
-                if (cached != null)
-                    return cached;
-
-                T item = getter();
-                if (item != null)
+                T? item = getter();
+                if (item is not null)
                     _cache.Set(
                         key,
                         item,

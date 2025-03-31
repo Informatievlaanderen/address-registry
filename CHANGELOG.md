@@ -1,3 +1,10 @@
+## [4.37.2](https://github.com/informatievlaanderen/address-registry/compare/v4.37.1...v4.37.2) (2025-03-31)
+
+
+### Bug Fixes
+
+* **adresmatch:** correct caching logic GAWR-6832 ([4247fad](https://github.com/informatievlaanderen/address-registry/commit/4247fad51f7f83d25a18195d7a94f0e9c03f9590))
+
 ## [4.37.1](https://github.com/informatievlaanderen/address-registry/compare/v4.37.0...v4.37.1) (2025-03-25)
 
 

@@ -475,9 +475,6 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
             };
 
             _latestQueries
-                .Setup(x => x.GetAllLatestStreetNames())
-                .Returns(new[] { streetNameLatestItem });
-            _latestQueries
                 .Setup(x => x.GetAllLatestStreetNamesByPersistentLocalId())
                 .Returns(new[] { streetNameLatestItem }.ToDictionary(x => x.PersistentLocalId));
             _latestQueries

@@ -1163,6 +1163,7 @@
             var houseNumberPersistentLocalId = _fixture.Create<AddressPersistentLocalId>();
             var boxNumberPersistentLocalId = houseNumberPersistentLocalId + 1;
             var addressHouseNumberWasCorrectedV2 = _fixture.Create<AddressHouseNumberWasCorrectedV2>()
+                .WithAddressPersistentLocalId(houseNumberPersistentLocalId)
                 .WithBoxNumberPersistentLocalIds(new List<AddressPersistentLocalId>()
                 {
                     new(boxNumberPersistentLocalId)

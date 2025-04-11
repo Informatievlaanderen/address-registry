@@ -72,7 +72,7 @@ namespace AddressRegistry.Producer.Ldes
             using (var xmlwriter = XmlWriter.Create(builder, settings))
             {
                 xmlwriter.WriteStartElement("gml", "Point", "http://www.opengis.net/gml/3.2");
-                xmlwriter.WriteAttributeString("srsName", "https://www.opengis.net/def/crs/EPSG/0/31370");
+                xmlwriter.WriteAttributeString("srsName", "http://www.opengis.net/def/crs/EPSG/0/31370");
                 Write(geometry.Coordinate, xmlwriter);
                 xmlwriter.WriteEndElement();
             }

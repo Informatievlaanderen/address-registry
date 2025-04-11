@@ -1,3 +1,10 @@
+## [4.37.3](https://github.com/informatievlaanderen/address-registry/compare/v4.37.2...v4.37.3) (2025-04-11)
+
+
+### Bug Fixes
+
+* **ldes:** change gml to http ([eec0713](https://github.com/informatievlaanderen/address-registry/commit/eec0713b2bb8f460cc05104e6d71d65d70a225e8))
+
 ## [4.37.2](https://github.com/informatievlaanderen/address-registry/compare/v4.37.1...v4.37.2) (2025-03-31)
 
 

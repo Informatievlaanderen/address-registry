@@ -75,6 +75,8 @@ namespace AddressRegistry.StreetName
             Register<AddressPositionWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
+            Register<AddressWasRejectedBecauseStreetNameWasRejected>(When);
+            Register<AddressWasRetiredBecauseStreetNameWasRejected>(When);
 
             Register<AddressHouseNumberWasReaddressed>(When);
             Register<AddressWasProposedBecauseOfReaddress>(When);
@@ -426,6 +428,18 @@ namespace AddressRegistry.StreetName
         {
             IsRemoved = true;
 
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRejectedBecauseStreetNameWasRejected @event)
+        {
+            Status = AddressStatus.Rejected;
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRetiredBecauseStreetNameWasRejected @event)
+        {
+            Status = AddressStatus.Retired;
             _lastEvent = @event;
         }
 

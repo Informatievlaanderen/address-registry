@@ -73,6 +73,8 @@ namespace AddressRegistry.StreetName
             Register<AddressPositionWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
+            Register<AddressWasRejectedBecauseStreetNameWasRejected>(When);
+            Register<AddressWasRetiredBecauseStreetNameWasRejected>(When);
 
             Register<AddressHouseNumberWasReaddressed>(When);
             Register<AddressWasProposedBecauseOfReaddress>(When);
@@ -328,6 +330,8 @@ namespace AddressRegistry.StreetName
         private void When(AddressPostalCodeWasChangedV2 @event) => RouteToAddress(@event);
 
         private void When(AddressWasRemovedBecauseStreetNameWasRemoved @event) => RouteToAddress(@event);
+        private void When(AddressWasRejectedBecauseStreetNameWasRejected @event) => RouteToAddress(@event);
+        private void When(AddressWasRetiredBecauseStreetNameWasRejected @event) => RouteToAddress(@event);
 
         private void When(AddressHouseNumberWasReaddressed @event) => RouteToAddress(@event);
 

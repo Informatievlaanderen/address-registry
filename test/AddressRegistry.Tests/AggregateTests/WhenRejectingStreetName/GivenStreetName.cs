@@ -149,14 +149,34 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetName
                 StreetNameStatus.Proposed);
             ((ISetProvenance)migratedStreetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
 
+            var proposedAddressWasMigratedToStreetName = new AddressWasMigratedToStreetNameBuilder(Fixture)
+                .WithStreetNamePersistentLocalId(streetNamePersistentLocalId)
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .Build();
+
+            var currentAddressWasMigratedToStreetName = new AddressWasMigratedToStreetNameBuilder(Fixture)
+                .WithStreetNamePersistentLocalId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(2))
+                .WithStatus(AddressStatus.Current)
+                .Build();
+
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
-            sut.Initialize(new List<object> { migratedStreetNameWasImported });
+            sut.Initialize(new List<object> { migratedStreetNameWasImported, proposedAddressWasMigratedToStreetName, currentAddressWasMigratedToStreetName });
 
             // Act
             sut.RejectStreetName();
 
             // Assert
             sut.Status.Should().Be(StreetNameStatus.Rejected);
+            sut.StreetNameAddresses.FindByPersistentLocalId(new AddressPersistentLocalId(proposedAddressWasMigratedToStreetName.AddressPersistentLocalId))!
+                .Status
+                .Should()
+                .Be(AddressStatus.Rejected);
+
+            sut.StreetNameAddresses.FindByPersistentLocalId(new AddressPersistentLocalId(currentAddressWasMigratedToStreetName.AddressPersistentLocalId))!
+                .Status
+                .Should()
+                .Be(AddressStatus.Retired);
         }
     }
 }

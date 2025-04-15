@@ -1,3 +1,10 @@
+## [4.37.4](https://github.com/informatievlaanderen/address-registry/compare/v4.37.3...v4.37.4) (2025-04-15)
+
+
+### Bug Fixes
+
+* **domain:** reject streetname sets status GAWR-6850 ([03a4878](https://github.com/informatievlaanderen/address-registry/commit/03a4878b2eac5ea981e3b544d28fdd9854be93f1))
+
 ## [4.37.3](https://github.com/informatievlaanderen/address-registry/compare/v4.37.2...v4.37.3) (2025-04-11)
 
 

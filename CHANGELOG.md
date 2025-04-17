@@ -1,3 +1,10 @@
+## [4.37.5](https://github.com/informatievlaanderen/address-registry/compare/v4.37.4...v4.37.5) (2025-04-17)
+
+
+### Bug Fixes
+
+* **search:** GAWR-6859 return better result with postalcode search ([1669a04](https://github.com/informatievlaanderen/address-registry/commit/1669a04366b30ee5e8a5de75f9c2cb9ba5079248))
+
 ## [4.37.4](https://github.com/informatievlaanderen/address-registry/compare/v4.37.3...v4.37.4) (2025-04-15)
 
 

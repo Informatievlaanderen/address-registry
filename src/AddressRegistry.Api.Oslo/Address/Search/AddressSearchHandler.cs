@@ -53,7 +53,7 @@
             }
 
             var pagination = (PaginationRequest)request.Pagination;
-            var query = request.Filtering.Filter.Query;
+            var query = request.Filtering.Filter.Query!;
 
             if (request.Filtering.Filter.ResultType == ResultType.Address)
             {
@@ -61,7 +61,8 @@
             }
 
             var streetNameNisCode = nisCode;
-            if (query is not null && _queryParser.TryExtractNisCodeViaPostalCode(ref query, out var queryNisCode))
+            var streetNameQuery = query;
+            if (_queryParser.TryExtractNisCodeViaPostalCode(ref streetNameQuery, out var queryNisCode))
             {
                 if (request.Filtering.Filter.ResultType == ResultType.StreetName && nisCode is not null && nisCode != queryNisCode)
                 {
@@ -74,7 +75,7 @@
                 }
             }
 
-            var streetNames = await SearchStreetNames(request, query, streetNameNisCode, pagination);
+            var streetNames = await SearchStreetNames(request, streetNameQuery, streetNameNisCode, pagination);
             if (request.Filtering.Filter.ResultType == ResultType.StreetName || streetNames.Results.Count >= pagination.Limit)
             {
                 return streetNames;

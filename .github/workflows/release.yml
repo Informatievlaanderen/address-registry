@@ -342,7 +342,7 @@ jobs:
 
   build-lambda-backoffice:
     name: Build Lambda
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda-v2.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda-arm64.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:

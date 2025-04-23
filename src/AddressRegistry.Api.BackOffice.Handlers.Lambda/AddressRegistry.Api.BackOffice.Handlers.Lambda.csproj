@@ -10,8 +10,7 @@
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <!-- Generate ready to run images during publishing to improve cold start time. -->
     <PublishReadyToRun>true</PublishReadyToRun>
-    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-
+    <RuntimeIdentifiers>linux-x64;linux-arm64</RuntimeIdentifiers>
     <!-- Error NETSDK1152: https://docs.microsoft.com/en-us/dotnet/core/compatibility/sdk/6.0/duplicate-files-in-output -->
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
     <StripSymbols>true</StripSymbols>

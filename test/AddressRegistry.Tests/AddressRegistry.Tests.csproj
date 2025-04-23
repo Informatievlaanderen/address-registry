@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
+  <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AddressRegistry.Api.BackOffice.Handlers.Lambda\AddressRegistry.Api.BackOffice.Handlers.Lambda.csproj" />
@@ -14,6 +14,8 @@
     <ProjectReference Include="..\..\src\AddressRegistry.Producer.Ldes\AddressRegistry.Producer.Ldes.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Producer\AddressRegistry.Producer.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.BackOffice\AddressRegistry.Projections.BackOffice.csproj" />
+    <ProjectReference Include="..\..\src\AddressRegistry.Projections.Legacy\AddressRegistry.Projections.Legacy.csproj" />
+    <ProjectReference Include="..\..\src\AddressRegistry.Projections.AddressMatch\AddressRegistry.Projections.AddressMatch.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Elastic\AddressRegistry.Projections.Elastic.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Extract\AddressRegistry.Projections.Extract.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Integration\AddressRegistry.Projections.Integration.csproj" />
@@ -23,5 +25,26 @@
     <ProjectReference Include="..\..\src\AddressRegistry\AddressRegistry.csproj" />
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit" />
+
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.EventHandling" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.EventHandling.Autofac" />
+
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Sqs" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events" />
+
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="AutoFixture.Xunit2" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="NetTopologySuite" />
+    <PackageReference Include="ProjNet" />
+  </ItemGroup>
 </Project>

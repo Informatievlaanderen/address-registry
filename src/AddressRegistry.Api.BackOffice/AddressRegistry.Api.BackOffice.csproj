@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
+  <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
 
   <PropertyGroup>
     <!-- Error NETSDK1152: https://docs.microsoft.com/en-us/dotnet/core/compatibility/sdk/6.0/duplicate-files-in-output -->
@@ -10,12 +10,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\net8.0\AddressRegistry.Api.BackOffice.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net9.0\AddressRegistry.Api.BackOffice.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP;NET8_0</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP;NET9_0</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net8.0\AddressRegistry.Api.BackOffice.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net9.0\AddressRegistry.Api.BackOffice.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
 
@@ -27,18 +27,34 @@
     <Content Include="Dockerfile" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
-    <Content Include="paket.template" CopyToOutputDirectory="Always" />
     <Content Include="init.sh" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AddressRegistry.Api.BackOffice.Abstractions\AddressRegistry.Api.BackOffice.Abstractions.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.StreetName\AddressRegistry.Consumer.Read.StreetName.csproj" />
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.Postal\AddressRegistry.Consumer.Read.Postal.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
     <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
+    <PackageReference Include="Datadog.Trace.Bundle" />
+
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Auth.AcmIdm" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Edit" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Sqs" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.TicketingService.Abstractions" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy" />
+
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="CsvHelper" />
+
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

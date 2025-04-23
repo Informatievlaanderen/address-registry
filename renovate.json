@@ -1,0 +1,21 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": ["dotnet-version"],
+      "enabled": false
+    },
+    {
+      "description": "Basisregisters Command handling packages",
+      "matchPackageNames": ["Be.Vlaanderen.Basisregisters.AggregateSource*", "Be.Vlaanderen.Basisregisters.CommandHandling*"],
+      "groupName": "command-handling"
+    },
+    {
+      "matchPackageNames": ["Structurizr.Core", "Structurizr.Client", "Structurizr.AdrTools"],
+      "allowedVersions": "<=0.9.7"
+    }
+  ]
+}

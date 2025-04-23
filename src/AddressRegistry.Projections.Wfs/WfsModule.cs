@@ -4,7 +4,6 @@ namespace AddressRegistry.Projections.Wfs
     using Microsoft.Data.SqlClient;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -65,8 +64,5 @@ namespace AddressRegistry.Projections.Wfs
 
             logger.LogWarning("Running InMemory for {Context}!", nameof(WfsContext));
         }
-
-        protected override void Load(ContainerBuilder builder)
-            => builder.RegisterType<RegistryAtomFeedReader>().As<IRegistryAtomFeedReader>();
     }
 }

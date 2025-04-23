@@ -3,7 +3,6 @@ namespace AddressRegistry.Projections.Wms
     using System;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -64,8 +63,5 @@ namespace AddressRegistry.Projections.Wms
 
             logger.LogWarning("Running InMemory for {Context}!", nameof(WmsContext));
         }
-
-        protected override void Load(ContainerBuilder builder)
-            => builder.RegisterType<RegistryAtomFeedReader>().As<IRegistryAtomFeedReader>();
     }
 }

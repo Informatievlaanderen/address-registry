@@ -1,0 +1,115 @@
+<Project>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <CentralPackageVersionOverrideEnabled>false</CentralPackageVersionOverrideEnabled>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
+
+        <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.4" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.4" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.4" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.4" />
+        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+
+        <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
+        <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
+
+        <PackageVersion Include="Autofac" Version="8.2.1" />
+        <PackageVersion Include="Polly" Version="8.5.2" />
+        <PackageVersion Include="CsvHelper" Version="33.0.1" />
+
+        <PackageVersion Include="Datadog.Trace.Bundle" Version="3.15.0" />
+
+        <PackageVersion Include="Destructurama.JsonNet" Version="4.0.2" />
+        <PackageVersion Include="Dapper" Version="2.1.66" />
+        <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.17.4" />
+        <PackageVersion Include="ProjNet" Version="2.0.0" />
+        <PackageVersion Include="MediatR" Version="12.5.0" />
+        <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
+        <PackageVersion Include="NetTopologySuite" Version="2.6.0" />
+        <PackageVersion Include="NodaTime" Version="3.2.2" />
+        <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+        <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="9.0.4" />
+
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.4" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="9.0.4" />
+
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events" Version="5.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.DockerUtilities" Version="4.0.0" />
+
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting" Version="10.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore" Version="10.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac" Version="10.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing" Version="10.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac" Version="10.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit" Version="10.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Api" Version="24.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Auth.AcmIdm" Version="4.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Aws.DistributedMutex" Version="5.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Aws.Lambda" Version="5.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency" Version="10.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore" Version="10.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.SnapshotVerifier" Version="10.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.EventHandling" Version="7.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.EventHandling.Autofac" Version="7.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor" Version="5.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic" Version="5.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer" Version="6.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer" Version="6.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer" Version="6.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple" Version="6.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Sqs" Version="4.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Sqs.Lambda" Version="4.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList" Version="15.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore" Version="15.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac" Version="15.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer" Version="15.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql" Version="15.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector" Version="15.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing" Version="15.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit" Version="15.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Projector" Version="16.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Crab" Version="5.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Common" Version="22.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Contracts" Version="22.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Edit" Version="22.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Legacy" Version="22.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Notifications" Version="22.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Oslo" Version="22.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Provenance" Version="22.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm" Version="22.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Extracts" Version="22.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Shaperon" Version="11.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.TicketingService.Abstractions" Version="3.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy" Version="3.0.0" />
+
+        <PackageVersion Include="Serilog" Version="4.2.0" />
+        <PackageVersion Include="Serilog.Settings.Configuration" Version="9.0.0" />
+        <PackageVersion Include="Serilog.Extensions.Logging" Version="9.0.1" />
+        <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
+        <PackageVersion Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+        <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+        <PackageVersion Include="Serilog.Formatting.Compact" Version="3.0.0" />
+
+        <PackageVersion Include="Structurizr.Core" Version="0.9.7" />
+        <PackageVersion Include="Structurizr.Client" Version="0.9.7" />
+
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.4" />
+        <PackageVersion Include="xunit" Version="2.9.3" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+        <PackageVersion Include="FluentAssertions" Version="[7.1.0,8.0.0)" />
+        <PackageVersion Include="Moq" Version="4.20.72" />
+        <PackageVersion Include="AutoFixture" Version="4.18.1" />
+        <PackageVersion Include="AutoFixture.Xunit2" Version="4.18.1" />
+
+        <PackageVersion Include="SourceLink.Embed.AllSourceFiles" Version="2.8.3" />
+        <PackageVersion Include="SourceLink.Copy.PdbFiles" Version="2.8.3" />
+    </ItemGroup>
+</Project>

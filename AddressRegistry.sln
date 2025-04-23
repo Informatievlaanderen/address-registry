@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		AddressRegistry.sln.DotSettings = AddressRegistry.sln.DotSettings
 		global.json = global.json
 		package.json = package.json
-		paket.dependencies = paket.dependencies
+		Directory.Packages.props = Directory.Packages.props
 		README.md = README.md
 		SEMVER.md = SEMVER.md
 	EndProjectSection
@@ -52,8 +52,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Projections.Wms", "src\AddressRegistry.Projections.Wms\AddressRegistry.Projections.Wms.csproj", "{84468348-ABDE-47E8-B7E8-CCBA8FAB6D3F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Consumer", "src\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj", "{39900D30-A0A1-42D2-90E9-50135916D577}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Migrator.Address", "src\AddressRegistry.Migrator.Address\AddressRegistry.Migrator.Address.csproj", "{FBD8EFCF-722A-4480-9E5D-3E9736103E12}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Api.BackOffice", "src\AddressRegistry.Api.BackOffice\AddressRegistry.Api.BackOffice.csproj", "{0A094042-A834-4278-A49E-C5C8C1BB6FA6}"
 EndProject
@@ -262,18 +260,6 @@ Global
 		{39900D30-A0A1-42D2-90E9-50135916D577}.Release|x64.Build.0 = Release|Any CPU
 		{39900D30-A0A1-42D2-90E9-50135916D577}.Release|x86.ActiveCfg = Release|Any CPU
 		{39900D30-A0A1-42D2-90E9-50135916D577}.Release|x86.Build.0 = Release|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Debug|x64.Build.0 = Debug|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Debug|x86.Build.0 = Debug|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Release|x64.ActiveCfg = Release|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Release|x64.Build.0 = Release|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Release|x86.ActiveCfg = Release|Any CPU
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12}.Release|x86.Build.0 = Release|Any CPU
 		{0A094042-A834-4278-A49E-C5C8C1BB6FA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0A094042-A834-4278-A49E-C5C8C1BB6FA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A094042-A834-4278-A49E-C5C8C1BB6FA6}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -508,7 +494,6 @@ Global
 		{938B2F44-ECFF-4412-8BD7-280F039E2E45} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{84468348-ABDE-47E8-B7E8-CCBA8FAB6D3F} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{39900D30-A0A1-42D2-90E9-50135916D577} = {C2F8FF63-7A48-4179-A720-86206C42F496}
-		{FBD8EFCF-722A-4480-9E5D-3E9736103E12} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{0A094042-A834-4278-A49E-C5C8C1BB6FA6} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{D3451327-14AF-4609-8606-5C146AA15003} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{94BEE474-05D5-4FB1-BE48-A4FD6BB38BFC} = {8EA18457-86E2-4D2D-AC9E-2552FDC9676F}

@@ -24,16 +24,6 @@ jobs:
         java-version: 17
         distribution: 'temurin'
 
-    - name: Cache Paket
-      uses: actions/cache@v4
-      env:
-        cache-name: cache-paket
-      with:
-        path: packages
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-
     - name: Parse repository name
       run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
       shell: bash
@@ -41,7 +31,9 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+        dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+        cache: true
+        cache-dependency-path: "**/packages.lock.json"
 
     - name: .NET version
       shell: bash
@@ -50,9 +42,9 @@ jobs:
     - name: Restore packages
       shell: bash
       run: |
+        ./pre-restore.sh
         dotnet tool restore
-        dotnet paket restore
-        dotnet restore
+        dotnet restore --locked-mode
 
     - name: Cache SonarCloud packages
       uses: actions/cache@v4
@@ -88,7 +80,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.VBR_SONAR_TOKEN }}
       shell: bash
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_address-registry" /o:"informatievlaanderen" /d:sonar.token="${{ secrets.VBR_SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions="**/dotCover.Output/**/*.*, dotCover.Output/src/*.html" /d:sonar.cs.dotcover.reportsPaths="~/temp/dotCover.Output.html" > /dev/null 2>&1
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_address-registry" /o:"informatievlaanderen" /d:sonar.token="${{ secrets.VBR_SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions="**/dotCover.Output/**/*.*, dotCover.Output/src/*.html" /d:sonar.cs.dotcover.reportsPaths="dotCover.Output.html" > /dev/null 2>&1
 
     - name: Build
       shell: bash
@@ -97,7 +89,7 @@ jobs:
 
     - name: Test
       shell: bash
-      run:  dotnet dotCover cover-dotnet --ReportType=HTML --Output=dotCover.Output.html -- test --nologo --no-build --filter 'FullyQualifiedName!~IntegrationTests' AddressRegistry.sln
+      run:  dotCover cover-dotnet --ReportType=HTML --Output=dotCover.Output.html -- test --nologo --no-build --filter 'FullyQualifiedName!~IntegrationTests' AddressRegistry.sln
 
     - name: Sonar end build & analyze
       env:

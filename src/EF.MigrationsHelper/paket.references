@@ -1,7 +1,0 @@
-Microsoft.EntityFrameworkCore.Design
-
-Npgsql.EntityFrameworkCore.PostgreSQL
-Npgsql.EntityFrameworkCore.PostgreSQL.Design
-
-SourceLink.Embed.AllSourceFiles
-SourceLink.Copy.PdbFiles

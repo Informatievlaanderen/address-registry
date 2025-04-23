@@ -5,11 +5,12 @@
     "dotnet lambda help",
     "All the command line options for the Lambda command can be specified in this file."
   ],
-  "profile": "vbr-test-bastion",
+  "profile": "",
   "region": "eu-west-1",
+  "package-type": "image",
   "configuration": "Release",
-  "function-runtime": "dotnet8",
-  "function-memory-size": 256,
-  "function-timeout": 30,
-  "function-handler": "AddressRegistry.Api.BackOffice.Handlers.Lambda::AddressRegistry.Api.BackOffice.Handlers.Lambda.Function::Handler"
+  "function-memory-size": 2048,
+  "function-timeout": 300,
+  "function-handler": "AddressRegistry.Api.BackOffice.Handlers.Lambda::AddressRegistry.Api.BackOffice.Handlers.Lambda.Function::Handler",
+  "docker-host-build-output-dir": "./bin/Release/lambda-publish"
 }

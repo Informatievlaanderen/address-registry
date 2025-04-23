@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
+  <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
 
   <PropertyGroup>
     <!-- Error NETSDK1152: https://docs.microsoft.com/en-us/dotnet/core/compatibility/sdk/6.0/duplicate-files-in-output -->
@@ -11,12 +11,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\net8.0\AddressRegistry.Api.Oslo.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net9.0\AddressRegistry.Api.Oslo.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP;NET8_0</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP;NET9_0</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net8.0\AddressRegistry.Api.Oslo.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net9.0\AddressRegistry.Api.Oslo.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
 
@@ -25,18 +25,61 @@
     <Content Include="init.sh" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
-    <Content Include="paket.template" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Consumer.Read.StreetName\AddressRegistry.Consumer.Read.StreetName.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Consumer.Read.Postal\AddressRegistry.Consumer.Read.Postal.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Projections.AddressMatch\AddressRegistry.Projections.AddressMatch.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Projections.Elastic\AddressRegistry.Projections.Elastic.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Projections.Legacy\AddressRegistry.Projections.Legacy.csproj" />
-    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\AddressRegistry.Consumer.Read.StreetName\AddressRegistry.Consumer.Read.StreetName.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\AddressRegistry.Consumer.Read.Postal\AddressRegistry.Consumer.Read.Postal.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\AddressRegistry.Projections.AddressMatch\AddressRegistry.Projections.AddressMatch.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\AddressRegistry.Projections.Elastic\AddressRegistry.Projections.Elastic.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\AddressRegistry.Projections.Legacy\AddressRegistry.Projections.Legacy.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" PrivateAssets="All" />
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <PackageId>Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo</PackageId>
+    <Title>Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo</Title>
+    <Authors>Basisregisters Vlaanderen</Authors>
+    <Owners>Digitaal Vlaanderen</Owners>
+    <Copyright>Copyright (c) Digitaal Vlaanderen</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/Informatievlaanderen/address-registry</PackageProjectUrl>
+    <PackageIcon>logo.png</PackageIcon>
+    <Description>Address Registry.</Description>
+    <!-- Include referenced projects' outputs in this package -->
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\logo.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <!-- Target to collect reference outputs for packaging -->
+  <Target Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.Projections.Legacy.dll" />
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.Projections.Legacy.pdb" />
+
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.dll" />
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.pdb" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
+    <PackageReference Include="Datadog.Trace.Bundle" />
+
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" />
+    <PackageReference Include="Elastic.Clients.Elasticsearch" />
+
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="MediatR.Contracts" />
+
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

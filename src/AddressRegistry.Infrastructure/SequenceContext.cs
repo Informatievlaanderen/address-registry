@@ -24,10 +24,10 @@ namespace AddressRegistry.Infrastructure
             var migrationConnectionStringName = "Sequences";
 
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{Environment.MachineName}.json")
-                .AddEnvironmentVariables()
+                // .SetBasePath(Directory.GetCurrentDirectory())
+                // .AddJsonFile("appsettings.json")
+                // .AddJsonFile($"appsettings.{Environment.MachineName}.json")
+                // .AddEnvironmentVariables()
                 .Build();
 
             var builder = new DbContextOptionsBuilder<SequenceContext>();

@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
+  <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
-  </ItemGroup>
+    <PackageReference Include="Elastic.Clients.Elasticsearch" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

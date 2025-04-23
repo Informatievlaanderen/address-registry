@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
+  <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
 
   <PropertyGroup>
     <!-- Error NETSDK1152: https://docs.microsoft.com/en-us/dotnet/core/compatibility/sdk/6.0/duplicate-files-in-output -->
@@ -21,5 +21,32 @@
     <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
   </ItemGroup>
   
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Datadog.Trace.Bundle" />
+
+    <PackageReference Include="Destructurama.JsonNet" />
+
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Aws.DistributedMutex" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Contracts" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Projector" />
+
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Extensions.Logging" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Serilog.Enrichers.Thread" />
+    <PackageReference Include="Serilog.Enrichers.Environment" />
+    <PackageReference Include="Serilog.Formatting.Compact" />
+
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

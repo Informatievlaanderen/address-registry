@@ -468,7 +468,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             ProvenanceData? provenanceData = null)
         {
             return new ProposeAddressLambdaRequest(
-                streetNamePersistentLocalId,
+                streetNamePersistentLocalId.ToString(),
                 new ProposeAddressSqsRequest
                 {
                     PersistentLocalId = addressPersistentLocalId,
@@ -477,7 +477,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                         StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                         PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
                         Huisnummer = houseNumber ?? Fixture.Create<HouseNumber>(),
-                        Busnummer = boxNumber,
+                        Busnummer = boxNumber ?? (string?)null,
                         PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
                         PositieSpecificatie = PositieSpecificatie.Ingang,
                         Positie = GeometryHelpers.GmlPointGeometry

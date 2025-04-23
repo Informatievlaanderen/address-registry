@@ -4,7 +4,7 @@ namespace AddressRegistry.StreetName
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Commands;
     using Events;
     using Exceptions;

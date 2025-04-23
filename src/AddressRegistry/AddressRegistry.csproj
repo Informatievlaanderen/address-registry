@@ -1,5 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
+  <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="NodaTime" />
+    <PackageReference Include="NetTopologySuite" />
+
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Crab" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.EventHandling" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Provenance" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Common" />
+
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

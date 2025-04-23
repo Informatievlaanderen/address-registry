@@ -1,0 +1,292 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net9.0": {
+      "Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting": {
+        "type": "Direct",
+        "requested": "[10.0.2, )",
+        "resolved": "10.0.2",
+        "contentHash": "pt6T22yVKp1u/cdntwGdo1kPN5yCxQPx1e3gJKOEP4M+BZfzlMIHKJrITe27/gNzJNCAwy+6OVmspwXtcXIf2Q==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.AggregateSource": "10.0.2"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore": {
+        "type": "Direct",
+        "requested": "[10.0.2, )",
+        "resolved": "10.0.2",
+        "contentHash": "XpuEbk+CPEoGDg8RKV1VVRUK8xo31Z4F8qO2lLUDkSDWMDSw+/ynOtrWOqgrIkB0s9no28XqY96tVphlGCSarw==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.AggregateSource": "10.0.2",
+          "Be.Vlaanderen.Basisregisters.CommandHandling": "10.0.2",
+          "Be.Vlaanderen.Basisregisters.EventHandling": "7.0.0",
+          "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": "5.0.0",
+          "SqlStreamStore": "1.2.0"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.Crab": {
+        "type": "Direct",
+        "requested": "[5.0.1, )",
+        "resolved": "5.0.1",
+        "contentHash": "or0wpQBcvjZ+npSzPl8EBVJrt8AuYIX3/prR4F5pnf6UuZVkRKs+griZXSb0L6QMKB/YQxNssGr1haryUknfOQ==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.AggregateSource": "10.0.2",
+          "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": "5.0.0",
+          "GeoJSON.NET": "1.4.1",
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.3",
+          "NodaTime": "3.2.2"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.EventHandling": {
+        "type": "Direct",
+        "requested": "[7.0.0, )",
+        "resolved": "7.0.0",
+        "contentHash": "+KRMy1JBvzh8FF2tPZevMbLAZWkKUHQMyxAR1pBz2DbGiZ91rEjmlRbXnDbIlamZZI4DCcxtgbDMntuhIWCMOg==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.Converters.TrimString": "5.0.0",
+          "Newtonsoft.Json": "13.0.3",
+          "NodaTime.Serialization.JsonNet": "3.2.0"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": {
+        "type": "Direct",
+        "requested": "[5.0.0, )",
+        "resolved": "5.0.0",
+        "contentHash": "YlSC0DHwE0vHgVmEOUQDF/6muu8Q+uv3gZWkS+0lKg6UocSUWa9VpBCciLnwLoSW7oIA+viSuBm4bGMWKrchDg=="
+      },
+      "Be.Vlaanderen.Basisregisters.GrAr.Common": {
+        "type": "Direct",
+        "requested": "[22.0.0, )",
+        "resolved": "22.0.0",
+        "contentHash": "n1XUz4IkevxszSiM+BJoZHGQj+BtNyyyXdw6mQ/twCYsTcxOUsrGtdS6GeERHffQKCdBX9v45WzNN5lbOYfZGA==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.AggregateSource": "10.0.2",
+          "Be.Vlaanderen.Basisregisters.CommandHandling": "10.0.2",
+          "NetTopologySuite": "2.6.0",
+          "NodaTime": "3.2.2"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.GrAr.Provenance": {
+        "type": "Direct",
+        "requested": "[22.0.0, )",
+        "resolved": "22.0.0",
+        "contentHash": "TMDF85EUOH/4vLvf/qMlcSJPtnt4XvU290IV1e2kaDFcZwBvCLCoCfwSGLunH+kWALCweLtjS2ZvvODu/rnk2A==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.CommandHandling": "10.0.2",
+          "Be.Vlaanderen.Basisregisters.Crab": "5.0.1",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "22.0.0",
+          "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": "5.0.0",
+          "CompareNETObjects": "4.83.0",
+          "Microsoft.CSharp": "4.7.0"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor": {
+        "type": "Direct",
+        "requested": "[5.0.0, )",
+        "resolved": "5.0.0",
+        "contentHash": "DI3ETyL4lW+/SQcVAHE1F2fkNLZ5UV8GtVMoPZxX73gTdlfcKHASnsKrxVS/IcQu/5dzwQR70OIpC7kKTQzKcg=="
+      },
+      "NetTopologySuite": {
+        "type": "Direct",
+        "requested": "[2.6.0, )",
+        "resolved": "2.6.0",
+        "contentHash": "1B1OTacTd4QtFyBeuIOcThwSSLUdRZU3bSFIwM8vk36XiZlBMi3K36u74e4OqwwHRHUuJC1PhbDx4hyI266X1Q=="
+      },
+      "NodaTime": {
+        "type": "Direct",
+        "requested": "[3.2.2, )",
+        "resolved": "3.2.2",
+        "contentHash": "dmju5W0UYC3QP/UJM0juKAZkH0HSDMp0gH91A0+mT9M0kgyM2Jm67hUZPl/WRQLq8Lijjqmdk8kyAViWFWM7dA=="
+      },
+      "SourceLink.Copy.PdbFiles": {
+        "type": "Direct",
+        "requested": "[2.8.3, )",
+        "resolved": "2.8.3",
+        "contentHash": "cxlw1QHd/J7lOtSZ45VZMOsF/YSOlwZy0fCkauo9Ib9vOv+zGzjm9q3D8qGyMII0Zz1GSmli/oxhmUNuYUpc1g=="
+      },
+      "SourceLink.Embed.AllSourceFiles": {
+        "type": "Direct",
+        "requested": "[2.8.3, )",
+        "resolved": "2.8.3",
+        "contentHash": "Hv77AfKNDqSUH6MSGW1ZwKWFJ/CNKOe4FD6lpJGNYdSSQeEEsE2KyPlG1IgzA8+CJG8lDQV2vLS4OljHtHohsw=="
+      },
+      "Be.Vlaanderen.Basisregisters.AggregateSource": {
+        "type": "Transitive",
+        "resolved": "10.0.2",
+        "contentHash": "Yl/b3hX+eL00r2hs/vIFbr4BX+4dapcj5AFBguPhO4QBb2Hwzgzm/jjuoS3bziUg5PAb1TWn+jQxcw63c886RA==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.Utilities.HashCodeCalculator": "5.0.0",
+          "Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor": "5.0.0",
+          "Be.Vlaanderen.Basisregisters.Utilities.ToStringBuilder": "4.0.8",
+          "Newtonsoft.Json": "13.0.3",
+          "NodaTime": "3.2.2",
+          "System.Collections.Immutable": "9.0.3"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.CommandHandling": {
+        "type": "Transitive",
+        "resolved": "10.0.2",
+        "contentHash": "kF9PkiM+9/iqXSSg4B+rXLAgNGgMAdIxtFsQsXlmQ6/tnqXU1FMbRJ0rAHCFKABwv+GW0b113NvDAdAA9V1x9Q==",
+        "dependencies": {
+          "System.Collections.Immutable": "9.0.3"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.Converters.TrimString": {
+        "type": "Transitive",
+        "resolved": "5.0.0",
+        "contentHash": "LVMiWd/VIVKgbcmtiQgYBi/yGMxSEybDrruUTOVEa4hQc0eMMd55a/KyMmaqsT0afMQwgqwO6ld25RagB7sQoA==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.Utilities.HashCodeCalculator": {
+        "type": "Transitive",
+        "resolved": "5.0.0",
+        "contentHash": "zb1i6RL8RkQQNa+gv553tMNe+q/6C41G4nia1p1u13COa4zCMVBmBs2ypFYuw2VTLmwAUhTZJDqGYwGVnC38YA=="
+      },
+      "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": {
+        "type": "Transitive",
+        "resolved": "5.0.0",
+        "contentHash": "OVyzqSCZKdjIke/oXSqp874O5vZvpwnec5wZkCmffjITjK+G/4nQk1jeV3wDAvusjcIEscdGOmhgYGCnUWoQkQ==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.Utilities.ToStringBuilder": {
+        "type": "Transitive",
+        "resolved": "4.0.8",
+        "contentHash": "jzp8ifH4bBjvhxGe4bBDeDGEXVbiXco7cZX2iKghOTulus30lKk/oj9mOz2gMusQHGEppvXhtHgoJsX3XNYRng=="
+      },
+      "CompareNETObjects": {
+        "type": "Transitive",
+        "resolved": "4.83.0",
+        "contentHash": "KNpF1bgvuifzKB5BId3ZHXaBdI/rgJNpq0ZvM2wtdc1Oe8rh4rUUQUnBgHOJQ353eVGNxoXwvlOPuZqg/5cjdg==",
+        "dependencies": {
+          "System.Configuration.Configurationmanager": "8.0.0",
+          "System.Drawing.Common": "8.0.0"
+        }
+      },
+      "GeoJSON.Net": {
+        "type": "Transitive",
+        "resolved": "1.4.1",
+        "contentHash": "jGl6JvyQV4hS3JsZ7FXTmB1tXE1kadXl2iD8H9OIqe1a5q7OfskDh0Cy2+YrEZ13eI4DJ8xTbDJXz2tldKyM8g==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        }
+      },
+      "Microsoft.CSharp": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "9.0.3",
+        "contentHash": "TfaHPSe39NyL2wxkisRxXK7xvHGZYBZ+dy3r+mqGvnxKgAPdHkMu3QMQZI4pquP6W5FIQBqs8FJpWV8ffCgDqQ=="
+      },
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Transitive",
+        "resolved": "9.0.3",
+        "contentHash": "H/MBMLt9A/69Ux4OrV7oCKt3DcMT04o5SCqDolulzQA66TLFEpYYb4qedMs/uwrLtyHXGuDGWKZse/oa8W9AZw==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.3"
+        }
+      },
+      "Microsoft.Win32.SystemEvents": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "9opKRyOKMCi2xJ7Bj7kxtZ1r9vbzosMvRrdEhVhDz8j8MoBGgB+WmC94yH839NPH+BclAjtQ/pyagvi/8gDLkw=="
+      },
+      "Newtonsoft.Json": {
+        "type": "Transitive",
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      },
+      "NodaTime.Serialization.JsonNet": {
+        "type": "Transitive",
+        "resolved": "3.2.0",
+        "contentHash": "zf4dQoRBaFxJ5Hf1SqVVHCPcMViKMZK/P0YnJUuhB8g58IxNGOkSxsPPX9jFp3fMjGrEER/ehyO+y86ubD4OKw==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3",
+          "NodaTime": "[3.0.0, 4.0.0)"
+        }
+      },
+      "SqlStreamStore": {
+        "type": "Transitive",
+        "resolved": "1.2.0",
+        "contentHash": "AlHlvqhwSkC9MbhlUQRMTtgf4d6qk8xs0n1jDiiCM6cJlp8w/aGJxdI5/+dQwXWlN79FFZFc/vunkfheHmX/2g==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        }
+      },
+      "System.Collections.Immutable": {
+        "type": "Transitive",
+        "resolved": "9.0.3",
+        "contentHash": "CfYi30Pbpw9aGpXVLcoGt+yM0egrE8M1DUOOwdAWOAQ2QZkXkSgjonqZYvtKdxUF1XJaLCp0OdTXueeAeUHSlQ=="
+      },
+      "System.Configuration.ConfigurationManager": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "JlYi9XVvIREURRUlGMr1F6vOFLk7YSY4p1vHo4kX3tQ0AGrjqlRWHDi66ImHhy6qwXBG3BJ6Y1QlYQ+Qz6Xgww==",
+        "dependencies": {
+          "System.Diagnostics.EventLog": "8.0.0",
+          "System.Security.Cryptography.ProtectedData": "8.0.0"
+        }
+      },
+      "System.Diagnostics.EventLog": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "fdYxcRjQqTTacKId/2IECojlDSFvp7LP5N78+0z/xH7v/Tuw5ZAxu23Y6PTCRinqyu2ePx+Gn1098NC6jM6d+A=="
+      },
+      "System.Drawing.Common": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "JkbHJjtI/dWc5dfmEdJlbe3VwgZqCkZRtfuWFh5GOv0f+gGCfBtzMpIVkmdkj2AObO9y+oiOi81UGwH3aBYuqA==",
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "8.0.0"
+        }
+      },
+      "System.Security.Cryptography.ProtectedData": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "+TUFINV2q2ifyXauQXRwy4CiBhqvDEDZeVJU7qfxya4aRYOKzVBpN+4acx25VcPB9ywUN6C0n8drWl110PhZEg=="
+      }
+    },
+    "net9.0/linux-arm64": {
+      "Microsoft.Win32.SystemEvents": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "9opKRyOKMCi2xJ7Bj7kxtZ1r9vbzosMvRrdEhVhDz8j8MoBGgB+WmC94yH839NPH+BclAjtQ/pyagvi/8gDLkw=="
+      },
+      "System.Diagnostics.EventLog": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "fdYxcRjQqTTacKId/2IECojlDSFvp7LP5N78+0z/xH7v/Tuw5ZAxu23Y6PTCRinqyu2ePx+Gn1098NC6jM6d+A=="
+      }
+    },
+    "net9.0/linux-x64": {
+      "Microsoft.Win32.SystemEvents": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "9opKRyOKMCi2xJ7Bj7kxtZ1r9vbzosMvRrdEhVhDz8j8MoBGgB+WmC94yH839NPH+BclAjtQ/pyagvi/8gDLkw=="
+      },
+      "System.Diagnostics.EventLog": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "fdYxcRjQqTTacKId/2IECojlDSFvp7LP5N78+0z/xH7v/Tuw5ZAxu23Y6PTCRinqyu2ePx+Gn1098NC6jM6d+A=="
+      }
+    },
+    "net9.0/win-x64": {
+      "Microsoft.Win32.SystemEvents": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "9opKRyOKMCi2xJ7Bj7kxtZ1r9vbzosMvRrdEhVhDz8j8MoBGgB+WmC94yH839NPH+BclAjtQ/pyagvi/8gDLkw=="
+      },
+      "System.Diagnostics.EventLog": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "fdYxcRjQqTTacKId/2IECojlDSFvp7LP5N78+0z/xH7v/Tuw5ZAxu23Y6PTCRinqyu2ePx+Gn1098NC6jM6d+A=="
+      }
+    }
+  }
+}

@@ -1,24 +1,60 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
+  <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\net8.0\AddressRegistry.Api.BackOffice.Abstractions.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net9.0\AddressRegistry.Api.BackOffice.Abstractions.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP;NET8_0</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP;NET9_0</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net8.0\AddressRegistry.Api.BackOffice.Abstractions.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net9.0\AddressRegistry.Api.BackOffice.Abstractions.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
-    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
-    <Content Include="paket.template" CopyToOutputDirectory="Always" />
+    <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" PrivateAssets="All" />
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <PackageId>Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.Abstractions</PackageId>
+    <Title>Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.Abstractions</Title>
+    <Authors>Basisregisters Vlaanderen</Authors>
+    <Owners>Digitaal Vlaanderen</Owners>
+    <Copyright>Copyright (c) Digitaal Vlaanderen</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/Informatievlaanderen/address-registry</PackageProjectUrl>
+    <PackageIcon>logo.png</PackageIcon>
+    <Description>Address Registry Api BackOffice Abstractions.</Description>
+    <!-- Include referenced projects' outputs in this package -->
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\logo.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <!-- Target to collect reference outputs for packaging -->
+  <Target Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.dll" />
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.pdb" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Edit" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Sqs" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.TicketingService.Abstractions" />
+
+    <PackageReference Include="MediatR.Contracts" />
+    <PackageReference Include="NetTopologySuite" />
+
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

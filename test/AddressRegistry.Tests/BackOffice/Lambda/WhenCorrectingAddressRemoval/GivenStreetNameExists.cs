@@ -63,11 +63,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRemoval
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<HouseNumber>(),
                 null);
-            
+
             RemoveAddress(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId);
-            
+
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
             var sut = new CorrectAddressRemovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -77,7 +77,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRemoval
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new CorrectAddressRemovalLambdaRequest(streetNamePersistentLocalId, new CorrectAddressRemovalSqsRequest
+            await sut.Handle(new CorrectAddressRemovalLambdaRequest(streetNamePersistentLocalId.ToString(), new CorrectAddressRemovalSqsRequest
                 {
                     Request = new CorrectAddressRemovalRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),

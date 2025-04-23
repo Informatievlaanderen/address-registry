@@ -17,19 +17,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
-      shell: bash
-
     - name: Notify deployment started
-      uses: slackapi/slack-github-action@v1.26.0
+      uses: slackapi/slack-github-action@v2
       with:
-        channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of address-registry to production has started
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
-        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
-        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
+        method: chat.postMessage
+        token: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        payload: |
+          channel: '#team-dinosaur-dev'
+          text: 'Deployment of address-registry to production has started'
 
   deploy_services_to_production:
     if: github.repository_owner == 'Informatievlaanderen'
@@ -122,7 +117,7 @@ jobs:
 
     steps:
     - name: CD Lambda(s) Configure credentials
-      uses: aws-actions/configure-aws-credentials@v4.0.2
+      uses: aws-actions/configure-aws-credentials@v4.1.0
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
@@ -146,16 +141,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
-      shell: bash
-
     - name: Notify deployment finished
-      uses: slackapi/slack-github-action@v1.26.0
+      uses: slackapi/slack-github-action@v2
       with:
-        channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of address-registry to production has finished
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
-        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
-        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
+        method: chat.postMessage
+        token: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        payload: |
+          channel: '#team-dinosaur-dev'
+          text: 'Deployment of address-registry to production has finished'

@@ -1,3 +1,15 @@
+# [5.0.0](https://github.com/informatievlaanderen/address-registry/compare/v4.37.5...v5.0.0) (2025-04-23)
+
+
+### Code Refactoring
+
+* use renovate and nuget + update pipeline ([4ae61c4](https://github.com/informatievlaanderen/address-registry/commit/4ae61c48f6b214519b7e0ca627264a37091228dd))
+
+
+### BREAKING CHANGES
+
+* update to dotnet 9
+
 ## [4.37.5](https://github.com/informatievlaanderen/address-registry/compare/v4.37.4...v4.37.5) (2025-04-17)
 
 

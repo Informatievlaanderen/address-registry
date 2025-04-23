@@ -3,7 +3,6 @@ namespace AddressRegistry.Projections.Extract
     using System;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -67,8 +66,5 @@ namespace AddressRegistry.Projections.Extract
 
             logger.LogWarning("Running InMemory for {Context}!", nameof(ExtractContext));
         }
-
-        protected override void Load(ContainerBuilder builder)
-            => builder.RegisterType<RegistryAtomFeedReader>().As<IRegistryAtomFeedReader>();
     }
 }

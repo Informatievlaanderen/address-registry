@@ -68,14 +68,14 @@
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             AddressPersistentLocalId = addressPersistentLocalId;
             Status = status;
-            PostalCode = postalCode;
+            PostalCode = postalCode ?? (string?)null;
             HouseNumber = houseNumber;
-            BoxNumber = boxNumber;
+            BoxNumber = boxNumber ?? (string?)null;
             GeometryMethod = geometryMethod;
             GeometrySpecification = geometrySpecification;
-            ExtendedWkbGeometry = extendedWkbGeometry;
+            ExtendedWkbGeometry = extendedWkbGeometry.ToString();
             OfficiallyAssigned = officiallyAssigned;
-            ParentPersistentLocalId = parentPersistentLocalId;
+            ParentPersistentLocalId = parentPersistentLocalId ?? (int?)null;
         }
 
         [JsonConstructor]

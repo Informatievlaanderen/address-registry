@@ -1,3 +1,10 @@
+## [5.0.3](https://github.com/informatievlaanderen/address-registry/compare/v5.0.2...v5.0.3) (2025-04-24)
+
+
+### Bug Fixes
+
+* **consumer:** status change streetname elastic projection ([b5ab9d2](https://github.com/informatievlaanderen/address-registry/commit/b5ab9d2bf1e3ca44984604d16b67ed390e2e20fb))
+
 ## [5.0.2](https://github.com/informatievlaanderen/address-registry/compare/v5.0.1...v5.0.2) (2025-04-24)
 
 

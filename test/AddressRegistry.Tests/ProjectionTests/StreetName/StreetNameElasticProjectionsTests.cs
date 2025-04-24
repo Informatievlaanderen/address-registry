@@ -472,7 +472,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                         doc.Status == StreetNameStatus.Current
                         && doc.VersionTimestamp.ToString() == _timestamp.ToBelgianDateTimeOffset().ToString()
                     ),
-                    It.IsAny<CancellationToken>()));
+                    It.IsAny<CancellationToken>()), Times.Exactly(2));
 
                 return Task.CompletedTask;
             });

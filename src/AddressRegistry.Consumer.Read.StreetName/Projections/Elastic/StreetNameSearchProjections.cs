@@ -19,7 +19,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections.Elastic
     public class StreetNameSearchProjections : ConnectedProjection<StreetNameConsumerContext>
     {
         private readonly Dictionary<Guid, Municipality> _municipalities = new Dictionary<Guid, Municipality>();
-        private readonly IDictionary<string, PostalInfo[]> _postalInfos = new Dictionary<string, PostalInfo[]>();
+        private readonly Dictionary<string, PostalInfo[]> _postalInfos = new Dictionary<string, PostalInfo[]>();
 
         private readonly IDbContextFactory<MunicipalityConsumerContext> _municipalityConsumerContextFactory;
         private readonly IDbContextFactory<PostalConsumerContext> _postalConsumerContextFactory;
@@ -159,7 +159,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections.Elastic
                 await elasticsearchClient.PartialUpdateDocument(message.PersistentLocalId,
                     new StreetNameSearchPartialDocument(InstantPattern.General.Parse(message.Provenance.Timestamp).Value)
                     {
-                        Status = StreetNameStatus.Rejected
+                        Status = StreetNameStatus.Current
                     }, ct);
             });
 

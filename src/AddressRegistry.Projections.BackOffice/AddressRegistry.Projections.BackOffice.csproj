@@ -28,6 +28,7 @@
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
     <PackageReference Include="Datadog.Trace.Bundle" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
 
     <PackageReference Include="Be.Vlaanderen.Basisregisters.EventHandling.Autofac" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer" />

@@ -32,7 +32,6 @@
     <ProjectReference Include="..\AddressRegistry.Projections.Wfs\AddressRegistry.Projections.Wfs.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Wms\AddressRegistry.Projections.Wms.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Syndication\AddressRegistry.Projections.Syndication.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Projections.BackOffice\AddressRegistry.Projections.BackOffice.csproj" />
 	  <ProjectReference Include="..\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
     <ProjectReference Include="..\AddressRegistry.Producer\AddressRegistry.Producer.csproj" />
     <ProjectReference Include="..\AddressRegistry.Producer.Snapshot.Oslo\AddressRegistry.Producer.Snapshot.Oslo.csproj" />

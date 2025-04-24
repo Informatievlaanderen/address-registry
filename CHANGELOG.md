@@ -1,3 +1,10 @@
+## [5.0.2](https://github.com/informatievlaanderen/address-registry/compare/v5.0.1...v5.0.2) (2025-04-24)
+
+
+### Bug Fixes
+
+* **migrations:** update snapshot models ([1aae175](https://github.com/informatievlaanderen/address-registry/commit/1aae175d8a03ba39e1dd434bb9dcf0f190d39733))
+
 ## [5.0.1](https://github.com/informatievlaanderen/address-registry/compare/v5.0.0...v5.0.1) (2025-04-24)
 
 # [5.0.0](https://github.com/informatievlaanderen/address-registry/compare/v4.37.5...v5.0.0) (2025-04-23)

@@ -16,6 +16,10 @@
     {
       "matchPackageNames": ["Structurizr.Core", "Structurizr.Client", "Structurizr.AdrTools"],
       "allowedVersions": "<=0.9.7"
+    },
+    {
+      "matchPackageNames": ["FluentAssertions"],
+      "allowedVersions": "<8.0.0"
     }
   ]
 }

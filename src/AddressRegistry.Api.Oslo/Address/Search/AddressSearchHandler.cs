@@ -53,6 +53,9 @@
             }
 
             var pagination = (PaginationRequest)request.Pagination;
+            if (pagination.Limit > 50)
+                pagination = new PaginationRequest(pagination.Offset, 50);
+
             var query = request.Filtering.Filter.Query!;
 
             if (request.Filtering.Filter.ResultType == ResultType.Address)

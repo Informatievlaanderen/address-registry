@@ -70,7 +70,13 @@
                                                             mp
                                                                 .Field($"{_fullStreetNames}.{NameSpelling}")
                                                                 .Query(query)
-                                                                .Slop(10))
+                                                                .Slop(10)),
+                                                    s =>
+                                                        s.Match(mp => mp
+                                                            .Field($"{_fullStreetNames}.{NameSpelling}")
+                                                            .Query(query)
+                                                            .Fuzziness(new Fuzziness("AUTO"))
+                                                            .Operator(Operator.And))
                                                 ));
                                             })
                                             .InnerHits(c =>

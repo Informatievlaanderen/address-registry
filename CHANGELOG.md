@@ -1,3 +1,10 @@
+## [5.0.4](https://github.com/informatievlaanderen/address-registry/compare/v5.0.3...v5.0.4) (2025-04-28)
+
+
+### Bug Fixes
+
+* **search:** update fuzzy search for streetnames ([e210b23](https://github.com/informatievlaanderen/address-registry/commit/e210b2366a732459751128f146247206422ddb96))
+
 ## [5.0.3](https://github.com/informatievlaanderen/address-registry/compare/v5.0.2...v5.0.3) (2025-04-24)
 
 

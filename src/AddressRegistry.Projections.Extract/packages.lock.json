@@ -1787,7 +1787,7 @@
       },
       "Serilog.Sinks.File": {
         "type": "CentralTransitive",
-        "requested": "[6.0.0, )",
+        "requested": "[7.0.0, )",
         "resolved": "6.0.0",
         "contentHash": "lxjg89Y8gJMmFxVkbZ+qDgjl+T4yC5F7WSLTvA+5q0R04tfKVLRL/EHpYoJ/MEQd2EeCKDuylBIVnAYMotmh2A==",
         "dependencies": {

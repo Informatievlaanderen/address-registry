@@ -59,10 +59,10 @@
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.EventHandling.Autofac" Version="7.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor" Version="5.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic" Version="5.0.0" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer" Version="6.0.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer" Version="6.0.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer" Version="6.0.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple" Version="6.0.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer" Version="6.0.3" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer" Version="6.0.3" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer" Version="6.0.3" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple" Version="6.0.3" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Sqs" Version="4.0.1" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Sqs.Lambda" Version="4.0.1" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList" Version="15.0.1" />
@@ -103,7 +103,7 @@
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
         <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.4" />
         <PackageVersion Include="xunit" Version="2.9.3" />
-        <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.0" />
         <PackageVersion Include="FluentAssertions" Version="[7.1.0,8.0.0)" />
         <PackageVersion Include="Moq" Version="4.20.72" />
         <PackageVersion Include="AutoFixture" Version="4.18.1" />

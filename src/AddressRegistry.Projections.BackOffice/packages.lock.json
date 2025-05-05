@@ -1820,7 +1820,7 @@
       },
       "Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple": {
         "type": "CentralTransitive",
-        "requested": "[6.0.2, )",
+        "requested": "[6.0.3, )",
         "resolved": "6.0.0",
         "contentHash": "N7gB7KczRTPQOSnXjXUoc098dkvnZpnC4+K9f/eXQ8/H9iJiT+n0cmLirV93ay0OARD39f9+oDBa7AgJGOL5YQ==",
         "dependencies": {

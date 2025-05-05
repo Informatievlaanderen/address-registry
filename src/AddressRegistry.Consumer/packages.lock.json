@@ -38,11 +38,15 @@
       },
       "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer": {
         "type": "Direct",
-        "requested": "[6.0.2, )",
-        "resolved": "6.0.2",
-        "contentHash": "rlJ1JgpcsyEOdNQAM3ry+nzetI4T1All/grk7f+Wi8kCHm3vkvwcmFruBhgw1UaKoKbC8/tNispEtDjJZuIrGg==",
+        "requested": "[6.0.3, )",
+        "resolved": "6.0.3",
+        "contentHash": "Ty3Ac44+0Pb4uOuBKnutrJfmpfAILNpJe/yc/Ha53cmeoiSz0vdoXjy1daZjT/M3z0XvMgHol05fdmroz6IDGA==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.SqlServer": "9.0.3"
+          "Confluent.Kafka": "2.10.0",
+          "Microsoft.EntityFrameworkCore": "9.0.4",
+          "Microsoft.EntityFrameworkCore.SqlServer": "9.0.4",
+          "Microsoft.Extensions.Logging": "9.0.4",
+          "Newtonsoft.Json": "13.0.3"
         }
       },
       "Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector": {
@@ -515,6 +519,14 @@
           "System.Drawing.Common": "8.0.0"
         }
       },
+      "Confluent.Kafka": {
+        "type": "Transitive",
+        "resolved": "2.10.0",
+        "contentHash": "beGF9x9Yw83NDTs0oyNdRHSR27HjF2NpwwCZZ45hEk1zE+yDW8JXuyzitfdYftLACCbuaBJCEh+ZW7Qxg9cdnA==",
+        "dependencies": {
+          "librdkafka.redist": "2.10.0"
+        }
+      },
       "Datadog.Trace": {
         "type": "Transitive",
         "resolved": "3.15.0",
@@ -563,6 +575,11 @@
         "dependencies": {
           "Newtonsoft.Json": "13.0.3"
         }
+      },
+      "librdkafka.redist": {
+        "type": "Transitive",
+        "resolved": "2.10.0",
+        "contentHash": "QOvg/8WapA3c5EwPojCjnLEdxJNjxJ5s2GO8VxrDV9BTpnXHHGJ14MPwcGKiQeiRsBvPoeoTKMOh5KYu/Wm3jw=="
       },
       "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": {
         "type": "Transitive",
@@ -1881,7 +1898,7 @@
       },
       "Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple": {
         "type": "CentralTransitive",
-        "requested": "[6.0.2, )",
+        "requested": "[6.0.3, )",
         "resolved": "6.0.0",
         "contentHash": "N7gB7KczRTPQOSnXjXUoc098dkvnZpnC4+K9f/eXQ8/H9iJiT+n0cmLirV93ay0OARD39f9+oDBa7AgJGOL5YQ==",
         "dependencies": {
@@ -2055,6 +2072,11 @@
       }
     },
     "net9.0/linux-arm64": {
+      "librdkafka.redist": {
+        "type": "Transitive",
+        "resolved": "2.10.0",
+        "contentHash": "QOvg/8WapA3c5EwPojCjnLEdxJNjxJ5s2GO8VxrDV9BTpnXHHGJ14MPwcGKiQeiRsBvPoeoTKMOh5KYu/Wm3jw=="
+      },
       "Microsoft.Data.SqlClient": {
         "type": "Transitive",
         "resolved": "6.0.1",
@@ -2486,6 +2508,11 @@
       }
     },
     "net9.0/linux-x64": {
+      "librdkafka.redist": {
+        "type": "Transitive",
+        "resolved": "2.10.0",
+        "contentHash": "QOvg/8WapA3c5EwPojCjnLEdxJNjxJ5s2GO8VxrDV9BTpnXHHGJ14MPwcGKiQeiRsBvPoeoTKMOh5KYu/Wm3jw=="
+      },
       "Microsoft.Data.SqlClient": {
         "type": "Transitive",
         "resolved": "6.0.1",
@@ -2917,6 +2944,11 @@
       }
     },
     "net9.0/win-x64": {
+      "librdkafka.redist": {
+        "type": "Transitive",
+        "resolved": "2.10.0",
+        "contentHash": "QOvg/8WapA3c5EwPojCjnLEdxJNjxJ5s2GO8VxrDV9BTpnXHHGJ14MPwcGKiQeiRsBvPoeoTKMOh5KYu/Wm3jw=="
+      },
       "Microsoft.Data.SqlClient": {
         "type": "Transitive",
         "resolved": "6.0.1",

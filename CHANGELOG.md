@@ -1,3 +1,10 @@
+## [5.0.5](https://github.com/informatievlaanderen/address-registry/compare/v5.0.4...v5.0.5) (2025-05-05)
+
+
+### Bug Fixes
+
+* **consumer:** bump message-handling to 6.0.3 ([74402af](https://github.com/informatievlaanderen/address-registry/commit/74402af6df66a4fc5b1b257847540c6ea4e50cbd))
+
 ## [5.0.4](https://github.com/informatievlaanderen/address-registry/compare/v5.0.3...v5.0.4) (2025-04-28)
 
 

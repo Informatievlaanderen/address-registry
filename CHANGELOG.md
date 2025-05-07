@@ -1,3 +1,10 @@
+## [5.0.6](https://github.com/informatievlaanderen/address-registry/compare/v5.0.5...v5.0.6) (2025-05-07)
+
+
+### Bug Fixes
+
+* **projector:** add projections healthcheck ([b37400c](https://github.com/informatievlaanderen/address-registry/commit/b37400cfecf9a6385b3abba7b486bfa015dc83c6))
+
 ## [5.0.5](https://github.com/informatievlaanderen/address-registry/compare/v5.0.4...v5.0.5) (2025-05-05)
 
 

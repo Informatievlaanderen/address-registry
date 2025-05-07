@@ -19,6 +19,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
+    using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
     using Elastic.Clients.Elasticsearch;
@@ -31,6 +32,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi.Models;
     using Modules;
+    using HealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
@@ -144,11 +146,21 @@ namespace AddressRegistry.Projector.Infrastructure
                             health.AddDbContextCheck<ElasticRunnerContext>(
                                 $"dbcontext-{nameof(ElasticRunnerContext).ToLowerInvariant()}",
                                 tags: new[] { DatabaseTag, "sql", "sqlserver" });
+
+                            health.AddCheck<ProjectionsHealthCheck>(
+                                "projections",
+                                failureStatus: HealthStatus.Unhealthy,
+                                tags: ["projections"]);
                         }
                     }
                 })
                 .Configure<ExtractConfig>(_configuration.GetSection("Extract"))
                 .Configure<IntegrationOptions>(_configuration.GetSection("Integration"));
+
+            services.AddSingleton<ProjectionsHealthCheck>(
+                c => new ProjectionsHealthCheck(
+                    new AllUnhealthyProjectionsHealthCheckStrategy
+                        (c.GetRequiredService<IConnectedProjectionsManager>()), _loggerFactory));
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new LoggingModule(_configuration, services));

@@ -129,6 +129,10 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             b.Property(p => p.LabelType);
 
             b.HasIndex(p => p.StreetNamePersistentLocalId);
+            b.HasIndex(p => p.HouseNumber);
+            b.HasIndex(p => p.BoxNumber).HasFilter("[BoxNumber] IS NOT NULL");
+            b.HasIndex(p => p.PostalCode);
+            b.HasIndex(p => p.Status);
             b.HasIndex(p => p.Removed);
 
             b

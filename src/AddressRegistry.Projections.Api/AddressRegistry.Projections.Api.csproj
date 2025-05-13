@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
+    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.EventHandling" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Common" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Legacy" />
+
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

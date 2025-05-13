@@ -2,6 +2,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
 {
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Projections.AddressMatch;
+    using AddressRegistry.Projections.Api;
     using AddressRegistry.Projections.Elastic;
     using AddressRegistry.Projections.Elastic.AddressList;
     using AddressRegistry.Projections.Elastic.AddressSearch;
@@ -95,6 +96,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
 
             RegisterExtractProjectionsV2(builder);
             RegisterLegacyProjectionsV2(builder);
+            // RegisterApiProjectionsV2(builder);
             RegisterWfsProjectionsV2(builder);
             RegisterWmsProjectionsV2(builder);
             RegisterAddressMatchProjections(builder);
@@ -147,7 +149,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         context.Resolve<IReadonlyStreamStore>(),
                         context.Resolve<EventDeserializer>(),
                         context.Resolve<IOptions<ExtractConfig>>(),
-                        DbaseCodePage.Western_European_ANSI.ToEncoding(),
+                        DbaseCodePage.Western_European_ANSI.ToEncoding()!,
                         new WKBReader()),
                     ConnectedProjectionSettings.Default);
         }
@@ -156,7 +158,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
         {
             builder.RegisterModule(
                 new AddressLastChangedListModule(
-                    _configuration.GetConnectionString("LastChangedList"),
+                    _configuration.GetConnectionString("LastChangedList")!,
                     _services,
                     _loggerFactory));
         }
@@ -179,6 +181,26 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressListProjectionsV2, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressSyndicationProjections, LegacyContext>(
                     () => new AddressSyndicationProjections(),
+                    ConnectedProjectionSettings.Default);
+        }
+
+        private void RegisterApiProjectionsV2(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new ApiModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory));
+            builder
+                .RegisterProjectionMigrator<ApiContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<AddressRegistry.Projections.Api.AddressDetail.AddressDetailProjections, ApiContext>(
+                    () => new AddressRegistry.Projections.Api.AddressDetail.AddressDetailProjections(),
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<AddressRegistry.Projections.Api.AddressSyndication.AddressSyndicationProjections, ApiContext>(
+                    () => new AddressRegistry.Projections.Api.AddressSyndication.AddressSyndicationProjections(),
                     ConnectedProjectionSettings.Default);
         }
 

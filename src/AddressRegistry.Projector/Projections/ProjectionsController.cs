@@ -20,6 +20,7 @@ namespace AddressRegistry.Projector.Projections
                 configuration.GetValue<string>("BaseUrl"))
         {
             RegisterConnectionString(Schema.Legacy, configuration.GetConnectionString("LegacyProjections"));
+            // RegisterConnectionString(Schema.Legacy, configuration.GetConnectionString("ApiProjections"));
             RegisterConnectionString(Schema.Extract, configuration.GetConnectionString("ExtractProjections"));
             RegisterConnectionString(Schema.Wfs, configuration.GetConnectionString("WfsProjections"));
             RegisterConnectionString(Schema.Wms, configuration.GetConnectionString("WmsProjections"));

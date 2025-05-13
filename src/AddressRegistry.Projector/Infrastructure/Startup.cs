@@ -131,6 +131,10 @@ namespace AddressRegistry.Projector.Infrastructure
                                 $"dbcontext-{nameof(LegacyContext).ToLowerInvariant()}",
                                 tags: new[] { DatabaseTag, "sql", "sqlserver" });
 
+                            // health.AddDbContextCheck<ApiContext>(
+                            //     $"dbcontext-{nameof(ApiContext).ToLowerInvariant()}",
+                            //     tags: new[] { DatabaseTag, "sql", "sqlserver" });
+
                             health.AddDbContextCheck<LastChangedListContext>(
                                 $"dbcontext-{nameof(LastChangedListContext).ToLowerInvariant()}",
                                 tags: new[] { DatabaseTag, "sql", "sqlserver" });

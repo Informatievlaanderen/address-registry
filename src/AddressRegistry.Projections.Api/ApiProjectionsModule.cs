@@ -1,28 +1,26 @@
-namespace AddressRegistry.Projections.Legacy
+namespace AddressRegistry.Projections.Api
 {
     using System;
-    using Microsoft.Data.SqlClient;
     using Autofac;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
-    public class LegacyModule : Module
+    public class ApiProjectionsModule : Module
     {
-        public LegacyModule(
+        public ApiProjectionsModule(
             IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory)
         {
-            var logger = loggerFactory.CreateLogger<LegacyModule>();
-            var connectionString = configuration.GetConnectionString("LegacyProjections");
+            var logger = loggerFactory.CreateLogger<ApiProjectionsModule>();
+            var connectionString = configuration.GetConnectionString("ApiProjections")!;
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
-                RunOnSqlServer(services, loggerFactory, connectionString);
+                RunOnNpgsql(services, loggerFactory, connectionString);
             else
                 RunInMemoryDb(services, loggerFactory, logger);
 
@@ -32,36 +30,35 @@ namespace AddressRegistry.Projections.Legacy
                 "\tSchema: {Schema}" +
                 Environment.NewLine +
                 "\tTableName: {TableName}",
-                nameof(LegacyContext), Schema.Legacy, MigrationTables.Legacy);
+                nameof(ApiContext), Schema.Api, MigrationTables.Api);
         }
 
-        private static void RunOnSqlServer(
+        private static void RunOnNpgsql(
             IServiceCollection services,
             ILoggerFactory loggerFactory,
-            string legacyConnectionString)
+            string apiConnectionString)
         {
             services
-                .AddDbContext<LegacyContext>((_, options) => options
+                .AddDbContext<ApiContext>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(legacyConnectionString, sqlServerOptions =>
+                    .UseSqlServer(apiConnectionString, sqlServerOptions =>
                     {
                         sqlServerOptions.EnableRetryOnFailure();
-                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.Legacy, Schema.Legacy);
-                    })
-                    .UseExtendedSqlServerMigrations());
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.Api, Schema.Api);
+                    }));
         }
 
         private static void RunInMemoryDb(
             IServiceCollection services,
             ILoggerFactory loggerFactory,
-            ILogger<LegacyModule> logger)
+            ILogger<ApiProjectionsModule> logger)
         {
             services
-                .AddDbContext<LegacyContext>(options => options
+                .AddDbContext<ApiContext>(options => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), _ => { }));
 
-            logger.LogWarning("Running InMemory for {Context}!", nameof(LegacyContext));
+            logger.LogWarning("Running InMemory for {Context}!", nameof(ApiContext));
         }
     }
 }

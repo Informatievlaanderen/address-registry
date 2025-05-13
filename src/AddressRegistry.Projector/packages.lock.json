@@ -1902,6 +1902,18 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )"
         }
       },
+      "addressregistry.projections.api": {
+        "type": "Project",
+        "dependencies": {
+          "AddressRegistry": "[1.0.0, )",
+          "AddressRegistry.Infrastructure": "[1.0.0, )",
+          "Be.Vlaanderen.Basisregisters.EventHandling": "[7.0.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "[22.0.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Legacy": "[22.0.0, )",
+          "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql": "[15.0.1, )",
+          "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )"
+        }
+      },
       "addressregistry.projections.elastic": {
         "type": "Project",
         "dependencies": {

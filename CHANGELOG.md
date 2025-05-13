@@ -1,3 +1,10 @@
+## [5.0.7](https://github.com/informatievlaanderen/address-registry/compare/v5.0.6...v5.0.7) (2025-05-13)
+
+
+### Performance Improvements
+
+* **wfs:** add indexes GAWR-6874 ([80e894f](https://github.com/informatievlaanderen/address-registry/commit/80e894fc90b95573d95c07bd5c1f0024077b0e68))
+
 ## [5.0.6](https://github.com/informatievlaanderen/address-registry/compare/v5.0.5...v5.0.6) (2025-05-07)
 
 

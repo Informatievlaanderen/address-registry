@@ -21,7 +21,7 @@ services:
       xpack.security.enrollment.enabled: false
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.18.0
+    image: docker.elastic.co/kibana/kibana:9.0.1
     container_name: kibana
     ports:
      - "5601:5601"

@@ -23,9 +23,17 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
             foreach (var scoreableObject in results)
             {
                 var scores = representationsForScoring
-                    ?.Where(representationForScoring => !string.IsNullOrWhiteSpace(scoreableObject.ScoreableProperty))
+                    ?.Where(representationForScoring => !string.IsNullOrWhiteSpace(scoreableObject.ScoreableProperty) && scoreableObject.ScoreableProperty != representationForScoring)
                     .Select(representationForScoring => scoreableObject.ScoreableProperty!.FuzzyScore(representationForScoring))
                     .ToList();
+
+                if (scores == null || scores.Count == 0)
+                {
+                    scores = representationsForScoring
+                        ?.Where(representationForScoring => !string.IsNullOrWhiteSpace(scoreableObject.ScoreableProperty))
+                        .Select(representationForScoring => scoreableObject.ScoreableProperty!.FuzzyScore(representationForScoring))
+                        .ToList();
+                }
 
                 scoreableObject.Score = scores.Any(x => x == 100) ? 100 : scores.Average(x => x);
             }

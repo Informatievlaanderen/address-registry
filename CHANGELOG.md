@@ -1,3 +1,10 @@
+## [5.0.8](https://github.com/informatievlaanderen/address-registry/compare/v5.0.7...v5.0.8) (2025-05-16)
+
+
+### Bug Fixes
+
+* **addressmatch:** don't like to itself to score, unless no other option left ([31af3cd](https://github.com/informatievlaanderen/address-registry/commit/31af3cd948fd41df8c3ef4b2f2ade0172ce374b8))
+
 ## [5.0.7](https://github.com/informatievlaanderen/address-registry/compare/v5.0.6...v5.0.7) (2025-05-13)
 
 

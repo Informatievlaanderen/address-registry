@@ -14,6 +14,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
     using Consumer.Read.Municipality.Projections;
     using Consumer.Read.Postal.Projections;
     using Consumer.Read.StreetName.Projections;
+    using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Moq;
@@ -367,6 +368,42 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
             firstMatch.Should().HaveVolledigAdres()
                 .Which.Should()
                 .HaveGeografischeNaam($"{existingStraatnaam.NameDutch} {request.Huisnummer}, {postcode} {existingGemeentenaam}");
+        }
+
+        [Fact]
+        public async Task CanFindAdresMatchButNotWithStreetName()
+        {
+            var existingNisCode = "11001";
+            var existingStraatnaamId = 1;
+            var existingGemeentenaam = "Geraardsbergen";
+            var postcode = "9500";
+
+            //Arrange
+            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
+            request.Niscode = null;
+            request.Straatnaam = "Eesbekestraat";
+            request.Gemeentenaam = existingGemeentenaam;
+            request.Postcode = postcode;
+            request.Huisnummer = "45";
+
+            MockGetAllLatestMunicipalities(existingNisCode, existingGemeentenaam);
+            MockStreetNames("Atembekestraat", existingStraatnaamId, existingNisCode, existingGemeentenaam);
+            MockGetLatestAddressesBy(existingStraatnaamId, postcode, request.Huisnummer);
+
+            //Act
+            var response = await _handler.Handle(request, CancellationToken.None);
+
+            //Assert
+            response.Should().NotBeNull();
+            response.Should().HaveMatches(1);
+
+            var firstMatch = response.AdresMatches.First();
+
+            firstMatch.Should().HaveGemeente()
+                .Which.Should().HaveGemeentenaam(existingGemeentenaam)
+                .And.HaveObjectId(existingNisCode);
+
+            firstMatch.Score.Should().NotBe(100);
         }
 
         [Fact]

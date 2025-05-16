@@ -1856,7 +1856,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
           "Datadog.Trace.Bundle": "[3.15.0, )",
           "Destructurama.JsonNet": "[4.0.2, )",
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.0.3, )",
           "Microsoft.Extensions.Hosting": "[9.0.4, )",
           "Serilog": "[4.2.0, )",
           "Serilog.Enrichers.Environment": "[3.0.1, )",
@@ -1887,7 +1887,7 @@
       "addressregistry.infrastructure.elastic": {
         "type": "Project",
         "dependencies": {
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.0.3, )",
           "Microsoft.Extensions.Configuration": "[9.0.4, )"
         }
       },
@@ -1916,7 +1916,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )",
           "Be.Vlaanderen.Basisregisters.Projector": "[16.0.0, )",
           "Datadog.Trace.Bundle": "[3.15.0, )",
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.0.3, )",
           "ProjNet": "[2.0.0, )"
         }
       },
@@ -2338,9 +2338,9 @@
       },
       "Elastic.Clients.Elasticsearch": {
         "type": "CentralTransitive",
-        "requested": "[8.17.4, )",
-        "resolved": "8.17.4",
-        "contentHash": "7zZ4xmQv96PlGZiQBfmuicgh3cUoAV9aZlY/vPdba02vWGz307XW+TbI3HaQrm4EPKrvD2PFNQmkJVBvhMZgxw==",
+        "requested": "[9.0.3, )",
+        "resolved": "9.0.3",
+        "contentHash": "24pSpgB5GieReeagUtEsIEKRtTKLth+rjZhWKnWC0NqgCG+RDhJiWUG7iWIiTrk/yGJPnB8cEjuNPkPg8N5f9g==",
         "dependencies": {
           "Elastic.Transport": "0.5.9"
         }

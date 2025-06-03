@@ -1,3 +1,10 @@
+## [5.0.9](https://github.com/informatievlaanderen/address-registry/compare/v5.0.8...v5.0.9) (2025-06-03)
+
+
+### Bug Fixes
+
+* separate lastchanged list ([f1879b2](https://github.com/informatievlaanderen/address-registry/commit/f1879b29df2d1a20965e2e6f7f811ab549faca2d))
+
 ## [5.0.8](https://github.com/informatievlaanderen/address-registry/compare/v5.0.7...v5.0.8) (2025-05-16)
 
 

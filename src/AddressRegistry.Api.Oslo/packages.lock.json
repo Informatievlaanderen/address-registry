@@ -81,11 +81,11 @@
       },
       "Elastic.Clients.Elasticsearch": {
         "type": "Direct",
-        "requested": "[8.17.4, )",
-        "resolved": "8.17.4",
-        "contentHash": "7zZ4xmQv96PlGZiQBfmuicgh3cUoAV9aZlY/vPdba02vWGz307XW+TbI3HaQrm4EPKrvD2PFNQmkJVBvhMZgxw==",
+        "requested": "[9.0.6, )",
+        "resolved": "9.0.6",
+        "contentHash": "AZK0VadUAcLcOS0fNT0aZd0Z5AdPdId7ZcPBROhMqmHKXTrfi0/pyavx0XwiXaC6MZ9XkKAjAjshPQwgOofSmQ==",
         "dependencies": {
-          "Elastic.Transport": "0.5.9"
+          "Elastic.Transport": "0.9.2"
         }
       },
       "MediatR": {
@@ -406,8 +406,11 @@
       },
       "Elastic.Transport": {
         "type": "Transitive",
-        "resolved": "0.5.9",
-        "contentHash": "RXoJAeXKaXq67SeLhyDMBPpvlkG940jqJWd5l+rKglMRLJn6X0dkLNlWehpDuouicNdwnYdcuADnqdSOiSvASw=="
+        "resolved": "0.9.2",
+        "contentHash": "evL2QL9tsjsWMuV/JAv4EyJmG0S//Np9z35qpWWn70+FiGiWYYsHgZEm7Vs4ad/CQh6YGMZcJ/G3len6+LzjUA==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        }
       },
       "FluentValidation": {
         "type": "Transitive",
@@ -1612,7 +1615,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
           "Datadog.Trace.Bundle": "[3.15.0, )",
           "Destructurama.JsonNet": "[4.0.2, )",
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.0.6, )",
           "Microsoft.Extensions.Hosting": "[9.0.4, )",
           "Serilog": "[4.2.0, )",
           "Serilog.Enrichers.Environment": "[3.0.1, )",
@@ -1643,7 +1646,7 @@
       "addressregistry.infrastructure.elastic": {
         "type": "Project",
         "dependencies": {
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.0.6, )",
           "Microsoft.Extensions.Configuration": "[9.0.4, )"
         }
       },
@@ -1672,7 +1675,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )",
           "Be.Vlaanderen.Basisregisters.Projector": "[16.0.0, )",
           "Datadog.Trace.Bundle": "[3.15.0, )",
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.0.6, )",
           "ProjNet": "[2.0.0, )"
         }
       },

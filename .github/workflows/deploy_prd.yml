@@ -44,7 +44,8 @@ jobs:
           'address-producer-snapshot-oslo',
           'address-producer-ldes',
           'address-projections',
-          'address-projections-backoffice'
+          'address-projections-backoffice',
+          'address-last-changed-list'
           ]
 
     steps:

@@ -75,9 +75,9 @@
       },
       "Elastic.Clients.Elasticsearch": {
         "type": "Direct",
-        "requested": "[8.17.4, )",
-        "resolved": "8.17.4",
-        "contentHash": "7zZ4xmQv96PlGZiQBfmuicgh3cUoAV9aZlY/vPdba02vWGz307XW+TbI3HaQrm4EPKrvD2PFNQmkJVBvhMZgxw==",
+        "requested": "[8.18.2, )",
+        "resolved": "8.18.2",
+        "contentHash": "uFV3CkqNBynEHOQY7jH0c3vdGGaGO2/BcP28er+5HVfmIMfz6FsiTffHqk42LZUCsEmIJET+onPuwAL0uOWooA==",
         "dependencies": {
           "Elastic.Transport": "0.5.9"
         }
@@ -935,7 +935,7 @@
       "addressregistry.infrastructure.elastic": {
         "type": "Project",
         "dependencies": {
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[8.18.2, )",
           "Microsoft.Extensions.Configuration": "[9.0.4, )"
         }
       },

@@ -1,0 +1,108 @@
+name: Manual Deploy
+run-name: 'Manual Deploy ${{ github.event.inputs.environment }} - ${{ github.event.inputs.version }}'
+concurrency: Manual Deploy ${{ github.event.inputs.environment }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+      environment:
+        description: 'Environment to deploy to'
+        type: choice
+        required: true
+        default: 'tst'
+        options:
+          - 'tst'
+          - 'stg'
+          - 'prd'
+
+jobs:
+  deploy_start_slack:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Deploy started
+    environment: ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Notify deployment started
+      uses: slackapi/slack-github-action@v2.0.0
+      with:
+        method: chat.postMessage
+        token: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        payload: |
+          channel: '#team-dinosaur-dev'
+          text: 'Deployment of address-registry (${{ github.event.inputs.version }}) to ${{ github.event.inputs.environment }} has started'
+
+  deploy_services:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ deploy_start_slack ]
+    name: Deploy
+    uses: informatievlaanderen/build-pipeline/.github/workflows/deploy-v4.yml@main
+    strategy:
+      matrix:
+        services: [
+          'address-api',
+          'address-backoffice-api',
+          'address-consumer',
+          'address-consumer-municipality',
+          'address-consumer-streetname',
+          'address-consumer-postal',
+          'address-producer',
+          'address-producer-snapshot-oslo',
+          'address-producer-ldes',
+          'address-projections',
+          'address-projections-backoffice',
+          'address-last-changed-list',
+          'address-cache-warmer',
+          'address-snapshot-verifier'
+        ]
+    with:
+      environment: ${{ github.event.inputs.environment }}
+      service-name: ${{ matrix.services }}
+      version: ${{ github.event.inputs.version }}
+      domain: 'basisregisters'
+      project: 'basisregisters'
+    secrets: inherit
+
+  deploy_lambda:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ deploy_services ]
+    name: Deploy lambda to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: CD Lambda(s) Configure credentials
+      uses: aws-actions/configure-aws-credentials@v4.1.0
+      with:
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
+        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+    - name: Promote Lambda(s)
+      uses: Informatievlaanderen/build-pipeline/.github/actions/deploy-lambda-v4@main
+      with:
+        function-name: ar-sqsbackofficefunction
+        deploy-url: ${{ vars.VBR_AWS_DEPLOY_LAMBDA_DEVOPS_BASEURL }}
+        access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+        secret-access-key-id: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
+        region: ${{ secrets.VBR_AWS_REGION_PRD }}
+        version: ${{ github.event.inputs.version }}
+        environment: ${{ github.event.inputs.environment }}
+
+  deploy_finish_slack:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ deploy_services, deploy_lambda ]
+    name: Deploy finished
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Notify deployment finished
+      uses: slackapi/slack-github-action@v2.0.0
+      with:
+        method: chat.postMessage
+        token: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        payload: |
+          channel: '#team-dinosaur-dev'
+          text: 'Deployment of address-registry to ${{ github.event.inputs.environment }} has finished'

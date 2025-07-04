@@ -4,9 +4,9 @@
     "net9.0": {
       "Elastic.Clients.Elasticsearch": {
         "type": "Direct",
-        "requested": "[8.17.4, )",
-        "resolved": "8.17.4",
-        "contentHash": "7zZ4xmQv96PlGZiQBfmuicgh3cUoAV9aZlY/vPdba02vWGz307XW+TbI3HaQrm4EPKrvD2PFNQmkJVBvhMZgxw==",
+        "requested": "[8.18.3, )",
+        "resolved": "8.18.3",
+        "contentHash": "KyeKt3cbJV3fNqySLf4wgx2X4l6PsKb31ot8aP5tn0MQMGlgvaXFN4ZDqBH5+P9scvAlNDsRaifdPLHvh9IENA==",
         "dependencies": {
           "Elastic.Transport": "0.5.9"
         }

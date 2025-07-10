@@ -1,7 +1,6 @@
-﻿namespace AddressRegistry.Tests.ProjectionTests.WmsV2
+﻿namespace AddressRegistry.Tests.ProjectionTests.WmsV3
 {
     using System.Linq;
-    using AddressRegistry.Projections.Wms;
     using AddressRegistry.StreetName;
     using FluentAssertions;
     using Xunit;

@@ -21,7 +21,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Wfs;
     using AddressRegistry.Projections.Wfs.AddressWfsV2;
     using AddressRegistry.Projections.Wms;
-    using AddressRegistry.Projections.Wms.AddressWmsItemV2;
     using AddressRegistry.Projections.Wms.AddressWmsItemV3;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -245,9 +244,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<WmsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<AddressWmsItemV2Projections, WmsContext>(() =>
-                        new AddressWmsItemV2Projections(WKBReaderFactory.CreateForLegacy()),
-                    wmsProjectionSettings)
                 .RegisterProjections<AddressWmsItemV3Projections, WmsContext>(c =>
                     new AddressWmsItemV3Projections(WKBReaderFactory.CreateForLegacy(), c.Resolve<IHouseNumberLabelUpdater>()),
                     wmsProjectionSettings);

@@ -3,7 +3,6 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressWfs;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
 
     public static class AddressWfsV2Extensions
@@ -58,8 +57,8 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             throw DatabaseItemNotFound(addressPersistentLocalId);
         }
 
-        private static ProjectionItemNotFoundException<AddressWfsProjections> DatabaseItemNotFound(int addressPersistentLocalId)
-            => new ProjectionItemNotFoundException<AddressWfsProjections>(addressPersistentLocalId.ToString());
+        private static ProjectionItemNotFoundException<AddressWfsV2Projections> DatabaseItemNotFound(int addressPersistentLocalId)
+            => new ProjectionItemNotFoundException<AddressWfsV2Projections>(addressPersistentLocalId.ToString());
     }
 }
 

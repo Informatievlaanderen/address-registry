@@ -43,7 +43,6 @@
     using Projections.Legacy.AddressListV2;
     using Projections.Legacy.AddressSyndication;
     using Projections.Wfs;
-    using Projections.Wfs.AddressWfs;
     using Projections.Wfs.AddressWfsV2;
     using Projections.Wms;
     using Projections.Wms.AddressWmsItemV3;
@@ -252,7 +251,6 @@
 
             yield return [new List<ConnectedProjection<WfsContext>>
             {
-                new AddressWfsProjections(new WKBReader()),
                 new AddressWfsV2Projections(new WKBReader(), new Projections.Wfs.AddressWfsV2.HouseNumberLabelUpdater())
             }];
 

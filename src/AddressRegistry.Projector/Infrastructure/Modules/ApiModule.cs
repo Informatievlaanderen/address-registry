@@ -19,7 +19,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressListV2;
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Wfs;
-    using AddressRegistry.Projections.Wfs.AddressWfs;
     using AddressRegistry.Projections.Wfs.AddressWfsV2;
     using AddressRegistry.Projections.Wms;
     using AddressRegistry.Projections.Wms.AddressWmsItemV2;
@@ -220,9 +219,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<WfsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<AddressWfsProjections, WfsContext>(() =>
-                        new AddressWfsProjections(WKBReaderFactory.CreateForLegacy()),
-                    wfsProjectionSettings)
                 .RegisterProjections<AddressWfsV2Projections, WfsContext>(c =>
                     new AddressWfsV2Projections(WKBReaderFactory.CreateForLegacy(), c.Resolve<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()),
                 wfsProjectionSettings);

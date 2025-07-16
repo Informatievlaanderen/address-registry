@@ -16,7 +16,6 @@ namespace AddressRegistry.Api.Oslo.Address
     using NetTopologySuite.Utilities;
     using Projections.Elastic.AddressList;
     using Projections.Elastic.AddressSearch;
-    using Projections.Legacy.AddressListV2;
     using StreetName;
     using AddressStatus = AddressRegistry.Address.AddressStatus;
     using MunicipalityLanguage = Consumer.Read.Municipality.Projections.MunicipalityLanguage;
@@ -72,23 +71,6 @@ namespace AddressRegistry.Api.Oslo.Address
                 Language.en => Taal.EN,
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             };
-        }
-
-        public static VolledigAdres? GetVolledigAdres(AddressListViewItemV2 addressListViewItem)
-        {
-            if (string.IsNullOrEmpty(addressListViewItem.NisCode))
-            {
-                return null;
-            }
-
-            var defaultMunicipalityName = addressListViewItem.DefaultMunicipalityName;
-            return new VolledigAdres(
-                addressListViewItem.DefaultStreetNameName.Value,
-                addressListViewItem.HouseNumber,
-                addressListViewItem.BoxNumber,
-                addressListViewItem.PostalCode,
-                defaultMunicipalityName.Value,
-                defaultMunicipalityName.Key);
         }
 
         public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode,

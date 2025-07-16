@@ -16,7 +16,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.LastChangedList;
     using AddressRegistry.Projections.Legacy;
     using AddressRegistry.Projections.Legacy.AddressDetailV2WithParent;
-    using AddressRegistry.Projections.Legacy.AddressListV2;
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Wfs;
     using AddressRegistry.Projections.Wfs.AddressWfsV2;
@@ -46,6 +45,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Microsoft.Extensions.Options;
     using NetTopologySuite.IO;
     using SqlStreamStore;
+    using ElasticModule = AddressRegistry.Projections.Elastic.Infrastructure.ElasticModule;
     using HouseNumberLabelUpdater = AddressRegistry.Projections.Wms.AddressWmsItemV3.HouseNumberLabelUpdater;
     using IHouseNumberLabelUpdater = AddressRegistry.Projections.Wms.AddressWmsItemV3.IHouseNumberLabelUpdater;
 
@@ -174,7 +174,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressDetailProjectionsV2WithParent, LegacyContext>(
                     () => new AddressDetailProjectionsV2WithParent(),
                     ConnectedProjectionSettings.Default)
-                .RegisterProjections<AddressListProjectionsV2, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressSyndicationProjections, LegacyContext>(
                     () => new AddressSyndicationProjections(),
                     ConnectedProjectionSettings.Default);
@@ -257,7 +256,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         _configuration,
                         _services,
                         _loggerFactory))
-                .RegisterModule(new AddressRegistry.Projections.Elastic.Infrastructure.ElasticModule(_configuration))
+                .RegisterModule(new ElasticModule(_configuration))
                 .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new PostalConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));

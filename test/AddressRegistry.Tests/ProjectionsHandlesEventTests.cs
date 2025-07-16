@@ -40,7 +40,6 @@
     using Projections.LastChangedList;
     using Projections.Legacy;
     using Projections.Legacy.AddressDetailV2WithParent;
-    using Projections.Legacy.AddressListV2;
     using Projections.Legacy.AddressSyndication;
     using Projections.Wfs;
     using Projections.Wfs.AddressWfsV2;
@@ -240,7 +239,6 @@
             yield return [new List<ConnectedProjection<LegacyContext>>
             {
                 new AddressDetailProjectionsV2WithParent(),
-                new AddressListProjectionsV2(),
                 new AddressSyndicationProjections()
             }];
 

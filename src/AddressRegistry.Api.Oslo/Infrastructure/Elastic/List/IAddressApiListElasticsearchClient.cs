@@ -16,5 +16,16 @@
             string? status,
             int? from,
             int? size);
+
+        Task<long> CountAddresses(
+            string? streetNameId,
+            string? streetName,
+            string? homonymAddition,
+            string? houseNumber,
+            string? boxNumber,
+            string? postalCode,
+            string? nisCode,
+            string? municipalityName,
+            string? status);
     }
 }

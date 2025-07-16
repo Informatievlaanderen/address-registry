@@ -23,13 +23,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
 
     public sealed class MediatRModule : Module
     {
-        private readonly IConfiguration _configuration;
-
-        public MediatRModule(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
         protected override void Load(ContainerBuilder builder)
         {
             builder
@@ -41,22 +34,11 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
-            if (_configuration.GetValue("UseElasticForList", defaultValue:false))
-            {
-                builder.Register(c => (IRequestHandler<AddressListOsloRequest, AddressListOsloResponse>)
-                    new AddressListOsloElasticHandler(
-                        c.Resolve<IAddressApiListElasticsearchClient>(),
-                        c.Resolve<IOptions<ResponseOptions>>()))
-                    .InstancePerLifetimeScope();
-            }
-            else
-            {
-                builder.Register(c => (IRequestHandler<AddressListOsloRequest, AddressListOsloResponse>)
-                    new AddressListOsloHandlerV2(
-                        c.Resolve<AddressQueryContext>(),
-                        c.Resolve<IOptions<ResponseOptions>>()))
-                    .InstancePerLifetimeScope();
-            }
+            builder.Register(c => (IRequestHandler<AddressListOsloRequest, AddressListOsloResponse>)
+                new AddressListOsloElasticHandler(
+                    c.Resolve<IAddressApiListElasticsearchClient>(),
+                    c.Resolve<IOptions<ResponseOptions>>()))
+                .InstancePerLifetimeScope();
 
             builder.Register(c => (IRequestHandler<AddressDetailOsloRequest, AddressDetailOsloResponse>)
                 new AddressDetailOsloHandlerV2(
@@ -67,9 +49,8 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                 .InstancePerLifetimeScope();
 
             builder.Register(c => (IRequestHandler<AddressCountRequest, TotaalAantalResponse>)
-                new AddressCountOsloHandlerV2(
-                    c.Resolve<LegacyContext>(),
-                    c.Resolve<AddressQueryContext>())).InstancePerLifetimeScope();
+                new AddressCountElasticHandler(c.Resolve<IAddressApiListElasticsearchClient>()))
+                .InstancePerLifetimeScope();
 
             builder.Register(c => (IRequestHandler<AddressMatchRequest, AddressMatchOsloCollection>)
                 new AddressMatchHandlerV2(

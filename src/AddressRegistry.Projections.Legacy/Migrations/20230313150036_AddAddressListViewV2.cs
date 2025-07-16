@@ -4,8 +4,6 @@
 
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
-    using AddressListV2;
-
     public partial class AddAddressListViewV2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +13,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
             migrationBuilder.Sql("ALTER AUTHORIZATION ON SCHEMA::AddressRegistryConsumerReadMunicipality TO address");
 
             migrationBuilder.Sql($@"
-CREATE VIEW [AddressRegistryLegacy].{AddressListViewItemV2Configuration.ViewName}
+CREATE VIEW [AddressRegistryLegacy].[vw_AddressListCountV2]
 WITH SCHEMABINDING
 AS
   SELECT al.AddressPersistentLocalId
@@ -54,35 +52,35 @@ INNER JOIN [AddressRegistryConsumerReadMunicipality].LatestItems m
 	ON s.NisCode = m.NisCode
 WHERE al.Removed = 0");
 
-            migrationBuilder.Sql($"CREATE UNIQUE CLUSTERED INDEX IX_{AddressListViewItemV2Configuration.ViewName}_AddressPersistentLocalId ON [AddressRegistryLegacy].{AddressListViewItemV2Configuration.ViewName} (AddressPersistentLocalId);");
+            migrationBuilder.Sql($"CREATE UNIQUE CLUSTERED INDEX IX_vw_AddressListCountV2_AddressPersistentLocalId ON [AddressRegistryLegacy].vw_AddressListCountV2 (AddressPersistentLocalId);");
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_HouseNumber",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_HouseNumber",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 column: "HouseNumber");
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_BoxNumber",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_BoxNumber",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 column: "BoxNumber");
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_PostalCode",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_PostalCode",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 column: "PostalCode");
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_Status",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_Status",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 column: "Status");
 
             migrationBuilder.CreateIndex(
-                    name: $"IX_{AddressListViewItemV2Configuration.ViewName}_MunicipalityNameSearch",
-                    table: AddressListViewItemV2Configuration.ViewName,
+                    name: $"IX_vw_AddressListCountV2_MunicipalityNameSearch",
+                    table: "vw_AddressListCountV2",
                     schema: "AddressRegistryLegacy",
                     columns: new[]
                     {
@@ -93,44 +91,44 @@ WHERE al.Removed = 0");
                     });
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_NisCode",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_NisCode",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 column: "NisCode");
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_StreetNameDutchSearch",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_StreetNameDutchSearch",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 columns: new[] { "StreetNameDutchSearch" });
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_StreetNameEnglishSearch",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_StreetNameEnglishSearch",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 columns: new[] { "StreetNameEnglishSearch" });
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_StreetNameFrenchSearch",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_StreetNameFrenchSearch",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 columns: new[] { "StreetNameFrenchSearch" });
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_StreetNameGermanSearch",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_StreetNameGermanSearch",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 columns: new[] { "StreetNameGermanSearch" });
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_StreetNamePersistentLocalId",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_StreetNamePersistentLocalId",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 column: "StreetNamePersistentLocalId");
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemV2Configuration.ViewName}_HomonymAdditions",
-                table: AddressListViewItemV2Configuration.ViewName,
+                name: $"IX_vw_AddressListCountV2_HomonymAdditions",
+                table: "vw_AddressListCountV2",
                 schema: "AddressRegistryLegacy",
                 columns: new[]
                 {
@@ -143,7 +141,7 @@ WHERE al.Removed = 0");
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql($"DROP VIEW [AddressRegistryLegacy].{AddressListViewItemV2Configuration.ViewName}");
+            migrationBuilder.Sql($"DROP VIEW [AddressRegistryLegacy].vw_AddressListCountV2");
         }
     }
 }

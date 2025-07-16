@@ -46,7 +46,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                 RunInMemoryDb(services, loggerFactory, logger);
             }
 
-            logger.LogInformation("Added {Context} to services:", nameof(AddressQueryContext));
+            logger.LogInformation("Added {Context} to services:", nameof(AddressMatchContextV2));
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -91,11 +91,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             string syndicationConnectionString)
         {
             services
-                .AddDbContext<AddressQueryContext>((_, options) => options
-                    .EnableSensitiveDataLogging()
-                    .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(syndicationConnectionString,
-                        sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
                 .AddDbContext<AddressMatchContextV2>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(syndicationConnectionString,
@@ -108,14 +103,11 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             ILogger<ApiModule> logger)
         {
             services
-                .AddDbContext<AddressQueryContext>(options => options
-                    .UseLoggerFactory(loggerFactory)
-                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
                 .AddDbContext<AddressMatchContextV2>(options => options
                     .UseLoggerFactory(loggerFactory)
                     .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
 
-            logger.LogWarning("Running InMemory for {Context}!", nameof(AddressQueryContext));
+            logger.LogWarning("Running InMemory for {Context}!", nameof(AddressMatchContextV2));
         }
     }
 }

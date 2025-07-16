@@ -69,7 +69,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2WithParent
 
     public class AddressDetailItemV2WithParentConfiguration : IEntityTypeConfiguration<AddressDetailItemV2WithParent>
     {
-        internal const string TableName = "AddressDetailsV2WithParent";
+        public const string TableName = "AddressDetailsV2WithParent";
 
         public void Configure(EntityTypeBuilder<AddressDetailItemV2WithParent> b)
         {

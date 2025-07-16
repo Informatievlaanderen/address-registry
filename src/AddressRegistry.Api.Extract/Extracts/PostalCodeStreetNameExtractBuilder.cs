@@ -5,11 +5,11 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
-    using AddressRegistry.Projections.Extract.PostalCodeStreetNameExtract;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Microsoft.Data.SqlClient;
-    using Projections.Legacy.AddressListV2;
+    using Projections.Extract.PostalCodeStreetNameExtract;
+    using Projections.Legacy.AddressDetailV2WithParent;
 
     public class PostalCodeStreetNameExtractBuilder
     {
@@ -24,7 +24,7 @@ namespace AddressRegistry.Api.Extract.Extracts
         {
             var query = $"""
                          SELECT PostalCode, StreetNamePersistentLocalId
-                         FROM [{Schema.Legacy}].[{AddressListItemV2Configuration.TableName}]
+                         FROM [{Schema.Legacy}].[{AddressDetailItemV2WithParentConfiguration.TableName}]
                          WHERE Removed = 0 AND PostalCode IS NOT NULL
                          GROUP BY PostalCode, StreetNamePersistentLocalId
                          ORDER BY PostalCode, StreetNamePersistentLocalId

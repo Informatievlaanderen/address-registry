@@ -179,6 +179,23 @@ namespace AddressRegistry.Tests.ProjectionTests.Postal
             });
         }
 
+        [Fact]
+        public async Task PostalInformationWasRemoved()
+        {
+            var e = new PostalInformationWasRemoved(
+                _postalCode,
+                _provenance);
+
+            Given(_postalInformationWasRegistered, e);
+            await Then(async ctx =>
+            {
+                var result = await ctx.PostalLatestItems.FindAsync(PostalCodeString);
+                result.Should().NotBeNull();
+                result.IsRemoved.Should().BeTrue();
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(_postalInformationWasRegistered.Provenance.Timestamp).Value);
+            });
+        }
+
         protected override PostalConsumerContext CreateContext()
         {
             var options = new DbContextOptionsBuilder<PostalConsumerContext>()

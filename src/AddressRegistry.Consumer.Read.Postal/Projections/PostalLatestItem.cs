@@ -17,6 +17,8 @@ namespace AddressRegistry.Consumer.Read.Postal.Projections
 
         public DateTimeOffset VersionTimestampAsDateTimeOffset { get; private set; }
 
+        public bool IsRemoved { get; set; }
+
         public Instant VersionTimestamp
         {
             get => Instant.FromDateTimeOffset(VersionTimestampAsDateTimeOffset);
@@ -83,6 +85,9 @@ namespace AddressRegistry.Consumer.Read.Postal.Projections
 
             builder.Property(p => p.VersionTimestampAsDateTimeOffset)
                 .HasColumnName("VersionTimestamp");
+
+            builder.Property(p => p.IsRemoved)
+                .HasDefaultValue(false);
 
             builder.HasIndex(p => p.VersionTimestampAsDateTimeOffset);
 

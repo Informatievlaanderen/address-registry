@@ -65,6 +65,15 @@ namespace AddressRegistry.Consumer.Read.Postal.Projections
                 }, ct);
             });
 
+            When<PostalInformationWasRemoved>(async (contextFactory, message, ct) =>
+            {
+                await contextFactory.FindAndUpdate(message.PostalCode, postal =>
+                {
+                    postal.IsRemoved = true;
+                    UpdateVersionTimestamp(message.Provenance, postal);
+                }, ct);
+            });
+
             When<MunicipalityWasAttached>(async (contextFactory, message, ct) =>
             {
                 await contextFactory.FindAndUpdate(message.PostalCode, postal =>

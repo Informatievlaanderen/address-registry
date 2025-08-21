@@ -1,3 +1,18 @@
+# [5.1.0](https://github.com/informatievlaanderen/address-registry/compare/v5.0.9...v5.1.0) (2025-08-21)
+
+
+### Bug Fixes
+
+* clean up old WFS projection ([007f6fb](https://github.com/informatievlaanderen/address-registry/commit/007f6fb5cb18c9bae3fdc6e6ac61684074719c4e))
+* cleanup WMS v2 projection ([f0638d8](https://github.com/informatievlaanderen/address-registry/commit/f0638d8a943b780b54a0a40d3857c6808ba7dd85))
+* process removed postalinfo GAWR-4168 ([ed8a07d](https://github.com/informatievlaanderen/address-registry/commit/ed8a07dddb6f6fe369ad37d215b4467546182a4f))
+
+
+### Features
+
+* remove List projection and dependencies ([f6922cd](https://github.com/informatievlaanderen/address-registry/commit/f6922cd9cfc8763dc599eb7771aab4cf5b95d2df))
+* update packages ([1b42b07](https://github.com/informatievlaanderen/address-registry/commit/1b42b0704f273c95d14db06f68159abbe3ab080e))
+
 ## [5.0.9](https://github.com/informatievlaanderen/address-registry/compare/v5.0.8...v5.0.9) (2025-06-03)
 
 

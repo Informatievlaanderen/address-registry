@@ -1,3 +1,10 @@
+## [5.1.1](https://github.com/informatievlaanderen/address-registry/compare/v5.1.0...v5.1.1) (2025-08-22)
+
+
+### Bug Fixes
+
+* correct geolocation view and remove old list views ([cd4d58d](https://github.com/informatievlaanderen/address-registry/commit/cd4d58d09f570fa090cad11972c1388943b5c077))
+
 # [5.1.0](https://github.com/informatievlaanderen/address-registry/compare/v5.0.9...v5.1.0) (2025-08-21)
 
 

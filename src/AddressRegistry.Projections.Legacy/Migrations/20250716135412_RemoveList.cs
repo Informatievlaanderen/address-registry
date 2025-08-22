@@ -11,6 +11,16 @@ namespace AddressRegistry.Projections.Legacy.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"
+IF OBJECT_ID('AddressRegistryLegacy.vw_AddressListV2', 'V') IS NOT NULL
+    DROP VIEW [AddressRegistryLegacy].[vw_AddressListV2]
+");
+
+            migrationBuilder.Sql(@"
+IF OBJECT_ID('AddressRegistryLegacy.vw_AddressListCountV2', 'V') IS NOT NULL
+    DROP VIEW [AddressRegistryLegacy].[vw_AddressListCountV2]
+");
+
             migrationBuilder.DropTable(
                 name: "AddressListV2",
                 schema: "AddressRegistryLegacy");

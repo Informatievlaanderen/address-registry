@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Projections.AddressMatch.AddressDetailV2WithParent;
@@ -45,6 +46,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
                 return results;
             }
 
+            var streetNameMatches = 0;
             foreach (var municipalityWrapper in results)
             {
                 foreach (var streetNameWrapper in municipalityWrapper)
@@ -59,6 +61,12 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
                                     houseNumberWithSubaddress.BoxNumber)
                                 .ToList());
                     }
+                }
+
+                streetNameMatches++;
+                if (streetNameMatches > 10 && results.AllAddresses().Count() >= 10)
+                {
+                    return results;
                 }
             }
 

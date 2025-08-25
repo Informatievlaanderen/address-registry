@@ -551,8 +551,11 @@
       },
       "Elastic.Transport": {
         "type": "Transitive",
-        "resolved": "0.5.9",
-        "contentHash": "RXoJAeXKaXq67SeLhyDMBPpvlkG940jqJWd5l+rKglMRLJn6X0dkLNlWehpDuouicNdwnYdcuADnqdSOiSvASw=="
+        "resolved": "0.10.1",
+        "contentHash": "8qUyxd4LzMiR+wtNEzdHHnu+iEpbKfoA001NyYgZZT0YZaNE9fWmFeZMxcTz7HMcYUidZSeT6vvongjZh1j/hQ==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        }
       },
       "Fare": {
         "type": "Transitive",
@@ -2801,7 +2804,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
           "Datadog.Trace.Bundle": "[3.24.1, )",
           "Destructurama.JsonNet": "[4.0.2, )",
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.1.5, )",
           "Microsoft.Extensions.Hosting": "[9.0.8, )",
           "Serilog": "[4.3.0, )",
           "Serilog.Enrichers.Environment": "[3.0.1, )",
@@ -2832,7 +2835,7 @@
       "addressregistry.infrastructure.elastic": {
         "type": "Project",
         "dependencies": {
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.1.5, )",
           "Microsoft.Extensions.Configuration": "[9.0.8, )"
         }
       },
@@ -2927,7 +2930,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )",
           "Be.Vlaanderen.Basisregisters.Projector": "[16.0.0, )",
           "Datadog.Trace.Bundle": "[3.24.1, )",
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.1.5, )",
           "ProjNet": "[2.1.0, )"
         }
       },
@@ -3021,7 +3024,7 @@
           "AspNetCore.HealthChecks.SqlServer": "[9.0.0, )",
           "Be.Vlaanderen.Basisregisters.Api": "[24.1.0, )",
           "Datadog.Trace.Bundle": "[3.24.1, )",
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.1.5, )",
           "MediatR": "[12.5.0, )",
           "MediatR.Contracts": "[2.0.1, )"
         }
@@ -3576,11 +3579,11 @@
       },
       "Elastic.Clients.Elasticsearch": {
         "type": "CentralTransitive",
-        "requested": "[8.17.4, )",
-        "resolved": "8.17.4",
-        "contentHash": "7zZ4xmQv96PlGZiQBfmuicgh3cUoAV9aZlY/vPdba02vWGz307XW+TbI3HaQrm4EPKrvD2PFNQmkJVBvhMZgxw==",
+        "requested": "[9.1.5, )",
+        "resolved": "9.1.5",
+        "contentHash": "qBaBZRN9EwnUNeOULuKYVhf1GZARrqkbPSxjwf6mltf0lt7uCVHxkfnCG3053IJ+xsScjk7Z3/W5IIUx18E0xQ==",
         "dependencies": {
-          "Elastic.Transport": "0.5.9"
+          "Elastic.Transport": "0.10.1"
         }
       },
       "MediatR": {

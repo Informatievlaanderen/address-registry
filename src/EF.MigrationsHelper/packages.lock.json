@@ -85,14 +85,6 @@
           "AWSSDK.Core": "[3.7.402.35, 4.0.0)"
         }
       },
-      "AWSSDK.SQS": {
-        "type": "Transitive",
-        "resolved": "3.7.400.129",
-        "contentHash": "vc1OnZscfyKbuucR6Ru1SQj6o6SYizmmd3P/BBgP7Oph9I2UMirSs92iDisKjI6kuun3qv5K9SJBasZA3di1lQ==",
-        "dependencies": {
-          "AWSSDK.Core": "[3.7.402.35, 4.0.0)"
-        }
-      },
       "Azure.Core": {
         "type": "Transitive",
         "resolved": "1.38.0",
@@ -337,8 +329,11 @@
       },
       "Elastic.Transport": {
         "type": "Transitive",
-        "resolved": "0.5.9",
-        "contentHash": "RXoJAeXKaXq67SeLhyDMBPpvlkG940jqJWd5l+rKglMRLJn6X0dkLNlWehpDuouicNdwnYdcuADnqdSOiSvASw=="
+        "resolved": "0.10.1",
+        "contentHash": "8qUyxd4LzMiR+wtNEzdHHnu+iEpbKfoA001NyYgZZT0YZaNE9fWmFeZMxcTz7HMcYUidZSeT6vvongjZh1j/hQ==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        }
       },
       "FluentValidation": {
         "type": "Transitive",
@@ -1703,7 +1698,6 @@
         "type": "Project",
         "dependencies": {
           "AddressRegistry.Infrastructure": "[1.0.0, )",
-          "Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.Abstractions": "[1.0.0, )",
           "Be.Vlaanderen.Basisregisters.Aws.DistributedMutex": "[5.0.0, )",
           "Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency": "[10.0.2, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[22.1.1, )",
@@ -1784,7 +1778,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
           "Datadog.Trace.Bundle": "[3.24.1, )",
           "Destructurama.JsonNet": "[4.0.2, )",
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.1.5, )",
           "Microsoft.Extensions.Hosting": "[9.0.8, )",
           "Serilog": "[4.3.0, )",
           "Serilog.Enrichers.Environment": "[3.0.1, )",
@@ -1815,7 +1809,7 @@
       "addressregistry.infrastructure.elastic": {
         "type": "Project",
         "dependencies": {
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.1.5, )",
           "Microsoft.Extensions.Configuration": "[9.0.8, )"
         }
       },
@@ -1896,7 +1890,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )",
           "Be.Vlaanderen.Basisregisters.Projector": "[16.0.0, )",
           "Datadog.Trace.Bundle": "[3.24.1, )",
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.1.5, )",
           "ProjNet": "[2.1.0, )"
         }
       },
@@ -1989,17 +1983,6 @@
           "Serilog.Settings.Configuration": "[9.0.0, )",
           "Serilog.Sinks.Console": "[6.0.0, )",
           "Serilog.Sinks.File": "[7.0.0, )"
-        }
-      },
-      "Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.Abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Be.Vlaanderen.Basisregisters.Api": "[24.1.0, )",
-          "Be.Vlaanderen.Basisregisters.GrAr.Edit": "[22.1.1, )",
-          "Be.Vlaanderen.Basisregisters.Sqs": "[4.0.1, )",
-          "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": "[3.2.3, )",
-          "MediatR.Contracts": "[2.0.1, )",
-          "NetTopologySuite": "[2.6.0, )"
         }
       },
       "AspNetCore.HealthChecks.NpgSql": {
@@ -2234,16 +2217,6 @@
         "resolved": "22.1.1",
         "contentHash": "rD3+xRh81tGrtkEvMD3dL9tYFf7aqwNSlLgXY6ucC97c7FjmRKM/tLLcYHEMkaYWJnau6a+kHCIQX0aeSlMKtQ=="
       },
-      "Be.Vlaanderen.Basisregisters.GrAr.Edit": {
-        "type": "CentralTransitive",
-        "requested": "[22.1.1, )",
-        "resolved": "22.1.1",
-        "contentHash": "zd910HCEX+BhaY4Bp3CcIpnYAJk4qbnekbLSQe4Mh6w7ecaexxCI1aL25ZutY3A2tILm+LdZHYfGlEbfpGeKcg==",
-        "dependencies": {
-          "Be.Vlaanderen.Basisregisters.GrAr.Common": "22.1.1",
-          "NetTopologySuite": "2.6.0"
-        }
-      },
       "Be.Vlaanderen.Basisregisters.GrAr.Extracts": {
         "type": "CentralTransitive",
         "requested": "[22.1.1, )",
@@ -2302,19 +2275,6 @@
           "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": "5.0.0",
           "CompareNETObjects": "4.83.0",
           "Microsoft.CSharp": "4.7.0"
-        }
-      },
-      "Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple": {
-        "type": "CentralTransitive",
-        "requested": "[6.0.3, )",
-        "resolved": "6.0.0",
-        "contentHash": "N7gB7KczRTPQOSnXjXUoc098dkvnZpnC4+K9f/eXQ8/H9iJiT+n0cmLirV93ay0OARD39f9+oDBa7AgJGOL5YQ==",
-        "dependencies": {
-          "AWSSDK.Core": "3.7.402.35",
-          "AWSSDK.SQS": "3.7.400.129",
-          "Microsoft.Extensions.Configuration.Json": "9.0.3",
-          "Microsoft.Extensions.DependencyInjection": "9.0.3",
-          "Newtonsoft.Json": "13.0.3"
         }
       },
       "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer": {
@@ -2461,27 +2421,6 @@
           "Microsoft.Extensions.Hosting": "9.0.3"
         }
       },
-      "Be.Vlaanderen.Basisregisters.Sqs": {
-        "type": "CentralTransitive",
-        "requested": "[4.0.1, )",
-        "resolved": "4.0.1",
-        "contentHash": "ZhlPVAxQy42dZFLUC8+blptMkj/MdR5GlqJ+p0r5nli1VdnZSMzDjOKPG45hhijJtga2/kmAL6R4XKJfC5wehw==",
-        "dependencies": {
-          "Be.Vlaanderen.Basisregisters.GrAr.Provenance": "22.0.0",
-          "Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple": "6.0.0",
-          "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": "3.0.0",
-          "MediatR": "12.5.0"
-        }
-      },
-      "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": {
-        "type": "CentralTransitive",
-        "requested": "[3.2.3, )",
-        "resolved": "3.2.3",
-        "contentHash": "FIZVv5CczFBfNwePQ0D4WcbEz1my2Z1gNfNoFo6KtUbA4Mzq5JcCAUQWPZrwnzX8Ni8Y326hb8ecSGuGp4xTDA==",
-        "dependencies": {
-          "System.Text.Json": "9.0.5"
-        }
-      },
       "Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor": {
         "type": "CentralTransitive",
         "requested": "[5.0.0, )",
@@ -2515,28 +2454,12 @@
       },
       "Elastic.Clients.Elasticsearch": {
         "type": "CentralTransitive",
-        "requested": "[8.17.4, )",
-        "resolved": "8.17.4",
-        "contentHash": "7zZ4xmQv96PlGZiQBfmuicgh3cUoAV9aZlY/vPdba02vWGz307XW+TbI3HaQrm4EPKrvD2PFNQmkJVBvhMZgxw==",
+        "requested": "[9.1.5, )",
+        "resolved": "9.1.5",
+        "contentHash": "qBaBZRN9EwnUNeOULuKYVhf1GZARrqkbPSxjwf6mltf0lt7uCVHxkfnCG3053IJ+xsScjk7Z3/W5IIUx18E0xQ==",
         "dependencies": {
-          "Elastic.Transport": "0.5.9"
+          "Elastic.Transport": "0.10.1"
         }
-      },
-      "MediatR": {
-        "type": "CentralTransitive",
-        "requested": "[12.5.0, )",
-        "resolved": "12.5.0",
-        "contentHash": "vqm2H8/nqL5NAJHPhsG1JOPwfkmbVrPyh4svdoRzu+uZh6Ex7PRoHBGsLYC0/RWCEJFqD1ohHNpteQvql9OktA==",
-        "dependencies": {
-          "MediatR.Contracts": "[2.0.1, 3.0.0)",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
-        }
-      },
-      "MediatR.Contracts": {
-        "type": "CentralTransitive",
-        "requested": "[2.0.1, )",
-        "resolved": "2.0.1",
-        "contentHash": "FYv95bNT4UwcNA+G/J1oX5OpRiSUxteXaUt2BJbRSdRNiIUNbggJF69wy6mnk2wYToaanpdXZdCwVylt96MpwQ=="
       },
       "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",

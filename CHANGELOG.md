@@ -1,3 +1,10 @@
+## [5.1.2](https://github.com/informatievlaanderen/address-registry/compare/v5.1.1...v5.1.2) (2025-08-25)
+
+
+### Bug Fixes
+
+* **oslo:** correct DI for mediatr ([78d3204](https://github.com/informatievlaanderen/address-registry/commit/78d320488e3969ea358c1ba653e3591784de0584))
+
 ## [5.1.1](https://github.com/informatievlaanderen/address-registry/compare/v5.1.0...v5.1.1) (2025-08-22)
 
 

@@ -1,6 +1,5 @@
 namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
 {
-    using Address;
     using Address.Count;
     using Address.Detail;
     using Address.List;
@@ -13,10 +12,8 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Consumer.Read.Municipality;
     using Consumer.Read.StreetName;
-    using Elastic;
     using Elastic.List;
     using MediatR;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
     using Options;
     using Projections.Legacy;

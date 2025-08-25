@@ -1,3 +1,10 @@
+## [5.1.3](https://github.com/informatievlaanderen/address-registry/compare/v5.1.2...v5.1.3) (2025-08-25)
+
+
+### Bug Fixes
+
+* **oslo:** break early if more than 10 results with lousy streetname match ([45fee3d](https://github.com/informatievlaanderen/address-registry/commit/45fee3d0cb43352d0d72fadba2737ef2af90436e))
+
 ## [5.1.2](https://github.com/informatievlaanderen/address-registry/compare/v5.1.1...v5.1.2) (2025-08-25)
 
 

@@ -106,6 +106,9 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
                 defaultStreetNameV2.Key,
                 addressV2.OfficiallyAssigned,
                 addressV2.VersionTimestamp.ToBelgianDateTimeOffset(),
+                _responseOptions.Value.DetailUrl,
+                _responseOptions.Value.AddressDetailParcelsLink,
+                _responseOptions.Value.AddressDetailBuildingUnitsLink,
                 addressV2.LastEventHash);
         }
     }

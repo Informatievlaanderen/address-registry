@@ -115,6 +115,13 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
         [JsonProperty(Required = Required.DisallowNull)]
         public bool OfficieelToegekend { get; set; }
 
+        /// <summary>
+        /// De hyperlinks die gerelateerd zijn aan het adres.
+        /// </summary>
+        [DataMember(Name = "_links", Order = 14)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public AddressDetailOsloResponseLinks? Links { get; set; }
+
         [IgnoreDataMember] [JsonIgnore] public string? LastEventHash { get; }
 
         public AddressDetailOsloResponse(
@@ -133,6 +140,9 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
             Taal taal,
             bool? officieelToegekend,
             DateTimeOffset version,
+            string selfDetailUrl,
+            string parcelLinkUrl,
+            string buildingUnitLinkUrl,
             string? lastEventHash = null)
         {
             Context = contextUrlDetail;
@@ -156,6 +166,47 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
                 postInfo?.ObjectId,
                 gemeente?.Gemeentenaam?.GeografischeNaam?.Spelling,
                 taal);
+
+            Links = new AddressDetailOsloResponseLinks(
+                self: new Link
+                {
+                    Href = new Uri(string.Format(selfDetailUrl, objectId))
+                },
+                percelen: new Link
+                {
+                    Href = new Uri(string.Format(parcelLinkUrl, objectId))
+                },
+                gebouweenheden: new Link
+                {
+                    Href = new Uri(string.Format(buildingUnitLinkUrl, objectId))
+                }
+            );
+        }
+    }
+
+    [DataContract(Name = "_links", Namespace = "")]
+    public class AddressDetailOsloResponseLinks
+    {
+        [DataMember(Name = "self")]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public Link Self { get; set; }
+
+        [DataMember(Name = "gebouweenheden", EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public Link? Gebouweenheden { get; set; }
+
+        [DataMember(Name = "percelen", EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public Link? Percelen { get; set; }
+
+        public AddressDetailOsloResponseLinks(
+            Link self,
+            Link? gebouweenheden = null,
+            Link? percelen = null)
+        {
+            Self = self;
+            Gebouweenheden = gebouweenheden;
+            Percelen = percelen;
         }
     }
 
@@ -195,7 +246,10 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
                 AdresStatus.InGebruik,
                 Taal.NL,
                 true,
-                DateTimeOffset.Now.ToExampleOffset());
+                DateTimeOffset.Now.ToExampleOffset(),
+                _responseOptions.DetailUrl,
+                _responseOptions.AddressDetailParcelsLink,
+                _responseOptions.AddressDetailBuildingUnitsLink);
         }
     }
 

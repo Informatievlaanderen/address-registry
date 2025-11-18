@@ -19,5 +19,8 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Options
 
         public string AddressMatchParcelLink { get; set; }
         public string AddressMatchBuildingUnitLink { get; set; }
+
+        public string AddressDetailBuildingUnitsLink { get; set; }
+        public string AddressDetailParcelsLink { get; set; }
     }
 }

@@ -1,3 +1,10 @@
+# [5.2.0](https://github.com/informatievlaanderen/address-registry/compare/v5.1.3...v5.2.0) (2025-11-21)
+
+
+### Features
+
+* **oslo:** add address detail links GAWR-7137 ([5c4ec1a](https://github.com/informatievlaanderen/address-registry/commit/5c4ec1add65c48f0da802a77fe7d0e1277fceca2))
+
 ## [5.1.3](https://github.com/informatievlaanderen/address-registry/compare/v5.1.2...v5.1.3) (2025-08-25)
 
 

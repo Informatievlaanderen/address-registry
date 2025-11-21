@@ -4,11 +4,11 @@
     "net9.0": {
       "Elastic.Clients.Elasticsearch": {
         "type": "Direct",
-        "requested": "[8.17.4, )",
-        "resolved": "8.17.4",
-        "contentHash": "7zZ4xmQv96PlGZiQBfmuicgh3cUoAV9aZlY/vPdba02vWGz307XW+TbI3HaQrm4EPKrvD2PFNQmkJVBvhMZgxw==",
+        "requested": "[8.19.12, )",
+        "resolved": "8.19.12",
+        "contentHash": "NC24OY0p+Pi14MkBpjokIz5+D/Pt/ol/wBkr6X200+ht3TIUFvLvFch6e1LJ3umJXL1+Rc/ebpPOra0+oIrijA==",
         "dependencies": {
-          "Elastic.Transport": "0.5.9"
+          "Elastic.Transport": "0.10.1"
         }
       },
       "Microsoft.Extensions.Configuration": {
@@ -35,8 +35,16 @@
       },
       "Elastic.Transport": {
         "type": "Transitive",
-        "resolved": "0.5.9",
-        "contentHash": "RXoJAeXKaXq67SeLhyDMBPpvlkG940jqJWd5l+rKglMRLJn6X0dkLNlWehpDuouicNdwnYdcuADnqdSOiSvASw=="
+        "resolved": "0.10.1",
+        "contentHash": "8qUyxd4LzMiR+wtNEzdHHnu+iEpbKfoA001NyYgZZT0YZaNE9fWmFeZMxcTz7HMcYUidZSeT6vvongjZh1j/hQ==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        }
+      },
+      "Microsoft.CSharp": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
       },
       "Microsoft.Extensions.Configuration.Abstractions": {
         "type": "Transitive",

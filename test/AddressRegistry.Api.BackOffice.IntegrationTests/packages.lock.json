@@ -4,11 +4,11 @@
     "net9.0": {
       "Be.Vlaanderen.Basisregisters.DockerUtilities": {
         "type": "Direct",
-        "requested": "[4.0.0, )",
-        "resolved": "4.0.0",
-        "contentHash": "VhRAuDhwO5MG+2XKgbE/JsJbmu6vRm3HEm4/sS+cwaRNEmpEURVjaOvwMy+GpJzFrZ7FdgirxoeQO2BFA3DUxg==",
+        "requested": "[4.0.1, )",
+        "resolved": "4.0.1",
+        "contentHash": "MUxFV6QoBA5vN2oOMqy1Tm757ua6rJxwEBy43l9cHHBH19l1cvOQRnkqc65Ib57Ft+IOsNQKw3jR/xfwBfkEHA==",
         "dependencies": {
-          "Ductus.FluentDocker": "2.10.59"
+          "Ductus.FluentDocker": "2.85.0"
         }
       },
       "FluentAssertions": {
@@ -373,8 +373,8 @@
       },
       "Ductus.FluentDocker": {
         "type": "Transitive",
-        "resolved": "2.10.59",
-        "contentHash": "y/wx7G5iNVSRRBnXuEQ5PVjFJfQAZXdqyv2WBqmxBCa089SQssibyOjcyUv/eskL2Hxap2+UHe3qQnlEHlAh1g==",
+        "resolved": "2.85.0",
+        "contentHash": "Zty0oWzG0oL0v0xNpwJdEp1lX1MZn+0ory840G5c4le4gVOK57IyJ7jkpREsPSZ27mxW4hi/Gz/vWrU72zSQdA==",
         "dependencies": {
           "Newtonsoft.Json": "13.0.1",
           "SharpCompress": "0.29.0"

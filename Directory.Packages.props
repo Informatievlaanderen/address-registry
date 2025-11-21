@@ -40,7 +40,7 @@
         <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="9.0.8" />
 
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events" Version="5.0.0" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.DockerUtilities" Version="4.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.DockerUtilities" Version="4.0.1" />
 
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting" Version="10.0.2" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore" Version="10.0.2" />

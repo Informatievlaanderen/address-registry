@@ -42,7 +42,7 @@ jobs:
       shell: bash
       run: |
         ln -s /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose
-        dotnet test --nologo --no-build --filter 'FullyQualifiedName~IntegrationTests' AddressRegistry.sln
+        dotnet test --nologo --no-build --filter 'FullyQualifiedName~BackOffice.IntegrationTests' AddressRegistry.sln
       env:
         OAuth2IntrospectionOptions__ClientId: ${{ secrets.VBR_ACMIDM_INTROSPECTION_CLIENT_ID_TST }}
         OAuth2IntrospectionOptions__ClientSecret: ${{ secrets.VBR_ACMIDM_INTROSPECTION_CLIENT_SECRET_TST }}

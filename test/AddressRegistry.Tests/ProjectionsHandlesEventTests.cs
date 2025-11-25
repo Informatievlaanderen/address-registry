@@ -278,11 +278,6 @@
                 new ProducerProjections(Mock.Of<IProducer>(), Mock.Of<ISnapshotManager>(), "")
             }];
 
-            yield return [new List<ConnectedProjection<AddressRegistry.Producer.Ldes.ProducerContext>>
-            {
-                new AddressRegistry.Producer.Ldes.ProducerProjections(Mock.Of<IProducer>(), "", new JsonSerializerSettings().ConfigureDefaultForApi(), Mock.Of<IDbContextFactory<StreetNameConsumerContext>>())
-            }];
-
             yield return [new List<ConnectedProjection<AddressRegistry.Producer.ProducerContext>>
             {
                 new ProducerMigrateReaddressFixProjections(Mock.Of<IProducer>(), Mock.Of<IStreamStore>()),

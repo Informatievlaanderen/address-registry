@@ -51,7 +51,6 @@ jobs:
           'address-consumer-postal',
           'address-producer',
           'address-producer-snapshot-oslo',
-          'address-producer-ldes',
           'address-projections',
           'address-projections-backoffice',
           'address-last-changed-list',

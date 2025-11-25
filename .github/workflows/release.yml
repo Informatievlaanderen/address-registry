@@ -246,22 +246,6 @@ jobs:
       prerestore-script: ./pre-restore.sh
     secrets: inherit
 
-  build-producer-ldes:
-    name: Build Producer Ldes
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
-      image-file: ar-producer-ldes-image.tar
-      image-name: producer-ldes
-      test-project: AddressRegistry.Tests
-      build-project: AddressRegistry.Producer.Ldes
-      semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
-      prerestore-script: ./pre-restore.sh
-    secrets: inherit
-
   build-snapshot-verifier:
     name: Build Snapshot Verifier
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
@@ -375,7 +359,6 @@ jobs:
       build-consumer-read-streetname,
       build-producer,
       build-producer-snapshot-oslo,
-      build-producer-ldes,
       build-cache-warmer,
       build-lambda-backoffice,
       build-snapshot-verifier ]
@@ -587,7 +570,6 @@ jobs:
           , 'consumer-read-postal'
           , 'producer'
           , 'producer-snapshot-oslo'
-          , 'producer-ldes'
           , 'cache-warmer'
           , 'snapshot-verifier'
           , 'lambda-sqsbackofficefunction'
@@ -664,7 +646,6 @@ jobs:
           'address-consumer-postal',
           'address-producer',
           'address-producer-snapshot-oslo',
-          'address-producer-ldes',
           'address-projections',
           'address-projections-backoffice',
           'address-last-changed-list'
@@ -807,7 +788,6 @@ jobs:
           'address-consumer-postal',
           'address-producer',
           'address-producer-snapshot-oslo',
-          'address-producer-ldes',
           'address-projections',
           'address-projections-backoffice',
           'address-last-changed-list'

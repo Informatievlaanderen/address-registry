@@ -56,7 +56,6 @@ namespace AddressRegistry.StreetName
                 GeometrySpecification.Lot,
                 GeometrySpecification.Stand,
                 GeometrySpecification.Berth,
-                GeometrySpecification.BuildingUnit
             };
 
             if (!validSpecifications.Contains(geometrySpecification))

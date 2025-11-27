@@ -10,8 +10,7 @@
                    specificatie == PositieSpecificatie.Perceel ||
                    specificatie == PositieSpecificatie.Lot ||
                    specificatie == PositieSpecificatie.Standplaats ||
-                   specificatie == PositieSpecificatie.Ligplaats ||
-                   specificatie == PositieSpecificatie.Gebouweenheid;
+                   specificatie == PositieSpecificatie.Ligplaats;
         }
 
         public static bool IsValidWhenDerivedFromObject(PositieSpecificatie specificatie)

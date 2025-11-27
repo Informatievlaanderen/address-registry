@@ -1,3 +1,11 @@
+# [5.3.0](https://github.com/informatievlaanderen/address-registry/compare/v5.2.0...v5.3.0) (2025-11-27)
+
+
+### Features
+
+* change position specification validation GAWR-7042 ([c530327](https://github.com/informatievlaanderen/address-registry/commit/c5303278809d92d2f771de9220d6ccfbb4da911e))
+* remove ldes GAWR-7170 ([58131fe](https://github.com/informatievlaanderen/address-registry/commit/58131fe0c6eb1c76d90fe0c95a093e6a5ebd66ed))
+
 # [5.2.0](https://github.com/informatievlaanderen/address-registry/compare/v5.1.3...v5.2.0) (2025-11-21)
 
 

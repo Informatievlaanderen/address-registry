@@ -52,6 +52,23 @@ namespace AddressRegistry.Tests.BackOffice.Validators
                 .WithErrorMessage("Ongeldige positieSpecificatie.");
         }
 
+        [Theory]
+        [InlineData(PositieSpecificatie.Gebouweenheid)]
+        public void GivenInvalidPositionSpecificationForPositionGeometryMethodAppointedByAdministrator_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
+        {
+            var result = _sut.TestValidate(new ChangeAddressPositionRequest
+            {
+                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                PositieSpecificatie = specificatie,
+                Positie = GeometryHelpers.GmlPointGeometry
+            });
+
+            result.Errors.Count.Should().Be(1);
+            result.ShouldHaveValidationErrorFor(nameof(ChangeAddressPositionRequest.PositieSpecificatie))
+                .WithErrorCode("AdresPositieSpecificatieValidatie")
+                .WithErrorMessage("Ongeldige positieSpecificatie.");
+        }
+
         [Fact]
         public void GivenNoPosition_ThenReturnsExpectedFailure()
         {

@@ -76,6 +76,26 @@ namespace AddressRegistry.Tests.BackOffice.Validators
                 .WithErrorMessage("Ongeldige positieSpecificatie.");
         }
 
+        [Theory]
+        [InlineData(PositieSpecificatie.Gebouweenheid)]
+        public async Task GivenInvalidPositionSpecificationForPositionGeometryMethodAppointedByAdministratorThenReturnsExpectedFailure(PositieSpecificatie specificatie)
+        {
+            WithStreamExists();
+
+            var result = await _sut.TestValidateAsync(new ProposeAddressRequest
+            {
+                PostInfoId = "12",
+                StraatNaamId = "34",
+                Huisnummer = "56",
+                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                PositieSpecificatie = specificatie
+            });
+
+            result.ShouldHaveValidationErrorFor(nameof(ProposeAddressRequest.PositieSpecificatie))
+                .WithErrorCode("AdresPositieSpecificatieValidatie")
+                .WithErrorMessage("Ongeldige positieSpecificatie.");
+        }
+
         [Fact]
         public async Task GivenNoPosition_ThenReturnsExpectedFailure()
         {

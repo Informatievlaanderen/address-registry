@@ -1,3 +1,10 @@
+## [5.3.1](https://github.com/informatievlaanderen/address-registry/compare/v5.3.0...v5.3.1) (2025-12-04)
+
+
+### Bug Fixes
+
+* **oslo:** update docs links ([9cc9313](https://github.com/informatievlaanderen/address-registry/commit/9cc9313f93ceb8ea30abbc111577e3331ea751c9))
+
 # [5.3.0](https://github.com/informatievlaanderen/address-registry/compare/v5.2.0...v5.3.0) (2025-11-27)
 
 

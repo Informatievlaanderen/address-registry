@@ -184,6 +184,9 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
         }
     }
 
+    /// <summary>
+    /// De hyperlinks die gerelateerd zijn aan het adres.
+    /// </summary>
     [DataContract(Name = "_links", Namespace = "")]
     public class AddressDetailOsloResponseLinks
     {

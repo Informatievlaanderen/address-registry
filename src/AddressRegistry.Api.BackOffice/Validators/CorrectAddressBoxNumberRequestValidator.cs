@@ -7,10 +7,10 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
     public class CorrectAddressBoxNumberRequestValidator : AbstractValidator<CorrectAddressBoxNumberRequest>
     {
-        public CorrectAddressBoxNumberRequestValidator()
+        public CorrectAddressBoxNumberRequestValidator(BoxNumberValidator boxNumberValidator)
         {
             RuleFor(x => x.Busnummer)
-                .Must(BoxNumber.HasValidFormat)
+                .Must(boxNumberValidator.Validate)
                 .WithMessage(ValidationErrors.Common.BoxNumberInvalidFormat.Message)
                 .WithErrorCode(ValidationErrors.Common.BoxNumberInvalidFormat.Code);
         }

@@ -8,9 +8,10 @@ namespace AddressRegistry.StreetName
 
     public class BoxNumber : StringValueObject<BoxNumber>
     {
-        internal BoxNumber(string boxNumber) : base(boxNumber.RemoveUnicodeControlCharacters()) { }
+        private static readonly Regex FormatRegex
+            = new ("^(?=.{1,10}$)-?(?![./])(?!.*[./]$)(?!.*[./]{2,})[A-Za-z0-9./]+$", RegexOptions.Compiled);
 
-        private static readonly Regex FormatRegex = new ("^(?!^[./]|.*[./]$)(?!.*[./]{2,})[a-zA-Z0-9./]{1,10}$", RegexOptions.Compiled);
+        internal BoxNumber(string boxNumber) : base(boxNumber.RemoveUnicodeControlCharacters()) { }
 
         public static BoxNumber Create(string boxNumber)
         {
@@ -27,7 +28,7 @@ namespace AddressRegistry.StreetName
             return Value.Equals(boxNumber.Value);
         }
 
-        public static bool HasValidFormat(string boxNumber)
+        public static bool HasValidFormat(string boxNumber, Regex? regex = null)
         {
             if (boxNumber == "0")
             {
@@ -38,7 +39,7 @@ namespace AddressRegistry.StreetName
                 return false;
             }
 
-            return FormatRegex.IsMatch(boxNumber);
+            return regex?.IsMatch(boxNumber) ?? FormatRegex.IsMatch(boxNumber);
         }
 
         protected override IEnumerable<object> Reflect()

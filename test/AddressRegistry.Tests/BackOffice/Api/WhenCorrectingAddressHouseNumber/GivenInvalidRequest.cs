@@ -26,7 +26,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
         public async Task WithInvalidHouseNumberFormat()
         {
             var act = async () => await _controller.CorrectHouseNumber(
-                new CorrectAddressHouseNumberRequestValidator(FakeHouseNumberValidator.Instance),
+                new CorrectAddressHouseNumberRequestValidator(FakeHouseNumberValidator.InstanceInterneBijwerker),
                 MockIfMatchValidator(true),
                 Fixture.Create<AddressPersistentLocalId>(),
                 new CorrectAddressHouseNumberRequest { Huisnummer = "INVALID"},

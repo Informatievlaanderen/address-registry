@@ -81,7 +81,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
                     backOfficeContext,
-                    FakeHouseNumberValidator.Instance),
+                    FakeHouseNumberValidator.InstanceInterneBijwerker),
                 request);
 
             act.Should()
@@ -102,7 +102,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
                     backOfficeContext,
-                    FakeHouseNumberValidator.Instance),
+                    FakeHouseNumberValidator.InstanceInterneBijwerker),
                 new ReaddressRequest
                 {
                     DoelStraatnaamId = $"{StraatNaamPuri}/1",
@@ -142,7 +142,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
                     backOfficeContext,
-                    FakeHouseNumberValidator.Instance),
+                    FakeHouseNumberValidator.InstanceInterneBijwerker),
                 request);
 
             act.Should()
@@ -177,7 +177,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
                     backOfficeContext,
-                    FakeHouseNumberValidator.Instance),
+                    FakeHouseNumberValidator.InstanceInterneBijwerker),
                 request);
 
             act.Should()
@@ -212,7 +212,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
                     backOfficeContext,
-                    FakeHouseNumberValidator.Instance),
+                    FakeHouseNumberValidator.InstanceInterneBijwerker),
                 request);
 
             act.Should()
@@ -246,7 +246,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
                     backOfficeContext,
-                    FakeHouseNumberValidator.Instance),
+                    FakeHouseNumberValidator.InstanceInterneBijwerker),
                 request);
 
             act.Should()
@@ -283,7 +283,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
                     backOfficeContext,
-                    FakeHouseNumberValidator.Instance),
+                    FakeHouseNumberValidator.InstanceInterneBijwerker),
                 request);
 
             act.Should()

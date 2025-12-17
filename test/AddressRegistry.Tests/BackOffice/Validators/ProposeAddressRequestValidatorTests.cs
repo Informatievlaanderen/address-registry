@@ -23,7 +23,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             _sut = new ProposeAddressRequestValidator(
                 new StreetNameExistsValidator(_streamStore.Object),
                 new FakePostalConsumerContext(),
-                FakeHouseNumberValidator.Instance);
+                FakeHouseNumberValidator.InstanceInterneBijwerker,
+                FakeBoxNumberValidator.InstanceInterneBijwerker);
         }
 
         private void WithStreamExists()

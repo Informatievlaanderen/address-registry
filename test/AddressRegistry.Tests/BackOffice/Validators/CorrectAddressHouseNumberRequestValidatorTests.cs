@@ -13,7 +13,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
         public CorrectAddressHouseNumberRequestValidatorTests()
         {
-            _sut = new CorrectAddressHouseNumberRequestValidator(FakeHouseNumberValidator.Instance);
+            _sut = new CorrectAddressHouseNumberRequestValidator(FakeHouseNumberValidator.InstanceInterneBijwerker);
         }
 
         [Fact]

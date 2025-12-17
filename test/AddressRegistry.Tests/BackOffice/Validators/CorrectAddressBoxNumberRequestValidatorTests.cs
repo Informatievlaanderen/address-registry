@@ -4,6 +4,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
     using AddressRegistry.Api.BackOffice.Validators;
     using FluentAssertions;
     using FluentValidation.TestHelper;
+    using Infrastructure;
     using Xunit;
 
     public class CorrectAddressBoxNumberRequestValidatorTests
@@ -12,7 +13,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
         public CorrectAddressBoxNumberRequestValidatorTests()
         {
-            _sut = new CorrectAddressBoxNumberRequestValidator();
+            _sut = new CorrectAddressBoxNumberRequestValidator(FakeBoxNumberValidator.InstanceInterneBijwerker);
         }
 
         [Fact]

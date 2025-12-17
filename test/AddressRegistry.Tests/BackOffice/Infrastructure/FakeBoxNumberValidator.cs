@@ -8,14 +8,14 @@
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Moq;
 
-    public static class FakeHouseNumberValidator
+    public static class FakeBoxNumberValidator
     {
-        private static HouseNumberValidator? _interneBijwerkerInstance;
-        private static HouseNumberValidator? _decentraleBijwerkerInstance;
-        public static HouseNumberValidator InstanceInterneBijwerker => _interneBijwerkerInstance ??= Create(Scopes.DvArAdresUitzonderingen);
-        public static HouseNumberValidator InstanceDecentraleBijwerker => _decentraleBijwerkerInstance ??= Create(Scopes.DvArAdresBeheer);
+        private static BoxNumberValidator? _interneBijwerkerInstance;
+        private static BoxNumberValidator? _decentraleBijwerkerInstance;
+        public static BoxNumberValidator InstanceInterneBijwerker => _interneBijwerkerInstance ??= Create(Scopes.DvArAdresUitzonderingen);
+        public static BoxNumberValidator InstanceDecentraleBijwerker => _decentraleBijwerkerInstance ??= Create(Scopes.DvArAdresBeheer);
 
-        private static HouseNumberValidator Create(string scope)
+        private static BoxNumberValidator Create(string scope)
         {
             DefaultHttpContext httpContext = new()
             {
@@ -34,7 +34,7 @@
                     HttpContext = httpContext
                 });
 
-            return new HouseNumberValidator(actionContextAccessor.Object);
+            return new BoxNumberValidator(actionContextAccessor.Object);
         }
     }
 }

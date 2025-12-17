@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
     using FluentAssertions;
     using FluentValidation;
     using global::AutoFixture;
+    using Infrastructure;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
@@ -25,7 +26,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
         public async Task WithInvalidBoxNumberFormat()
         {
             var act = async () => await _controller.CorrectBoxNumber(
-                new CorrectAddressBoxNumberRequestValidator(),
+                new CorrectAddressBoxNumberRequestValidator(FakeBoxNumberValidator.InstanceInterneBijwerker),
                 MockIfMatchValidator(true),
                 Fixture.Create<AddressPersistentLocalId>(),
                 new CorrectAddressBoxNumberRequest { Busnummer = "12345678911"},

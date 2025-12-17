@@ -18,7 +18,8 @@ namespace AddressRegistry.Api.BackOffice.Validators
         public ProposeAddressRequestValidator(
             StreetNameExistsValidator streetNameExistsValidator,
             PostalConsumerContext postalConsumerContext,
-            HouseNumberValidator houseNumberValidator)
+            HouseNumberValidator houseNumberValidator,
+            BoxNumberValidator boxNumberValidator)
         {
             RuleFor(x => x.StraatNaamId)
                 .MustAsync(async (straatNaamId, ct) =>
@@ -38,7 +39,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .WithErrorCode(ValidationErrors.Common.HouseNumberInvalidFormat.Code);
 
             RuleFor(x => x.Busnummer)
-                .Must(BoxNumber.HasValidFormat!)
+                .Must(boxNumberValidator.Validate!)
                 .When(x => !string.IsNullOrEmpty(x.Busnummer))
                 .WithMessage(ValidationErrors.Common.BoxNumberInvalidFormat.Message)
                 .WithErrorCode(ValidationErrors.Common.BoxNumberInvalidFormat.Code);

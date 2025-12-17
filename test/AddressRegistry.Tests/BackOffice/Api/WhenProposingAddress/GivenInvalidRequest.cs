@@ -284,7 +284,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 new ProposeAddressRequestValidator(
                     new StreetNameExistsValidator(_streamStore.Object),
                     postalConsumerContext,
-                    FakeHouseNumberValidator.Instance),
+                    FakeHouseNumberValidator.InstanceInterneBijwerker,
+                    FakeBoxNumberValidator.InstanceInterneBijwerker),
                 new ProposeAddressSqsRequestFactory(Mock.Of<IPersistentLocalIdGenerator>()),
                 request,
                 CancellationToken.None);

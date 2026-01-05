@@ -1,3 +1,10 @@
+# [5.4.0](https://github.com/informatievlaanderen/address-registry/compare/v5.3.1...v5.4.0) (2026-01-05)
+
+
+### Features
+
+* add support negative boxnumbers GAWR-7174 ([3641550](https://github.com/informatievlaanderen/address-registry/commit/3641550c5199791d6966335d76a520661a33e5c9))
+
 ## [5.3.1](https://github.com/informatievlaanderen/address-registry/compare/v5.3.0...v5.3.1) (2025-12-04)
 
 

@@ -36,6 +36,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var oldStreetNamePersistentLocalId = new StreetNamePersistentLocalId(streetNamePersistentLocalId + 1);
+            var desiredStatus = Fixture.Create<bool>() ? AddressStatus.Proposed : AddressStatus.Current;
 
             var houseNumber = Fixture.Create<HouseNumber>();
             var postalCode = Fixture.Create<PostalCode>();
@@ -52,7 +53,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 officiallyAssigned: Fixture.Create<bool>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                AddressStatus.Proposed);
+                desiredStatus);
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
 
             var proposeChildAddress = new ProposeAddressesForMunicipalityMergerItem(
@@ -75,7 +76,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
             var oldAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
                 .WithStreetNamePersistentLocalId(command.Addresses.First().MergedStreetNamePersistentLocalId)
                 .WithAddressPersistentLocalId(command.Addresses.First().MergedAddressPersistentLocalId)
-                .WithStatus(Fixture.Create<bool>() ? AddressStatus.Proposed : AddressStatus.Current)
+                .WithStatus(desiredStatus)
                 .Build();
 
             Assert(new Scenario()
@@ -99,7 +100,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                             GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                             proposeChildAddress.OfficiallyAssigned,
                             proposeChildAddress.MergedAddressPersistentLocalId,
-                            parentAddressWasProposed.DesiredStatus))));
+                            desiredStatus))));
         }
 
         [Fact]

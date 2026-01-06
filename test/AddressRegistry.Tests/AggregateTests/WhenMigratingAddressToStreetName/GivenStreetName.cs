@@ -185,7 +185,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                 command.HouseNumber,
                 command.BoxNumber,
                 command.Geometry,
-                true,
+                command.OfficiallyAssigned,
                 command.PostalCode,
                 command.IsCompleted,
                 command.IsRemoved,

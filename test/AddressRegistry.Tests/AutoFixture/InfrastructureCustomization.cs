@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.AutoFixture
         {
             fixture.Customize(new NodaTimeCustomization());
             fixture.Customize(new SetProvenanceImplementationsCallSetProvenance());
+            fixture.Customize(new RandomBooleanSequenceCustomization());
         }
     }
 }

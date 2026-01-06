@@ -54,7 +54,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressApproval
         public void WithApprovedAndOfficiallyAssignedBoxNumberAddresses_ThenBoxNumberAddressesWereAlsoCorrected()
         {
             var houseNumberAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
-                .AsHouseNumberAddress(addressStatus: AddressStatus.Current);
+                .AsHouseNumberAddress(addressStatus: AddressStatus.Current)
+                .WithOfficiallyAssigned(true);
 
             var boxNumberAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
                 .AsBoxNumberAddress(new AddressPersistentLocalId(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId))
@@ -94,7 +95,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressApproval
             var command = Fixture.Create<CorrectAddressApproval>();
 
             var addressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
-                .AsHouseNumberAddress(addressStatus: AddressStatus.Proposed);
+                .AsHouseNumberAddress(addressStatus: AddressStatus.Proposed)
+                .WithOfficiallyAssigned(true);
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -161,7 +163,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressApproval
             var command = Fixture.Create<CorrectAddressApproval>();
 
             var addressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
-                .AsHouseNumberAddress(addressStatus: addressStatus);
+                .AsHouseNumberAddress(addressStatus: addressStatus)
+                .WithOfficiallyAssigned(true);
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -193,7 +196,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressApproval
         {
             // Arrange
             var houseNumberAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
-                .AsHouseNumberAddress(addressStatus: AddressStatus.Current);
+                .AsHouseNumberAddress(addressStatus: AddressStatus.Current)
+                .WithOfficiallyAssigned(true);
 
             var boxNumberAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
                 .AsBoxNumberAddress(new AddressPersistentLocalId(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId))

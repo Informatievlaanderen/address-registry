@@ -55,6 +55,10 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 .AsSelf()
                 .InstancePerLifetimeScope();
 
+            builder.RegisterType<BoxNumberValidator>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+
             builder
                 .RegisterType<StreetNameExistsValidator>()
                 .AsSelf()

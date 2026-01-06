@@ -1,3 +1,10 @@
+## [5.4.1](https://github.com/informatievlaanderen/address-registry/compare/v5.4.0...v5.4.1) (2026-01-06)
+
+
+### Bug Fixes
+
+* **api:** correct BoxNumberValidator registration ([3c13d2a](https://github.com/informatievlaanderen/address-registry/commit/3c13d2a012c5c89d3d6e35ad84815734ee37c0b6))
+
 # [5.4.0](https://github.com/informatievlaanderen/address-registry/compare/v5.3.1...v5.4.0) (2026-01-05)
 
 

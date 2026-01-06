@@ -124,6 +124,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRegularizati
             // Arrange
             var addressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
                 .AsHouseNumberAddress()
+                .WithOfficiallyAssigned(true)
                 .WithStatus(status);
 
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();

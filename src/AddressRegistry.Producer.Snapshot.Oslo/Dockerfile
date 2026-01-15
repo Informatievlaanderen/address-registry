@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/runtime-deps:9.0.4-bookworm-slim-amd64
+FROM mcr.microsoft.com/dotnet/runtime-deps:9.0.12-bookworm-slim-amd64
 
 # create work dir and set permissions as WORKDIR sets permissions as root
 RUN mkdir /app && chown -R app:app /app

@@ -113,7 +113,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             var act = SetupController(new ProposeAddressRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
-                Huisnummer = "AA",
+                Huisnummer = "AA.",
                 PostInfoId = PostInfoPuri + "101"
             });
 

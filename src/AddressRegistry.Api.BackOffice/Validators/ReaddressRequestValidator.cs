@@ -46,7 +46,7 @@
                 .WithErrorCode(ValidationErrors.Readdress.AddressNotFound.Code);
 
             RuleForEach(x => x.HerAdresseer)
-                .Must(x => houseNumberValidator.Validate(x.DoelHuisnummer))
+                .Must(x => HouseNumberValidator.DecentraleBijwerkerHouseNumberFormatRegex.IsMatch(x.DoelHuisnummer))
                 .WithMessage((_, x) => ValidationErrors.Readdress.HouseNumberInvalidFormat.Message(x.DoelHuisnummer))
                 .WithErrorCode(ValidationErrors.Readdress.HouseNumberInvalidFormat.Code);
 

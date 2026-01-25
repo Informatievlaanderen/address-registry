@@ -29,7 +29,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
                 new CorrectAddressHouseNumberRequestValidator(FakeHouseNumberValidator.InstanceInterneBijwerker),
                 MockIfMatchValidator(true),
                 Fixture.Create<AddressPersistentLocalId>(),
-                new CorrectAddressHouseNumberRequest { Huisnummer = "INVALID"},
+                new CorrectAddressHouseNumberRequest { Huisnummer = "INVALID."},
                 ifMatchHeaderValue: null);
 
             // Assert

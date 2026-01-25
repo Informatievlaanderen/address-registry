@@ -7,7 +7,7 @@
 
     public class HouseNumberValidator
     {
-        private static readonly Regex DecentraleBijwerkerHouseNumberFormatRegex =
+        internal static readonly Regex DecentraleBijwerkerHouseNumberFormatRegex =
             new("^[1-9]([0-9]{0,8}([A-H]|[K-N]|[P]|[R-T]|[V-Z]){0,1}|[0-9]{0,9})$", RegexOptions.Compiled);
 
         private readonly IActionContextAccessor _actionContextAccessor;

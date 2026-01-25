@@ -7,7 +7,7 @@
 
     public class BoxNumberValidator
     {
-        private static readonly Regex DecentraleBijwerkerBoxNumberFormatRegex =
+        internal static readonly Regex DecentraleBijwerkerBoxNumberFormatRegex =
             new ("^(?!^[./]|.*[./]$)(?!.*[./]{2,})[a-zA-Z0-9./]{1,10}$", RegexOptions.Compiled);
 
         private readonly IActionContextAccessor _actionContextAccessor;

@@ -12,8 +12,7 @@
     {
         public ReaddressRequestValidator(
             StreetNameExistsValidator streetNameExistsValidator,
-            BackOfficeContext backOfficeContext,
-            HouseNumberValidator houseNumberValidator)
+            BackOfficeContext backOfficeContext)
         {
             RuleFor(x => x.DoelStraatnaamId)
                 .MustAsync(async (straatNaamId, ct) =>

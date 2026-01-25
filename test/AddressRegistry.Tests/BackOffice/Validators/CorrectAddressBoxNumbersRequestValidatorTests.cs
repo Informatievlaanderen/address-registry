@@ -18,7 +18,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         public CorrectAddressBoxNumbersRequestValidatorTests()
         {
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
-            _sut = new CorrectAddressBoxNumbersRequestValidator(_backOfficeContext, FakeBoxNumberValidator.InstanceInterneBijwerker);
+            _sut = new CorrectAddressBoxNumbersRequestValidator(_backOfficeContext);
         }
 
         public static IEnumerable<object[]> EmptyBusnummers()

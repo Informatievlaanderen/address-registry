@@ -17,6 +17,10 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         [InlineData("46/0.1")]
         [InlineData("46.0/1")]
         [InlineData("-46.0/1")]
+        [InlineData("A..1")] // valid since GAWR-7233
+        [InlineData("A//1")] // valid since GAWR-7233
+        [InlineData("A./1")] // valid since GAWR-7233
+        [InlineData("A/.1")] // valid since GAWR-7233
         public void HasValidFormat(string boxNumber)
         {
             BoxNumber.HasValidFormat(boxNumber).Should().BeTrue();
@@ -34,10 +38,6 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         [InlineData("1/")]
         [InlineData("/A")]
         [InlineData(".A")]
-        [InlineData("A..1")]
-        [InlineData("A//1")]
-        [InlineData("A./1")]
-        [InlineData("A/.1")]
         public void HasInvalidFormat(string boxNumber)
         {
             BoxNumber.HasValidFormat(boxNumber).Should().BeFalse();

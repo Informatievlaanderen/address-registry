@@ -80,8 +80,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
             var act = async () => await _controller.Readdress(
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
-                    backOfficeContext,
-                    FakeHouseNumberValidator.InstanceInterneBijwerker),
+                    backOfficeContext),
                 request);
 
             act.Should()
@@ -101,8 +100,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
             var act = async () => await _controller.Readdress(
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
-                    backOfficeContext,
-                    FakeHouseNumberValidator.InstanceInterneBijwerker),
+                    backOfficeContext),
                 new ReaddressRequest
                 {
                     DoelStraatnaamId = $"{StraatNaamPuri}/1",
@@ -141,8 +139,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
             var act = async () => await _controller.Readdress(
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
-                    backOfficeContext,
-                    FakeHouseNumberValidator.InstanceInterneBijwerker),
+                    backOfficeContext),
                 request);
 
             act.Should()
@@ -173,11 +170,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                     }
                 }
             };
+
             var act = async () => await _controller.Readdress(
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
-                    backOfficeContext,
-                    FakeHouseNumberValidator.InstanceInterneBijwerker),
+                    backOfficeContext),
                 request);
 
             act.Should()
@@ -211,8 +208,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
             var act = async () => await _controller.Readdress(
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
-                    backOfficeContext,
-                    FakeHouseNumberValidator.InstanceInterneBijwerker),
+                    backOfficeContext),
                 request);
 
             act.Should()
@@ -245,8 +241,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
             var act = async () => await _controller.Readdress(
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
-                    backOfficeContext,
-                    FakeHouseNumberValidator.InstanceInterneBijwerker),
+                    backOfficeContext),
                 request);
 
             act.Should()
@@ -282,8 +277,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
             var act = async () => await _controller.Readdress(
                 new ReaddressRequestValidator(
                     new StreetNameExistsValidator(streamStore.Object),
-                    backOfficeContext,
-                    FakeHouseNumberValidator.InstanceInterneBijwerker),
+                    backOfficeContext),
                 request);
 
             act.Should()

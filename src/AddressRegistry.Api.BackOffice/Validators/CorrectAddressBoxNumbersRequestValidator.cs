@@ -12,9 +12,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
     public class CorrectAddressBoxNumbersRequestValidator : AbstractValidator<CorrectAddressBoxNumbersRequest>
     {
-        public CorrectAddressBoxNumbersRequestValidator(
-            BackOfficeContext backOfficeContext,
-            BoxNumberValidator boxNumberValidator)
+        public CorrectAddressBoxNumbersRequestValidator(BackOfficeContext backOfficeContext)
         {
             RuleFor(x => x.Busnummers)
                 .NotEmpty()
@@ -38,7 +36,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .WithMessage((_, x) => ValidationErrors.Common.AddressNotFoundWithId.Message(x.AdresId))
                 .WithErrorCode(ValidationErrors.Common.AddressNotFoundWithId.Code)
 
-                .Must(x => boxNumberValidator.Validate(x.Busnummer))
+                .Must(x => BoxNumberValidator.DecentraleBijwerkerBoxNumberFormatRegex.IsMatch(x.Busnummer))
                 .WithMessage((_, x) => ValidationErrors.Common.BoxNumberInvalidFormat.MessageWithBoxNumber(x.Busnummer))
                 .WithErrorCode(ValidationErrors.Common.BoxNumberInvalidFormat.Code)
 

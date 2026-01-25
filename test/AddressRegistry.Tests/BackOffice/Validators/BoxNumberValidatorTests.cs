@@ -69,10 +69,10 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         [InlineData("1/", false)]
         [InlineData("/A", false)]
         [InlineData(".A", false)]
-        [InlineData("A..1", false)]
-        [InlineData("A//1", false)]
-        [InlineData("A./1", false)]
-        [InlineData("A/.1", false)]
+        //[InlineData("A..1", false)] valid since GAWR-7233
+        //[InlineData("A//1", false)] valid since GAWR-7233
+        //[InlineData("A./1", false)] valid since GAWR-7233
+        //[InlineData("A/.1", false)] valid since GAWR-7233
         public void ValidateWhenUserIsInterneBijwerker(string boxNumber, bool expectedResult)
         {
             _interneBijwerkerBoxNumberValidator.Validate(boxNumber).Should().Be(expectedResult);

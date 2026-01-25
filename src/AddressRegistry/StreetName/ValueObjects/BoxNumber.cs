@@ -9,7 +9,7 @@ namespace AddressRegistry.StreetName
     public class BoxNumber : StringValueObject<BoxNumber>
     {
         private static readonly Regex FormatRegex
-            = new ("^(?=.{1,10}$)-?(?![./])(?!.*[./]$)(?!.*[./]{2,})[A-Za-z0-9./]+$", RegexOptions.Compiled);
+            = new ("^(?=.{1,10}$)-?(?:[A-Za-z0-9]|[A-Za-z0-9].*[A-Za-z0-9])$", RegexOptions.Compiled);
 
         internal BoxNumber(string boxNumber) : base(boxNumber.RemoveUnicodeControlCharacters()) { }
 

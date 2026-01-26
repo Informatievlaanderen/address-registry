@@ -1,3 +1,16 @@
+# [5.5.0](https://github.com/informatievlaanderen/address-registry/compare/v5.4.1...v5.5.0) (2026-01-26)
+
+
+### Bug Fixes
+
+* use random boolean in tests ([93b4d14](https://github.com/informatievlaanderen/address-registry/commit/93b4d14ae904c04d2b4781dda41a009231bb16d2))
+
+
+### Features
+
+* **backoffice:** loosen boxnr regex internal admin GAWR-7233 ([ab4782f](https://github.com/informatievlaanderen/address-registry/commit/ab4782fe8c9d8db61f1abdecc4845a62bad08c22))
+* **backoffice:** loosen housenumber regex internal admin GAWR-7234 ([7d86f9a](https://github.com/informatievlaanderen/address-registry/commit/7d86f9a6d54cf4556c733e4813dc4db270aaebb5))
+
 ## [5.4.1](https://github.com/informatievlaanderen/address-registry/compare/v5.4.0...v5.4.1) (2026-01-06)
 
 

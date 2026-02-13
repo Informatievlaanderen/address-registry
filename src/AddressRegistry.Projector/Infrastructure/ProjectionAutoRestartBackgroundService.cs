@@ -44,8 +44,8 @@ namespace AddressRegistry.Projector.Infrastructure
             {
                 try
                 {
-                    await Task.Delay(CheckInterval, stoppingToken);
                     await CheckAndRestartProjectionsAsync(stoppingToken);
+                    await Task.Delay(CheckInterval, stoppingToken);
                 }
                 catch (OperationCanceledException)
                 {

@@ -1,3 +1,10 @@
+# [5.6.0](https://github.com/informatievlaanderen/address-registry/compare/v5.5.0...v5.6.0) (2026-02-16)
+
+
+### Features
+
+* add projection auto-restart background service with exponential backoff ([f23136c](https://github.com/informatievlaanderen/address-registry/commit/f23136c23bf41c52fc657f660220aed31ddee528))
+
 # [5.5.0](https://github.com/informatievlaanderen/address-registry/compare/v5.4.1...v5.5.0) (2026-01-26)
 
 

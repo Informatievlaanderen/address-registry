@@ -100,7 +100,7 @@ namespace AddressRegistry.Projector.Infrastructure
                     await _projectionsManager.Start(projectionId, cancellationToken);
                     retryState.RecordAttempt();
 
-                    _logger.LogInformation(
+                    _logger.LogWarning(
                         "Restart command sent for projection '{ProjectionId}'.",
                         projectionId);
                 }

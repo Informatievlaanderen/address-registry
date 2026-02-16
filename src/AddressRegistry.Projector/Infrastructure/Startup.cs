@@ -162,6 +162,10 @@ namespace AddressRegistry.Projector.Infrastructure
                     new AllUnhealthyProjectionsHealthCheckStrategy
                         (c.GetRequiredService<IConnectedProjectionsManager>()), _loggerFactory));
 
+            services.AddHostedService(
+                c => new ProjectionAutoRestartBackgroundService(
+                    c.GetRequiredService<IConnectedProjectionsManager>(), _loggerFactory));
+
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new LoggingModule(_configuration, services));
             containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));

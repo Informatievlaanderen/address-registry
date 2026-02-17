@@ -7,12 +7,12 @@
     <ItemGroup>
         <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
 
-        <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.8" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.8" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.8" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
-        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.13" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.13" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.13" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.13" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.13" />
+        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.13" />
 
         <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
         <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
@@ -34,10 +34,10 @@
         <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
         <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="9.0.4" />
 
-        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8" />
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="9.0.8" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.13" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.13" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.13" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="9.0.13" />
 
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events" Version="5.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.DockerUtilities" Version="4.0.1" />
@@ -101,7 +101,7 @@
         <PackageVersion Include="Structurizr.Client" Version="0.9.7" />
 
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.8" />
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.13" />
         <PackageVersion Include="xunit" Version="2.9.3" />
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
         <PackageVersion Include="FluentAssertions" Version="[7.2.0,8.0.0)" />

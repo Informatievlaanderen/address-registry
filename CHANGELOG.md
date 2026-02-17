@@ -1,3 +1,10 @@
+# [5.7.0](https://github.com/informatievlaanderen/address-registry/compare/v5.6.0...v5.7.0) (2026-02-17)
+
+
+### Features
+
+* add status filter to adresmatch GAWR-7392 ([400c7c0](https://github.com/informatievlaanderen/address-registry/commit/400c7c0b14a119d5d9fbbb0fdd4e4a89e9a7cdac))
+
 # [5.6.0](https://github.com/informatievlaanderen/address-registry/compare/v5.5.0...v5.6.0) (2026-02-16)
 
 

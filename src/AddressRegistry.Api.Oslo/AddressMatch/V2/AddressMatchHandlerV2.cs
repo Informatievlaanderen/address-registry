@@ -79,13 +79,18 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
             if (!hasAddressResults && Enum.TryParse<StraatnaamStatus>(status, true, out var straatnaamStatus))
             {
                 var streetNameStatus = MapStraatnaamStatus(straatnaamStatus);
+                var streetNamesByPersistentLocalId = _latestQueries.GetAllLatestStreetNamesByPersistentLocalId();
+
                 return results.Where(x =>
                 {
                     if (x.Straatnaam?.ObjectId == null)
-                        return true;
+                        return false;
 
-                    var streetName = _latestQueries.FindLatestStreetNameById(int.Parse(x.Straatnaam.ObjectId));
-                    return streetName?.Status == streetNameStatus;
+                    if (!int.TryParse(x.Straatnaam.ObjectId, out var persistentLocalId))
+                        return false;
+
+                    return streetNamesByPersistentLocalId.TryGetValue(persistentLocalId, out var streetName)
+                           && streetName.Status == streetNameStatus;
                 }).ToList();
             }
 

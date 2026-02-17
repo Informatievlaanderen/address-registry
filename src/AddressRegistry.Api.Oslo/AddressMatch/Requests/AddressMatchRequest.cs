@@ -36,7 +36,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Requests
         public string Busnummer { get; set; }
 
         /// <summary>
-        /// status filter (AdresStatus or StraatNaamStatus)
+        /// status filter (AdresStatus or StraatnaamStatus)
         /// </summary>
         public string? Status { get; set; }
     }

@@ -34,5 +34,10 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Requests
         /// bus number to be interpreted litterally
         /// </summary>
         public string Busnummer { get; set; }
+
+        /// <summary>
+        /// status filter (AdresStatus or StraatNaamStatus)
+        /// </summary>
+        public string? Status { get; set; }
     }
 }

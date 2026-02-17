@@ -1,14 +1,19 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
     using Infrastructure.Options;
     using Matching;
     using MediatR;
     using Microsoft.Extensions.Options;
     using Requests;
     using Responses;
+    using StreetNameStatus = Consumer.Read.StreetName.Projections.StreetNameStatus;
 
     public sealed class AddressMatchHandlerV2 : IRequestHandler<AddressMatchRequest, AddressMatchOsloCollection>
     {
@@ -37,8 +42,15 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
                 maxNumberOfResults,
                 warningLogger);
 
-            var result = addressMatch
-                .Process(new AddressMatchBuilder(Map(request)))
+            var processedResults = addressMatch
+                .Process(new AddressMatchBuilder(Map(request)));
+
+            if (!string.IsNullOrWhiteSpace(request.Status))
+            {
+                processedResults = FilterByStatus(processedResults, request.Status);
+            }
+
+            var result = processedResults
                 .OrderByDescending(x => x.Score)
                 .ThenBy(x => x.ScoreableProperty)
                 .Take(maxNumberOfResults)
@@ -51,6 +63,45 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
                 AdresMatches = result,
                 Warnings = warningLogger.Warnings
             });
+        }
+
+        private IReadOnlyList<AddressMatchScoreableItemV2> FilterByStatus(
+            IReadOnlyList<AddressMatchScoreableItemV2> results,
+            string status)
+        {
+            var hasAddressResults = results.Any(x => x.AdresStatus != null);
+
+            if (hasAddressResults && Enum.TryParse<AdresStatus>(status, true, out var adresStatus))
+            {
+                return results.Where(x => x.AdresStatus == adresStatus).ToList();
+            }
+
+            if (!hasAddressResults && Enum.TryParse<StraatnaamStatus>(status, true, out var straatnaamStatus))
+            {
+                var streetNameStatus = MapStraatnaamStatus(straatnaamStatus);
+                return results.Where(x =>
+                {
+                    if (x.Straatnaam?.ObjectId == null)
+                        return true;
+
+                    var streetName = _latestQueries.FindLatestStreetNameById(int.Parse(x.Straatnaam.ObjectId));
+                    return streetName?.Status == streetNameStatus;
+                }).ToList();
+            }
+
+            return results;
+        }
+
+        private static StreetNameStatus MapStraatnaamStatus(StraatnaamStatus straatnaamStatus)
+        {
+            return straatnaamStatus switch
+            {
+                StraatnaamStatus.Voorgesteld => StreetNameStatus.Proposed,
+                StraatnaamStatus.InGebruik => StreetNameStatus.Current,
+                StraatnaamStatus.Gehistoreerd => StreetNameStatus.Retired,
+                StraatnaamStatus.Afgekeurd => StreetNameStatus.Rejected,
+                _ => throw new ArgumentOutOfRangeException(nameof(straatnaamStatus), straatnaamStatus, null)
+            };
         }
 
         private static AddressMatchQueryComponents Map(AddressMatchRequest request) =>

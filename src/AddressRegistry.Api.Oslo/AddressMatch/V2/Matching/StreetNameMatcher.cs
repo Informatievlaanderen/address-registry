@@ -84,10 +84,18 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
             => IsValidMatch(matchResult);
 
         protected override IReadOnlyList<TResult>? BuildResultsInternal(AddressMatchBuilder? results)
-            => results?
-                .AllStreetNames()
+        {
+            var streetNames = results?.AllStreetNames();
+            if (streetNames == null)
+                return null;
+
+            if (results?.Query.StreetNameStatus.HasValue == true)
+                streetNames = streetNames.Where(w => w.StreetName.Status == results.Query.StreetNameStatus.Value);
+
+            return streetNames
                 .Select(w => _mapper.Map(w.StreetName))
                 .ToList();
+        }
 
         private static void FindStreetNamesByName(AddressMatchBuilder results, IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
             => FindStreetNamesBy(

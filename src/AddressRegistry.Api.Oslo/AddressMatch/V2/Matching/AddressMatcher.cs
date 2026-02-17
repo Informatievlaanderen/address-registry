@@ -58,7 +58,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
                                 .GetLatestAddressesBy(
                                     streetNameWrapper.StreetName.PersistentLocalId,
                                     houseNumberWithSubaddress.HouseNumber,
-                                    houseNumberWithSubaddress.BoxNumber)
+                                    houseNumberWithSubaddress.BoxNumber,
+                                    results.Query.AddressStatus)
                                 .ToList());
                     }
                 }

@@ -1,12 +1,12 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
+    using Convertors;
     using Infrastructure.Options;
     using Matching;
     using MediatR;
@@ -42,15 +42,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
                 maxNumberOfResults,
                 warningLogger);
 
-            var processedResults = addressMatch
-                .Process(new AddressMatchBuilder(Map(request)));
-
-            if (!string.IsNullOrWhiteSpace(request.Status))
-            {
-                processedResults = FilterByStatus(processedResults, request.Status);
-            }
-
-            var result = processedResults
+            var result = addressMatch
+                .Process(new AddressMatchBuilder(Map(request)))
                 .OrderByDescending(x => x.Score)
                 .ThenBy(x => x.ScoreableProperty)
                 .Take(maxNumberOfResults)
@@ -65,36 +58,28 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
             });
         }
 
-        private IReadOnlyList<AddressMatchScoreableItemV2> FilterByStatus(
-            IReadOnlyList<AddressMatchScoreableItemV2> results,
-            string status)
+        private static AddressMatchQueryComponents Map(AddressMatchRequest request)
         {
-            var hasAddressResults = results.Any(x => x.AdresStatus != null);
-
-            if (hasAddressResults && Enum.TryParse<AdresStatus>(status, true, out var adresStatus))
+            var query = new AddressMatchQueryComponents
             {
-                return results.Where(x => x.AdresStatus == adresStatus).ToList();
+                MunicipalityName = request.Gemeentenaam,
+                HouseNumber = request.Huisnummer,
+                BoxNumber = request.Busnummer,
+                NisCode = request.Niscode,
+                PostalCode = request.Postcode,
+                StreetName = request.Straatnaam
+            };
+
+            if (!string.IsNullOrWhiteSpace(request.Status))
+            {
+                if (Enum.TryParse<AdresStatus>(request.Status, true, out var adresStatus))
+                    query.AddressStatus = adresStatus.ConvertFromAdresStatus();
+
+                if (Enum.TryParse<StraatnaamStatus>(request.Status, true, out var straatnaamStatus))
+                    query.StreetNameStatus = MapStraatnaamStatus(straatnaamStatus);
             }
 
-            if (!hasAddressResults && Enum.TryParse<StraatnaamStatus>(status, true, out var straatnaamStatus))
-            {
-                var streetNameStatus = MapStraatnaamStatus(straatnaamStatus);
-                var streetNamesByPersistentLocalId = _latestQueries.GetAllLatestStreetNamesByPersistentLocalId();
-
-                return results.Where(x =>
-                {
-                    if (x.Straatnaam?.ObjectId == null)
-                        return false;
-
-                    if (!int.TryParse(x.Straatnaam.ObjectId, out var persistentLocalId))
-                        return false;
-
-                    return streetNamesByPersistentLocalId.TryGetValue(persistentLocalId, out var streetName)
-                           && streetName.Status == streetNameStatus;
-                }).ToList();
-            }
-
-            return results;
+            return query;
         }
 
         private static StreetNameStatus MapStraatnaamStatus(StraatnaamStatus straatnaamStatus)
@@ -108,16 +93,5 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
                 _ => throw new ArgumentOutOfRangeException(nameof(straatnaamStatus), straatnaamStatus, null)
             };
         }
-
-        private static AddressMatchQueryComponents Map(AddressMatchRequest request) =>
-            new AddressMatchQueryComponents
-            {
-                MunicipalityName = request.Gemeentenaam,
-                HouseNumber = request.Huisnummer,
-                BoxNumber = request.Busnummer,
-                NisCode = request.Niscode,
-                PostalCode = request.Postcode,
-                StreetName = request.Straatnaam
-            };
     }
 }

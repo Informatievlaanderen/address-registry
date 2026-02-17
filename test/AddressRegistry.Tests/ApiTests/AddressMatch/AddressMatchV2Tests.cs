@@ -515,8 +515,9 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 .Setup(x => x.GetAllLatestStreetNamesByPersistentLocalId())
                 .Returns(new[] { streetNameLatestItem }.ToDictionary(x => x.PersistentLocalId));
             _latestQueries
-                .Setup(x => x.GetLatestStreetNamesBy(municipalityName))
-                .Returns(new[] { streetNameLatestItem });
+                .Setup(x => x.GetLatestStreetNamesBy(new[] { municipalityName }, It.IsAny<Consumer.Read.StreetName.Projections.StreetNameStatus?>()))
+                .Returns((string[] _, Consumer.Read.StreetName.Projections.StreetNameStatus? status) =>
+                    new[] { streetNameLatestItem }.Where(x => !status.HasValue || x.Status == status.Value));
             _latestQueries
                 .Setup(x => x.FindLatestStreetNameById(streetNamePersistentLocalId))
                 .Returns(streetNameLatestItem);
@@ -526,41 +527,53 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
 
         private void MockGetLatestAddressesBy(int streetNamePersistentLocalId, string postcode, string huisnummer, string? busnummer = null)
         {
+            var addresses = new[]
+            {
+                new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, busnummer,
+                    AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
+                    GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
+            };
+
             _latestQueries
-                .Setup(x => x.GetLatestAddressesBy(streetNamePersistentLocalId, huisnummer, busnummer))
-                .Returns(new[]
-                {
-                    new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, busnummer,
-                        AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
-                        GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
-                });
+                .Setup(x => x.GetLatestAddressesBy(
+                    It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<AddressStatus?>()))
+                .Returns((int _, string _, string? _, AddressStatus? status) =>
+                    addresses.Where(a => !status.HasValue || a.Status == status.Value));
         }
 
-        private void MockGetLatestAddressesByWithStatus(int streetNamePersistentLocalId, string postcode, string huisnummer, AddressStatus status, string? busnummer = null)
+        private void MockGetLatestAddressesByWithStatus(int streetNamePersistentLocalId, string postcode, string huisnummer, AddressStatus addressStatus, string? busnummer = null)
         {
+            var addresses = new[]
+            {
+                new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, busnummer,
+                    addressStatus, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
+                    GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
+            };
+
             _latestQueries
-                .Setup(x => x.GetLatestAddressesBy(streetNamePersistentLocalId, huisnummer, busnummer))
-                .Returns(new[]
-                {
-                    new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, busnummer,
-                        status, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
-                        GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
-                });
+                .Setup(x => x.GetLatestAddressesBy(
+                    It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<AddressStatus?>()))
+                .Returns((int _, string _, string? _, AddressStatus? status) =>
+                    addresses.Where(a => !status.HasValue || a.Status == status.Value));
         }
 
         private void MockGetLatestAddressesByWithMultipleStatuses(int streetNamePersistentLocalId, string postcode, string huisnummer)
         {
+            var addresses = new[]
+            {
+                new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, null,
+                    AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
+                    GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant()),
+                new AddressDetailItemV2WithParent(3, streetNamePersistentLocalId, null, postcode, huisnummer, "A",
+                    AddressStatus.Proposed, true, new Point(121, 46).AsBinary(), GeometryMethod.DerivedFromObject,
+                    GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
+            };
+
             _latestQueries
-                .Setup(x => x.GetLatestAddressesBy(streetNamePersistentLocalId, huisnummer, null))
-                .Returns(new[]
-                {
-                    new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, null,
-                        AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
-                        GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant()),
-                    new AddressDetailItemV2WithParent(3, streetNamePersistentLocalId, null, postcode, huisnummer, "A",
-                        AddressStatus.Proposed, true, new Point(121, 46).AsBinary(), GeometryMethod.DerivedFromObject,
-                        GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
-                });
+                .Setup(x => x.GetLatestAddressesBy(
+                    It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<AddressStatus?>()))
+                .Returns((int _, string _, string? _, AddressStatus? status) =>
+                    addresses.Where(a => !status.HasValue || a.Status == status.Value));
         }
 
         [Fact]
@@ -613,6 +626,9 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
 
             //Assert
             response.Should().NotBeNull();
+            // Addresses are filtered out at query level (Current != Proposed),
+            // and street names are filtered out at BuildResults level (null != Proposed),
+            // so no matches are returned
             response.Should().HaveMatches(0);
         }
 
@@ -687,6 +703,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
 
             //Assert
             response.Should().NotBeNull();
+            // Street name matched by name but filtered out by status in BuildResults
             response.Should().HaveMatches(0);
         }
 

@@ -515,8 +515,9 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 .Setup(x => x.GetAllLatestStreetNamesByPersistentLocalId())
                 .Returns(new[] { streetNameLatestItem }.ToDictionary(x => x.PersistentLocalId));
             _latestQueries
-                .Setup(x => x.GetLatestStreetNamesBy(municipalityName))
-                .Returns(new[] { streetNameLatestItem });
+                .Setup(x => x.GetLatestStreetNamesBy(new[] { municipalityName }, It.IsAny<Consumer.Read.StreetName.Projections.StreetNameStatus?>()))
+                .Returns((string[] _, Consumer.Read.StreetName.Projections.StreetNameStatus? status) =>
+                    new[] { streetNameLatestItem }.Where(x => !status.HasValue || x.Status == status.Value));
             _latestQueries
                 .Setup(x => x.FindLatestStreetNameById(streetNamePersistentLocalId))
                 .Returns(streetNameLatestItem);
@@ -526,14 +527,208 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
 
         private void MockGetLatestAddressesBy(int streetNamePersistentLocalId, string postcode, string huisnummer, string? busnummer = null)
         {
+            var addresses = new[]
+            {
+                new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, busnummer,
+                    AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
+                    GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
+            };
+
             _latestQueries
-                .Setup(x => x.GetLatestAddressesBy(streetNamePersistentLocalId, huisnummer, busnummer))
-                .Returns(new[]
-                {
-                    new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, busnummer,
-                        AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
-                        GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
-                });
+                .Setup(x => x.GetLatestAddressesBy(
+                    It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<AddressStatus?>()))
+                .Returns((int _, string _, string? _, AddressStatus? status) =>
+                    addresses.Where(a => !status.HasValue || a.Status == status.Value));
+        }
+
+        private void MockGetLatestAddressesByWithStatus(int streetNamePersistentLocalId, string postcode, string huisnummer, AddressStatus addressStatus, string? busnummer = null)
+        {
+            var addresses = new[]
+            {
+                new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, busnummer,
+                    addressStatus, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
+                    GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
+            };
+
+            _latestQueries
+                .Setup(x => x.GetLatestAddressesBy(
+                    It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<AddressStatus?>()))
+                .Returns((int _, string _, string? _, AddressStatus? status) =>
+                    addresses.Where(a => !status.HasValue || a.Status == status.Value));
+        }
+
+        private void MockGetLatestAddressesByWithMultipleStatuses(int streetNamePersistentLocalId, string postcode, string huisnummer)
+        {
+            var addresses = new[]
+            {
+                new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, null,
+                    AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
+                    GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant()),
+                new AddressDetailItemV2WithParent(3, streetNamePersistentLocalId, null, postcode, huisnummer, "A",
+                    AddressStatus.Proposed, true, new Point(121, 46).AsBinary(), GeometryMethod.DerivedFromObject,
+                    GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
+            };
+
+            _latestQueries
+                .Setup(x => x.GetLatestAddressesBy(
+                    It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<AddressStatus?>()))
+                .Returns((int _, string _, string? _, AddressStatus? status) =>
+                    addresses.Where(a => !status.HasValue || a.Status == status.Value));
+        }
+
+        [Fact]
+        public async Task CanFilterAdresMatchByAdresStatus()
+        {
+            var existingNisCode = "11001";
+            var existingStraatnaamId = 1;
+            var existingGemeentenaam = "Springfield";
+            var postcode = "9000";
+
+            //Arrange
+            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
+            request.Huisnummer = "742";
+            request.Status = "InGebruik";
+
+            MockGetAllLatestMunicipalities(existingNisCode, existingGemeentenaam);
+            MockStreetNames(request.Straatnaam, existingStraatnaamId, existingNisCode, existingGemeentenaam);
+            MockGetLatestAddressesByWithStatus(existingStraatnaamId, postcode, request.Huisnummer, AddressStatus.Current);
+
+            //Act
+            var response = await _handler.Handle(request, CancellationToken.None);
+
+            //Assert
+            response.Should().NotBeNull();
+            response.Should().HaveMatches(1);
+
+            var firstMatch = response.AdresMatches.First();
+            firstMatch.AdresStatus.Should().Be(Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres.AdresStatus.InGebruik);
+        }
+
+        [Fact]
+        public async Task CanFilterAdresMatchByAdresStatus_FiltersOutNonMatchingStatus()
+        {
+            var existingNisCode = "11001";
+            var existingStraatnaamId = 1;
+            var existingGemeentenaam = "Springfield";
+            var postcode = "9000";
+
+            //Arrange
+            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
+            request.Huisnummer = "742";
+            request.Status = "Voorgesteld";
+
+            MockGetAllLatestMunicipalities(existingNisCode, existingGemeentenaam);
+            MockStreetNames(request.Straatnaam, existingStraatnaamId, existingNisCode, existingGemeentenaam);
+            MockGetLatestAddressesByWithStatus(existingStraatnaamId, postcode, request.Huisnummer, AddressStatus.Current);
+
+            //Act
+            var response = await _handler.Handle(request, CancellationToken.None);
+
+            //Assert
+            response.Should().NotBeNull();
+            // Addresses are filtered out at query level (Current != Proposed),
+            // and street names are filtered out at BuildResults level (null != Proposed),
+            // so no matches are returned
+            response.Should().HaveMatches(0);
+        }
+
+        [Fact]
+        public async Task CanFilterAdresMatchByAdresStatus_MultipleAddresses()
+        {
+            var existingNisCode = "11001";
+            var existingStraatnaamId = 1;
+            var existingGemeentenaam = "Springfield";
+            var postcode = "9000";
+
+            //Arrange
+            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
+            request.Huisnummer = "742";
+            request.Status = "InGebruik";
+
+            MockGetAllLatestMunicipalities(existingNisCode, existingGemeentenaam);
+            MockStreetNames(request.Straatnaam, existingStraatnaamId, existingNisCode, existingGemeentenaam);
+            MockGetLatestAddressesByWithMultipleStatuses(existingStraatnaamId, postcode, request.Huisnummer);
+
+            //Act
+            var response = await _handler.Handle(request, CancellationToken.None);
+
+            //Assert
+            response.Should().NotBeNull();
+            response.Should().HaveMatches(1);
+            response.AdresMatches.First().AdresStatus.Should().Be(Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres.AdresStatus.InGebruik);
+        }
+
+        [Fact]
+        public async Task CanFilterStraatnaamByStatus()
+        {
+            var existingNisCode = "11001";
+            var existingStraatnaamId = 1;
+            var existingGemeentenaam = "Springfield";
+
+            //Arrange
+            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
+            request.Status = "InGebruik";
+
+            MockGetAllLatestMunicipalities(existingNisCode, existingGemeentenaam);
+            var streetName = MockStreetNames(request.Straatnaam, existingStraatnaamId, existingNisCode, existingGemeentenaam);
+            streetName.Status = Consumer.Read.StreetName.Projections.StreetNameStatus.Current;
+
+            //Act
+            var response = await _handler.Handle(request, CancellationToken.None);
+
+            //Assert
+            response.Should().NotBeNull();
+            response.Should().HaveMatches(1);
+            response.AdresMatches.First().Should().HaveStraatnaam()
+                .Which.Should().HaveStraatnaam(request.Straatnaam);
+        }
+
+        [Fact]
+        public async Task CanFilterStraatnaamByStatus_FiltersOutNonMatchingStatus()
+        {
+            var existingNisCode = "11001";
+            var existingStraatnaamId = 1;
+            var existingGemeentenaam = "Springfield";
+
+            //Arrange
+            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
+            request.Status = "InGebruik";
+
+            MockGetAllLatestMunicipalities(existingNisCode, existingGemeentenaam);
+            var streetName = MockStreetNames(request.Straatnaam, existingStraatnaamId, existingNisCode, existingGemeentenaam);
+            streetName.Status = Consumer.Read.StreetName.Projections.StreetNameStatus.Retired;
+
+            //Act
+            var response = await _handler.Handle(request, CancellationToken.None);
+
+            //Assert
+            response.Should().NotBeNull();
+            // Street name matched by name but filtered out by status in BuildResults
+            response.Should().HaveMatches(0);
+        }
+
+        [Fact]
+        public async Task StatusFilter_NoFilter_ReturnsAllResults()
+        {
+            var existingNisCode = "11001";
+            var existingStraatnaamId = 1;
+            var existingGemeentenaam = "Springfield";
+            var postcode = "9000";
+
+            //Arrange
+            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
+            request.Huisnummer = "742";
+
+            MockGetAllLatestMunicipalities(existingNisCode, existingGemeentenaam);
+            MockStreetNames(request.Straatnaam, existingStraatnaamId, existingNisCode, existingGemeentenaam);
+            MockGetLatestAddressesByWithMultipleStatuses(existingStraatnaamId, postcode, request.Huisnummer);
+
+            //Act
+            var response = await _handler.Handle(request, CancellationToken.None);
+
+            //Assert
+            response.Should().NotBeNull();
+            response.Should().HaveMatches(2);
         }
     }
 

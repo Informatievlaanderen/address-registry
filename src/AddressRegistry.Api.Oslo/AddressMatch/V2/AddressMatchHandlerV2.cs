@@ -1,14 +1,19 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 {
+    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
+    using Convertors;
     using Infrastructure.Options;
     using Matching;
     using MediatR;
     using Microsoft.Extensions.Options;
     using Requests;
     using Responses;
+    using StreetNameStatus = Consumer.Read.StreetName.Projections.StreetNameStatus;
 
     public sealed class AddressMatchHandlerV2 : IRequestHandler<AddressMatchRequest, AddressMatchOsloCollection>
     {
@@ -53,8 +58,9 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
             });
         }
 
-        private static AddressMatchQueryComponents Map(AddressMatchRequest request) =>
-            new AddressMatchQueryComponents
+        private static AddressMatchQueryComponents Map(AddressMatchRequest request)
+        {
+            var query = new AddressMatchQueryComponents
             {
                 MunicipalityName = request.Gemeentenaam,
                 HouseNumber = request.Huisnummer,
@@ -63,5 +69,29 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
                 PostalCode = request.Postcode,
                 StreetName = request.Straatnaam
             };
+
+            if (!string.IsNullOrWhiteSpace(request.Status))
+            {
+                if (Enum.TryParse<AdresStatus>(request.Status, true, out var adresStatus))
+                    query.AddressStatus = adresStatus.ConvertFromAdresStatus();
+
+                if (Enum.TryParse<StraatnaamStatus>(request.Status, true, out var straatnaamStatus))
+                    query.StreetNameStatus = MapStraatnaamStatus(straatnaamStatus);
+            }
+
+            return query;
+        }
+
+        private static StreetNameStatus MapStraatnaamStatus(StraatnaamStatus straatnaamStatus)
+        {
+            return straatnaamStatus switch
+            {
+                StraatnaamStatus.Voorgesteld => StreetNameStatus.Proposed,
+                StraatnaamStatus.InGebruik => StreetNameStatus.Current,
+                StraatnaamStatus.Gehistoreerd => StreetNameStatus.Retired,
+                StraatnaamStatus.Afgekeurd => StreetNameStatus.Rejected,
+                _ => throw new ArgumentOutOfRangeException(nameof(straatnaamStatus), straatnaamStatus, null)
+            };
+        }
     }
 }

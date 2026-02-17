@@ -11,14 +11,15 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using Microsoft.Extensions.Caching.Memory;
     using Projections.AddressMatch;
     using Projections.AddressMatch.AddressDetailV2WithParent;
+    using AddressStatus = StreetName.AddressStatus;
 
     public interface ILatestQueries
     {
         IDictionary<string, MunicipalityLatestItem> GetAllLatestMunicipalities();
         IDictionary<int, StreetNameLatestItem> GetAllLatestStreetNamesByPersistentLocalId();
-        IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(params string[] municipalityNames);
+        IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(string[] municipalityNames, StreetNameStatus? streetNameStatus = null);
         StreetNameLatestItem? FindLatestStreetNameById(int streetNamePersistentLocalId);
-        IEnumerable<AddressDetailItemV2WithParent> GetLatestAddressesBy(int streetNamePersistentLocalId, string? houseNumber, string? boxNumber);
+        IEnumerable<AddressDetailItemV2WithParent> GetLatestAddressesBy(int streetNamePersistentLocalId, string? houseNumber, string? boxNumber, AddressStatus? addressStatus = null);
         IEnumerable<PostalLatestItem> GetAllPostalInfo();
     }
 
@@ -62,7 +63,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
                     StreetNameCacheLock)!
                 .ByPersistentLocalId;
 
-        public IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(params string[] municipalityNames)
+        public IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(string[] municipalityNames, StreetNameStatus? streetNameStatus = null)
         {
             var lowerMunicipalityNames = municipalityNames
                 .Select(x => x.RemoveDiacritics())
@@ -74,7 +75,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
                     lowerMunicipalityNames.Contains(x.Value.NameFrenchSearch))
                 .Select(x => x.Key);
 
-            return GetOrAddLatestStreetNames(
+            var results = GetOrAddLatestStreetNames(
                 streetNames => nisCodes
                     .SelectMany(g => streetNames.ByMunicipalityNisCode.TryGetValue(g, out var value)
                         ? value
@@ -84,6 +85,11 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
                     .Where(x => nisCodes.Contains(x.NisCode))
                     .ToList()
                     .AsEnumerable());
+
+            if (streetNameStatus.HasValue)
+                return results.Where(x => x.Status == streetNameStatus.Value);
+
+            return results;
         }
 
         public StreetNameLatestItem? FindLatestStreetNameById(int streetNamePersistentLocalId) =>
@@ -93,7 +99,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
                 () => GetLatestStreetNameItems().FirstOrDefault(
                     x => x.PersistentLocalId == streetNamePersistentLocalId));
 
-        public IEnumerable<AddressDetailItemV2WithParent> GetLatestAddressesBy(int streetNamePersistentLocalId, string? houseNumber, string? boxNumber)
+        public IEnumerable<AddressDetailItemV2WithParent> GetLatestAddressesBy(int streetNamePersistentLocalId, string? houseNumber, string? boxNumber, AddressStatus? addressStatus = null)
         {
             var streetName = FindLatestStreetNameById(streetNamePersistentLocalId);
 
@@ -108,6 +114,9 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
 
             if (!string.IsNullOrEmpty(boxNumber))
                 query = query.Where(x => x.BoxNumber == boxNumber);
+
+            if (addressStatus.HasValue)
+                query = query.Where(x => x.Status == addressStatus.Value);
 
             return query;
         }

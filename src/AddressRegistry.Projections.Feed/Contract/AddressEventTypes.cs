@@ -32,4 +32,21 @@ namespace AddressRegistry.Projections.Feed.Contract
         [JsonProperty("naarIds", Order = 1)]
         public required List<string> To { get; set; }
     }
+
+    public sealed class AddressPositionCloudEventValue
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; } = "Point";
+
+        [JsonProperty("projectie")]
+        public string Projection { get; set; } = "http://www.opengis.net/def/crs/EPSG/0/31370";
+
+        [JsonProperty("gml")]
+        public string Gml { get; set; } = string.Empty;
+
+        public AddressPositionCloudEventValue(string gml)
+        {
+            Gml = gml;
+        }
+    }
 }

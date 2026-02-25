@@ -78,6 +78,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.BoxNumber.Should().Be(addressWasMigrated.BoxNumber);
                     document.Document.PostalCode.Should().Be(addressWasMigrated.PostalCode ?? string.Empty);
                     document.Document.OfficiallyAssigned.Should().Be(addressWasMigrated.OfficiallyAssigned);
+                    document.Document.PositionGeometryMethod.Should().Be(addressWasMigrated.GeometryMethod.ToString());
+                    document.Document.PositionSpecification.Should().Be(addressWasMigrated.GeometrySpecification.ToString());
+                    document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
 
                     var feedItem = await context.AddressFeed.SingleOrDefaultAsync(x => x.PersistentLocalId == addressWasMigrated.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position, addressWasMigrated);
@@ -107,7 +110,16 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                 && (string.IsNullOrEmpty(addressWasMigrated.BoxNumber)
                                     || attrs.Any(a => a.Name == AddressAttributeNames.BoxNumber
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasMigrated.BoxNumber))),
+                                               && a.NewValue!.ToString() == addressWasMigrated.BoxNumber))
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasMigrated.GeometryMethod.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasMigrated.GeometrySpecification.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.Position
+                                               && a.OldValue == null
+                                               && a.NewValue != null)),
                             AddressWasMigratedToStreetName.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -141,6 +153,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
                     document.Document.Status.Should().Be(AdresStatus.Voorgesteld);
                     document.Document.OfficiallyAssigned.Should().BeTrue();
+                    document.Document.PositionGeometryMethod.Should().Be(addressWasProposedV2.GeometryMethod.ToString());
+                    document.Document.PositionSpecification.Should().Be(addressWasProposedV2.GeometrySpecification.ToString());
+                    document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
 
                     var feedItem = await context.AddressFeed.SingleOrDefaultAsync(x => x.PersistentLocalId == addressWasProposedV2.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position, addressWasProposedV2);
@@ -171,7 +186,16 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                 && (string.IsNullOrEmpty(addressWasProposedV2.BoxNumber)
                                     || attrs.Any(a => a.Name == AddressAttributeNames.BoxNumber
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasProposedV2.BoxNumber))),
+                                               && a.NewValue!.ToString() == addressWasProposedV2.BoxNumber))
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasProposedV2.GeometryMethod.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasProposedV2.GeometrySpecification.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.Position
+                                               && a.OldValue == null
+                                               && a.NewValue != null)),
                             AddressWasProposedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -595,7 +619,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
                             addressRemovalWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset(),
-                            AddressEventTypes.UpdateV1,
+                            AddressEventTypes.CreateV1,
                             addressRemovalWasCorrected.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
                             It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
@@ -614,7 +638,16 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                 && (string.IsNullOrEmpty(addressRemovalWasCorrected.BoxNumber)
                                     || attrs.Any(a => a.Name == AddressAttributeNames.BoxNumber
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressRemovalWasCorrected.BoxNumber))),
+                                               && a.NewValue!.ToString() == addressRemovalWasCorrected.BoxNumber))
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressRemovalWasCorrected.GeometryMethod.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressRemovalWasCorrected.GeometrySpecification.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.Position
+                                               && a.OldValue == null
+                                               && a.NewValue != null)),
                             AddressRemovalWasCorrected.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -639,6 +672,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     var document = await context.AddressDocuments.FindAsync(addressPositionWasChanged.AddressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.LastChangedOn.Should().Be(addressPositionWasChanged.Provenance.Timestamp);
+                    document.Document.PositionGeometryMethod.Should().Be(addressPositionWasChanged.GeometryMethod.ToString());
+                    document.Document.PositionSpecification.Should().Be(addressPositionWasChanged.GeometrySpecification.ToString());
+                    document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -649,11 +685,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
-                                               && a.OldValue == null
                                                && a.NewValue!.ToString() == addressPositionWasChanged.GeometryMethod.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
-                                               && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressPositionWasChanged.GeometrySpecification.ToString())),
+                                               && a.NewValue!.ToString() == addressPositionWasChanged.GeometrySpecification.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.Position
+                                               && a.NewValue != null)),
                             AddressPositionWasChanged.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -776,7 +812,16 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                 && (string.IsNullOrEmpty(addressWasProposedForMunicipalityMerger.BoxNumber)
                                     || attrs.Any(a => a.Name == AddressAttributeNames.BoxNumber
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.BoxNumber))),
+                                               && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.BoxNumber))
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.GeometryMethod.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.GeometrySpecification.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.Position
+                                               && a.OldValue == null
+                                               && a.NewValue != null)),
                             AddressWasProposedForMunicipalityMerger.EventName,
                             It.IsAny<string>()),
                         Times.Once);

@@ -7,8 +7,8 @@
     using System.Runtime.CompilerServices;
     using System.Text;
     using Api.BackOffice.Abstractions;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -22,7 +22,6 @@
     using Microsoft.Extensions.Options;
     using Moq;
     using NetTopologySuite.IO;
-    using Newtonsoft.Json;
     using Producer;
     using Producer.Snapshot.Oslo;
     using Projections.AddressMatch;
@@ -32,6 +31,8 @@
     using Projections.Elastic.AddressSearch;
     using Projections.Extract;
     using Projections.Extract.AddressExtract;
+    using Projections.Feed;
+    using Projections.Feed.AddressFeed;
     using Projections.Integration;
     using Projections.Integration.Infrastructure;
     using Projections.Integration.LatestItem;
@@ -240,6 +241,11 @@
             {
                 new AddressDetailProjectionsV2WithParent(),
                 new AddressSyndicationProjections()
+            }];
+
+            yield return [new List<ConnectedProjection<FeedContext>>
+            {
+                new AddressFeedProjections(Mock.Of<IChangeFeedService>())
             }];
 
             yield return [new List<ConnectedProjection<AddressMatchContext>>

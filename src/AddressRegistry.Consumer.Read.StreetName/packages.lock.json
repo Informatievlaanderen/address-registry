@@ -16,9 +16,9 @@
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Contracts": {
         "type": "Direct",
-        "requested": "[22.3.0, )",
-        "resolved": "22.3.0",
-        "contentHash": "nSwOnynlrqKfqIdDqAxL9I7IzvIBVNAAz/5cW1Hv0F7yZxfGbjiKXFVgH+yKOyc1xOeKEgDpTIHhgDndTQio4A=="
+        "requested": "[22.7.0, )",
+        "resolved": "22.7.0",
+        "contentHash": "gssZZLgdq0huy5njuwWP6tL2mh0SRKpGPX4xQRQ/2uuDHB2zkHyOdPqHY2nj6jEZBcHo8np11/pxwwzulgI7xQ=="
       },
       "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer": {
         "type": "Direct",
@@ -864,8 +864,8 @@
           "Be.Vlaanderen.Basisregisters.Crab": "[5.0.1, )",
           "Be.Vlaanderen.Basisregisters.EventHandling": "[7.0.0, )",
           "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": "[5.0.0, )",
-          "Be.Vlaanderen.Basisregisters.GrAr.Common": "[22.3.0, )",
-          "Be.Vlaanderen.Basisregisters.GrAr.Provenance": "[22.3.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "[22.7.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Provenance": "[22.7.0, )",
           "Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor": "[5.0.0, )",
           "NetTopologySuite": "[2.6.0, )",
           "NodaTime": "[3.2.2, )"
@@ -876,8 +876,8 @@
         "dependencies": {
           "AddressRegistry.Infrastructure": "[1.0.0, )",
           "Be.Vlaanderen.Basisregisters.Aws.DistributedMutex": "[5.0.0, )",
-          "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[22.3.0, )",
-          "Be.Vlaanderen.Basisregisters.GrAr.Legacy": "[22.3.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[22.7.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Legacy": "[22.7.0, )",
           "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer": "[6.0.3, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector": "[15.0.1, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
@@ -899,7 +899,7 @@
         "dependencies": {
           "AddressRegistry.Infrastructure": "[1.0.0, )",
           "Be.Vlaanderen.Basisregisters.Aws.DistributedMutex": "[5.0.0, )",
-          "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[22.3.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[22.7.0, )",
           "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer": "[6.0.3, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector": "[15.0.1, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
@@ -1037,9 +1037,9 @@
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Common": {
         "type": "CentralTransitive",
-        "requested": "[22.3.0, )",
-        "resolved": "22.3.0",
-        "contentHash": "JQjgLTdHmqV1yjnwRzJ4++V4fU7N8y/kuK77mZX8GeW68p0TtWv+adHO4uBOlvD5/5lVhE3Ccmc6c16c3sVoNQ==",
+        "requested": "[22.7.0, )",
+        "resolved": "22.7.0",
+        "contentHash": "dUWCB3Zx1BJYbyzap/m2v91jfW5WWmBhe6XEpEcnMfNmNqff/RtyMXbg7RMiMa6uznsFN3ZFUYrIy7wQDaJufA==",
         "dependencies": {
           "Be.Vlaanderen.Basisregisters.AggregateSource": "10.0.2",
           "Be.Vlaanderen.Basisregisters.CommandHandling": "10.0.2",
@@ -1049,24 +1049,24 @@
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Legacy": {
         "type": "CentralTransitive",
-        "requested": "[22.3.0, )",
-        "resolved": "22.3.0",
-        "contentHash": "A+3PYpLYSvGM557GfJzmCeRdUZUUhYGHclHLA4svgh1JDbMQziAOiTEVfCUF94jQ5mdTwCuaDTz3eMv7CDGdRw==",
+        "requested": "[22.7.0, )",
+        "resolved": "22.7.0",
+        "contentHash": "WZwNPAtR0TpuW163Ka1XRMRdbxOWJtBKpYXVKSKC6DFooRVq1ghIIzQ5n3IJDyWVvIemJdBmhTabUnWGpJaUOw==",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.GrAr.Common": "22.3.0",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "22.7.0",
           "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": "5.0.0",
           "Newtonsoft.Json": "13.0.3"
         }
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Provenance": {
         "type": "CentralTransitive",
-        "requested": "[22.3.0, )",
-        "resolved": "22.3.0",
-        "contentHash": "0w9Xu8G+qRVP4g2OQ39v5axm4hoz0VLUxQEeX0CnavW6BmaRjbMA7oYquJs2dk+JWGWNUeePMouJw6SpElKkGA==",
+        "requested": "[22.7.0, )",
+        "resolved": "22.7.0",
+        "contentHash": "0CROZOHtMp/WnXDVGrqyNxeQdtR1tkx5oXfRRoLZCSU4/UQVbiyOSKeXDTS7wZr3PcXkx6y5YYNmnlP7uA8y9w==",
         "dependencies": {
           "Be.Vlaanderen.Basisregisters.CommandHandling": "10.0.2",
           "Be.Vlaanderen.Basisregisters.Crab": "5.0.1",
-          "Be.Vlaanderen.Basisregisters.GrAr.Common": "22.3.0",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "22.7.0",
           "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": "5.0.0",
           "CompareNETObjects": "4.83.0",
           "Microsoft.CSharp": "4.7.0"

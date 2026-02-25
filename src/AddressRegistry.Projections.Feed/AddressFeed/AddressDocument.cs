@@ -71,6 +71,9 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
         public string PostalCode { get; set; }
         public AdresStatus? Status { get; set; }
         public bool OfficiallyAssigned { get; set; }
+        public string? PositionAsGml { get; set; }
+        public string? PositionGeometryMethod { get; set; }
+        public string? PositionSpecification { get; set; }
 
         public DateTimeOffset VersionId { get; set; }
 

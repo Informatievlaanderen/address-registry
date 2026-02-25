@@ -41,13 +41,18 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.IsRemoved = message.Message.IsRemoved;
                 await context.AddressDocuments.AddAsync(document, ct);
 
-                await AddCloudEvent(message, document, context, [
+                List<BaseRegistriesCloudEventAttribute> attributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, message.Message.StreetNamePersistentLocalId),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
-                ], AddressEventTypes.CreateV1);
+                ];
+
+                if (!string.IsNullOrEmpty(document.Document.BoxNumber))
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.BoxNumber, null, document.Document.BoxNumber));
+
+                await AddCloudEvent(message, document, context, attributes, AddressEventTypes.CreateV1);
             });
 
             When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
@@ -61,13 +66,18 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     message.Message.Provenance.Timestamp);
                 await context.AddressDocuments.AddAsync(document, ct);
 
-                await AddCloudEvent(message, document, context, [
+                List<BaseRegistriesCloudEventAttribute> attributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, message.Message.StreetNamePersistentLocalId),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, AdresStatus.Voorgesteld),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
-                ], AddressEventTypes.CreateV1);
+                ];
+
+                if (!string.IsNullOrEmpty(document.Document.BoxNumber))
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.BoxNumber, null, document.Document.BoxNumber));
+
+                await AddCloudEvent(message, document, context, attributes, AddressEventTypes.CreateV1);
             });
 
             When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
@@ -84,13 +94,18 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.Document.OfficiallyAssigned = message.Message.OfficiallyAssigned;
                 await context.AddressDocuments.AddAsync(document, ct);
 
-                await AddCloudEvent(message, document, context, [
+                List<BaseRegistriesCloudEventAttribute> attributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, message.Message.StreetNamePersistentLocalId),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
-                ], AddressEventTypes.CreateV1);
+                ];
+
+                if (!string.IsNullOrEmpty(document.Document.BoxNumber))
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.BoxNumber, null, document.Document.BoxNumber));
+
+                await AddCloudEvent(message, document, context, attributes, AddressEventTypes.CreateV1);
 
                 await AddTransformCloudEvent(message, document, context,
                     new AddressCloudTransformEvent
@@ -111,13 +126,18 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     message.Message.Provenance.Timestamp);
                 await context.AddressDocuments.AddAsync(document, ct);
 
-                await AddCloudEvent(message, document, context, [
+                List<BaseRegistriesCloudEventAttribute> attributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, message.Message.StreetNamePersistentLocalId),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, AdresStatus.Voorgesteld),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
-                ], AddressEventTypes.CreateV1);
+                ];
+
+                if (!string.IsNullOrEmpty(document.Document.BoxNumber))
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.BoxNumber, null, document.Document.BoxNumber));
+
+                await AddCloudEvent(message, document, context, attributes, AddressEventTypes.CreateV1);
             });
 
             When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
@@ -448,9 +468,18 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.Document.OfficiallyAssigned = false;
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, oldValue, false)
-                ]);
+                var oldStatus = document.Document.Status;
+                document.Document.Status = AdresStatus.InGebruik;
+                document.LastChangedOn = message.Message.Provenance.Timestamp;
+
+                List<BaseRegistriesCloudEventAttribute> baseRegistriesCloudEventAttributes = [
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, oldValue, false),
+                ];
+
+                if(oldStatus != AdresStatus.InGebruik)
+                    baseRegistriesCloudEventAttributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.InGebruik));
+
+                await AddCloudEvent(message, document, context, baseRegistriesCloudEventAttributes);
             });
 
             When<Envelope<AddressWasRegularized>>(async (context, message, ct) =>
@@ -574,12 +603,18 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.Document.OfficiallyAssigned = message.Message.OfficiallyAssigned;
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context, [
+                List<BaseRegistriesCloudEventAttribute> attributes = [
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, message.Message.StreetNamePersistentLocalId),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
-                ]);
+                ];
+
+                if (!string.IsNullOrEmpty(document.Document.BoxNumber))
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.BoxNumber, null, document.Document.BoxNumber));
+
+                await AddCloudEvent(message, document, context, attributes, AddressEventTypes.CreateV1);
             });
 
             // StreetName events that update address versions

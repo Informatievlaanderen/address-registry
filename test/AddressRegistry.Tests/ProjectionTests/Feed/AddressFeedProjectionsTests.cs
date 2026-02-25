@@ -103,7 +103,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == (addressWasMigrated.PostalCode ?? string.Empty))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasMigrated.OfficiallyAssigned.ToString())),
+                                               && a.NewValue!.ToString() == addressWasMigrated.OfficiallyAssigned.ToString())
+                                && (string.IsNullOrEmpty(addressWasMigrated.BoxNumber)
+                                    || attrs.Any(a => a.Name == AddressAttributeNames.BoxNumber
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasMigrated.BoxNumber))),
                             AddressWasMigratedToStreetName.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -163,7 +167,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasProposedV2.PostalCode)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == true.ToString())),
+                                               && a.NewValue!.ToString() == true.ToString())
+                                && (string.IsNullOrEmpty(addressWasProposedV2.BoxNumber)
+                                    || attrs.Any(a => a.Name == AddressAttributeNames.BoxNumber
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasProposedV2.BoxNumber))),
                             AddressWasProposedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -509,7 +517,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue!.ToString() == true.ToString()
-                                               && a.NewValue!.ToString() == false.ToString())),
+                                               && a.NewValue!.ToString() == false.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.StatusName
+                                               && a.OldValue!.ToString() == nameof(AdresStatus.Voorgesteld)
+                                               && a.NewValue!.ToString() == nameof(AdresStatus.InGebruik))),
                             AddressWasDeregulated.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -599,7 +610,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == (addressRemovalWasCorrected.PostalCode ?? string.Empty))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressRemovalWasCorrected.OfficiallyAssigned.ToString())),
+                                               && a.NewValue!.ToString() == addressRemovalWasCorrected.OfficiallyAssigned.ToString())
+                                && (string.IsNullOrEmpty(addressRemovalWasCorrected.BoxNumber)
+                                    || attrs.Any(a => a.Name == AddressAttributeNames.BoxNumber
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressRemovalWasCorrected.BoxNumber))),
                             AddressRemovalWasCorrected.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -757,7 +772,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.PostalCode)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.OfficiallyAssigned.ToString())),
+                                               && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.OfficiallyAssigned.ToString())
+                                && (string.IsNullOrEmpty(addressWasProposedForMunicipalityMerger.BoxNumber)
+                                    || attrs.Any(a => a.Name == AddressAttributeNames.BoxNumber
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.BoxNumber))),
                             AddressWasProposedForMunicipalityMerger.EventName,
                             It.IsAny<string>()),
                         Times.Once);

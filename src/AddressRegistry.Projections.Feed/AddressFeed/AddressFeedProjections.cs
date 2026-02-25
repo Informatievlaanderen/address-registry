@@ -91,6 +91,13 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
                 ], AddressEventTypes.CreateV1);
+
+                await AddTransformCloudEvent(message, document, context,
+                    new AddressCloudTransformEvent
+                    {
+                        From = [message.Message.MergedAddressPersistentLocalId.ToString()],
+                        To = [document.PersistentLocalId.ToString()]
+                    });
             });
 
             When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
@@ -243,6 +250,16 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 await AddCloudEvent(message, document, context, [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Afgekeurd)
                 ]);
+
+                var transformEvent = new AddressCloudTransformEvent
+                {
+                    From = [document.PersistentLocalId.ToString()],
+                    To = message.Message.NewAddressPersistentLocalId.HasValue
+                        ? [message.Message.NewAddressPersistentLocalId.Value.ToString()]
+                        : []
+                };
+
+                await AddTransformCloudEvent(message, document, context, transformEvent);
             });
 
             When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (context, message, ct) =>
@@ -315,6 +332,16 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 await AddCloudEvent(message, document, context, [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Gehistoreerd)
                 ]);
+
+                var transformEvent = new AddressCloudTransformEvent
+                {
+                    From = [document.PersistentLocalId.ToString()],
+                    To = message.Message.NewAddressPersistentLocalId.HasValue
+                        ? [message.Message.NewAddressPersistentLocalId.Value.ToString()]
+                        : []
+                };
+
+                await AddTransformCloudEvent(message, document, context, transformEvent);
             });
 
             When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (context, message, ct) =>
@@ -656,6 +683,40 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.LastChangedOnAsDateTimeOffset,
                 [document.Document.StreetNamePersistentLocalId.ToString()],
                 attributes,
+                message.EventName,
+                message.Metadata["CommandId"].ToString()!);
+
+            addressFeedItem.CloudEventAsString = _changeFeedService.SerializeCloudEvent(cloudEvent);
+            await CheckToUpdateCache(page, context);
+        }
+
+        private async Task AddTransformCloudEvent<T>(
+            Envelope<T> message,
+            AddressDocument document,
+            FeedContext context,
+            AddressCloudTransformEvent transformEvent)
+            where T : IHasProvenance, IMessage
+        {
+            var page = await context.CalculatePage();
+            var addressFeedItem = new AddressFeedItem(
+                position: message.Position,
+                page: page,
+                persistentLocalId: document.PersistentLocalId)
+            {
+                Application = message.Message.Provenance.Application,
+                Modification = message.Message.Provenance.Modification,
+                Operator = message.Message.Provenance.Operator,
+                Organisation = message.Message.Provenance.Organisation,
+                Reason = message.Message.Provenance.Reason
+            };
+            await context.AddressFeed.AddAsync(addressFeedItem);
+
+            var cloudEvent = _changeFeedService.CreateCloudEvent(
+                addressFeedItem.Id,
+                message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                AddressEventTypes.TransformV1,
+                transformEvent,
+                _changeFeedService.DataSchemaUriTransform,
                 message.EventName,
                 message.Metadata["CommandId"].ToString()!);
 

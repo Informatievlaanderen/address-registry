@@ -39,6 +39,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.Document.Status = MapStatus(message.Message.Status);
                 document.Document.OfficiallyAssigned = message.Message.OfficiallyAssigned;
                 document.IsRemoved = message.Message.IsRemoved;
+
+                var gml = GmlHelpers.ConvertToGml(message.Message.ExtendedWkbGeometry);
+                document.Document.PositionAsGml = gml;
+                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
+                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+
                 await context.AddressDocuments.AddAsync(document, ct);
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
@@ -46,7 +52,10 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, document.Document.PositionGeometryMethod),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, null, CreatePositionValue(gml))
                 ];
 
                 if (!string.IsNullOrEmpty(document.Document.BoxNumber))
@@ -64,6 +73,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     message.Message.BoxNumber,
                     message.Message.PostalCode,
                     message.Message.Provenance.Timestamp);
+
+                var gml = GmlHelpers.ConvertToGml(message.Message.ExtendedWkbGeometry);
+                document.Document.PositionAsGml = gml;
+                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
+                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+
                 await context.AddressDocuments.AddAsync(document, ct);
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
@@ -71,7 +86,10 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, AdresStatus.Voorgesteld),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, document.Document.PositionGeometryMethod),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, null, CreatePositionValue(gml))
                 ];
 
                 if (!string.IsNullOrEmpty(document.Document.BoxNumber))
@@ -92,6 +110,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 document.Document.Status = MapStatus(message.Message.DesiredStatus);
                 document.Document.OfficiallyAssigned = message.Message.OfficiallyAssigned;
+
+                var gml = GmlHelpers.ConvertToGml(message.Message.ExtendedWkbGeometry);
+                document.Document.PositionAsGml = gml;
+                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
+                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+
                 await context.AddressDocuments.AddAsync(document, ct);
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
@@ -99,7 +123,10 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, document.Document.PositionGeometryMethod),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, null, CreatePositionValue(gml))
                 ];
 
                 if (!string.IsNullOrEmpty(document.Document.BoxNumber))
@@ -124,6 +151,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     message.Message.BoxNumber,
                     message.Message.PostalCode,
                     message.Message.Provenance.Timestamp);
+
+                var gml = GmlHelpers.ConvertToGml(message.Message.ExtendedWkbGeometry);
+                document.Document.PositionAsGml = gml;
+                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
+                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+
                 await context.AddressDocuments.AddAsync(document, ct);
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
@@ -131,7 +164,10 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, AdresStatus.Voorgesteld),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, document.Document.PositionGeometryMethod),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, null, CreatePositionValue(gml))
                 ];
 
                 if (!string.IsNullOrEmpty(document.Document.BoxNumber))
@@ -442,22 +478,40 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
+                var oldGml = document.Document.PositionAsGml;
+                var oldMethod = document.Document.PositionGeometryMethod;
+                var oldSpecification = document.Document.PositionSpecification;
+
+                var newGml = GmlHelpers.ConvertToGml(message.Message.ExtendedWkbGeometry);
+                document.Document.PositionAsGml = newGml;
+                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
+                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, message.Message.GeometryMethod),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, message.Message.GeometrySpecification)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, oldMethod, document.Document.PositionGeometryMethod),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, oldSpecification, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, CreatePositionValue(oldGml), CreatePositionValue(newGml))
                 ]);
             });
 
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
+                var oldGml = document.Document.PositionAsGml;
+                var oldMethod = document.Document.PositionGeometryMethod;
+                var oldSpecification = document.Document.PositionSpecification;
+
+                var newGml = GmlHelpers.ConvertToGml(message.Message.ExtendedWkbGeometry);
+                document.Document.PositionAsGml = newGml;
+                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
+                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, message.Message.GeometryMethod),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, message.Message.GeometrySpecification)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, oldMethod, document.Document.PositionGeometryMethod),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, oldSpecification, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, CreatePositionValue(oldGml), CreatePositionValue(newGml))
                 ]);
             });
 
@@ -601,6 +655,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.Document.BoxNumber = message.Message.BoxNumber;
                 document.Document.PostalCode = message.Message.PostalCode ?? string.Empty;
                 document.Document.OfficiallyAssigned = message.Message.OfficiallyAssigned;
+
+                var gml = GmlHelpers.ConvertToGml(message.Message.ExtendedWkbGeometry);
+                document.Document.PositionAsGml = gml;
+                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
+                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
@@ -608,7 +668,10 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, document.Document.PositionGeometryMethod),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, null, CreatePositionValue(gml))
                 ];
 
                 if (!string.IsNullOrEmpty(document.Document.BoxNumber))
@@ -777,6 +840,14 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 AddressStatus.Rejected => AdresStatus.Afgekeurd,
                 _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
             };
+        }
+
+        private static List<AddressPositionCloudEventValue>? CreatePositionValue(string? gml)
+        {
+            if (string.IsNullOrEmpty(gml))
+                return null;
+
+            return [new AddressPositionCloudEventValue(gml)];
         }
 
         private static Task DoNothing<T>(FeedContext context, Envelope<T> envelope, CancellationToken ct) where T : IMessage => Task.CompletedTask;

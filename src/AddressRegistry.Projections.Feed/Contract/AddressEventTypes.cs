@@ -1,5 +1,8 @@
 namespace AddressRegistry.Projections.Feed.Contract
 {
+    using System.Collections.Generic;
+    using Newtonsoft.Json;
+
     public static class AddressEventTypes
     {
         public const string CreateV1 = "basisregisters.address.create.v1";
@@ -19,5 +22,14 @@ namespace AddressRegistry.Projections.Feed.Contract
         public const string PositionGeometryMethod = "positieGeometrieMethode";
         public const string PositionSpecification = "positieSpecificatie";
         public const string OfficiallyAssigned = "officieelToegekend";
+    }
+
+    public sealed class AddressCloudTransformEvent
+    {
+        [JsonProperty("vanIds", Order = 0)]
+        public required List<string> From { get; set; }
+
+        [JsonProperty("naarIds", Order = 1)]
+        public required List<string> To { get; set; }
     }
 }

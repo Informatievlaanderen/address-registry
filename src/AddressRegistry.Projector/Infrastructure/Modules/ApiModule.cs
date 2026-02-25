@@ -8,6 +8,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Elastic.Infrastructure;
     using AddressRegistry.Projections.Extract;
     using AddressRegistry.Projections.Extract.AddressExtract;
+    using AddressRegistry.Projections.Feed;
+    using AddressRegistry.Projections.Feed.AddressFeed;
     using AddressRegistry.Projections.Integration;
     using AddressRegistry.Projections.Integration.Infrastructure;
     using AddressRegistry.Projections.Integration.LatestItem;
@@ -24,8 +26,11 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
+    using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
@@ -44,6 +49,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using NetTopologySuite.IO;
+    using Newtonsoft.Json;
     using SqlStreamStore;
     using ElasticModule = AddressRegistry.Projections.Elastic.Infrastructure.ElasticModule;
     using HouseNumberLabelUpdater = AddressRegistry.Projections.Wms.AddressWmsItemV3.HouseNumberLabelUpdater;
@@ -96,6 +102,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
             RegisterWfsProjectionsV2(builder);
             RegisterWmsProjectionsV2(builder);
             RegisterAddressMatchProjections(builder);
+            RegisterFeedProjections(builder);
 
             if(_configuration.GetSection("Integration").GetValue("Enabled", false))
                 RegisterIntegrationProjections(builder);
@@ -246,6 +253,37 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressWmsItemV3Projections, WmsContext>(c =>
                     new AddressWmsItemV3Projections(WKBReaderFactory.CreateForLegacy(), c.Resolve<IHouseNumberLabelUpdater>()),
                     wmsProjectionSettings);
+        }
+
+        private void RegisterFeedProjections(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new FeedModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory,
+                        EventsJsonSerializerSettingsProvider.CreateSerializerSettings()));
+
+            builder.Register(c => new ChangeFeedService(
+                    c.Resolve<IOptions<ChangeFeedConfig>>().Value,
+                    c.Resolve<LastChangedListContext>(),
+                    new JsonSerializerSettings().ConfigureDefaultForApi()))
+                .AsImplementedInterfaces()
+                .AsSelf()
+                .SingleInstance();
+
+            builder
+                .RegisterProjectionMigrator<FeedContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<AddressFeedProjections, FeedContext>(context =>
+                        new AddressFeedProjections(context.Resolve<IChangeFeedService>()),
+                    ConnectedProjectionSettings.Configure(c =>
+                    {
+                        c.ConfigureCatchUpPageSize(1);
+                        c.ConfigureCatchUpUpdatePositionMessageInterval(1);
+                    }));
         }
 
         private void RegisterElasticProjections(ContainerBuilder builder)

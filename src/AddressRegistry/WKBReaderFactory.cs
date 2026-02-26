@@ -21,6 +21,13 @@ namespace AddressRegistry
                 new NtsGeometryServices(
                     new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
                     new PrecisionModel(PrecisionModels.Floating),
-                    WkbGeometry.SridLambert72));
+                    StreetName.ExtendedWkbGeometry.SridLambert72));
+
+        public static WKBReader CreateForLambert2008() =>
+            new WKBReader(
+                new NtsGeometryServices(
+                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
+                    new PrecisionModel(PrecisionModels.Floating),
+                    StreetName.ExtendedWkbGeometry.SridLambert2008));
     }
 }

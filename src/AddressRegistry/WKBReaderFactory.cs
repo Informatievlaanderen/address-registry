@@ -10,17 +10,12 @@ namespace AddressRegistry
     public static class WKBReaderFactory
     {
         public static WKBReader CreateForLegacy() =>
-            new WKBReader(
-                new NtsGeometryServices(
-                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
-                    new PrecisionModel(PrecisionModels.Floating),
-                    SpatialReferenceSystemId.Lambert72));
+            Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology.WKBReaderFactory.CreateForLambert72();
 
         public static WKBReader Create() =>
-            new WKBReader(
-                new NtsGeometryServices(
-                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
-                    new PrecisionModel(PrecisionModels.Floating),
-                    WkbGeometry.SridLambert72));
+            Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology.WKBReaderFactory.CreateForLambert72();
+
+        public static WKBReader CreateForLambert2008() =>
+            Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology.WKBReaderFactory.CreateForLambert2008();
     }
 }

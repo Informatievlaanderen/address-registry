@@ -1,16 +1,15 @@
 namespace AddressRegistry.StreetName
 {
     using System;
-    using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using NetTopologySuite.IO;
 
     public class ExtendedWkbGeometry : ByteArrayValueObject<ExtendedWkbGeometry>
     {
-        private static readonly WKBReader WkbReader = WKBReaderFactory.Create();
-
-        public const int SridLambert72 = 31370;
+        public const int SridLambert72 = SystemReferenceId.SridLambert72;
 
         public ExtendedWkbGeometry(byte[] ewkbBytes) : base(ewkbBytes) { }
 
@@ -24,8 +23,10 @@ namespace AddressRegistry.StreetName
                 return null;
             try
             {
-                var geometry = WkbReader.Read(wkb);
-                geometry.SRID = WkbGeometry.SridLambert72;
+                wkb.TryReadSrid(out var srid);
+                var reader = Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology.WKBReaderFactory.CreateForEwkb(wkb);
+                var geometry = reader.Read(wkb);
+                geometry.SRID = srid;
                 var wkbWriter = new WKBWriter { Strict = false, HandleSRID = true };
                 return new ExtendedWkbGeometry(wkbWriter.Write(geometry));
             }

@@ -41,6 +41,7 @@
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Sqs.Lambda" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.TicketingService.Abstractions" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" />
 
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />

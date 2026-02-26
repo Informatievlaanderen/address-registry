@@ -20,7 +20,7 @@
     <ProjectReference Include="..\AddressRegistry.Api.BackOffice.Abstractions\AddressRegistry.Api.BackOffice.Abstractions.csproj" />
     <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Datadog.Trace.Bundle" />
 
@@ -29,6 +29,7 @@
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Aws.DistributedMutex" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Contracts" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer" />

@@ -25,7 +25,7 @@
 
         <PackageVersion Include="Destructurama.JsonNet" Version="4.0.2" />
         <PackageVersion Include="Dapper" Version="2.1.66" />
-        <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.17.4" />
+        <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.15" />
         <PackageVersion Include="ProjNet" Version="2.1.0" />
         <PackageVersion Include="MediatR" Version="12.5.0" />
         <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />

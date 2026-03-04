@@ -10,7 +10,7 @@
       "rollForward": false
     },
     "dotnet-ef": {
-      "version": "9.0.4",
+      "version": "9.0.13",
       "commands": [
         "dotnet-ef"
       ]

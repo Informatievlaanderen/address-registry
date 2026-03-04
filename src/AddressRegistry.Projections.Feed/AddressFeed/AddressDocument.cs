@@ -74,6 +74,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
         public string? PositionAsGml { get; set; }
         public string? PositionGeometryMethod { get; set; }
         public string? PositionSpecification { get; set; }
+        public string? ExtendedWkbGeometry { get; set; }
 
         public DateTimeOffset VersionId { get; set; }
 

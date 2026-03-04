@@ -11,6 +11,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -81,6 +82,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.PositionGeometryMethod.Should().Be(addressWasMigrated.GeometryMethod.ToString());
                     document.Document.PositionSpecification.Should().Be(addressWasMigrated.GeometrySpecification.ToString());
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
+                    document.Document.ExtendedWkbGeometry.Should().Be(addressWasMigrated.ExtendedWkbGeometry);
 
                     var feedItem = await context.AddressFeed.SingleOrDefaultAsync(x => x.PersistentLocalId == addressWasMigrated.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position, addressWasMigrated);
@@ -119,7 +121,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasMigrated.GeometrySpecification.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
-                                               && a.NewValue != null)),
+                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
                             AddressWasMigratedToStreetName.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -156,6 +158,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.PositionGeometryMethod.Should().Be(addressWasProposedV2.GeometryMethod.ToString());
                     document.Document.PositionSpecification.Should().Be(addressWasProposedV2.GeometrySpecification.ToString());
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
+                    document.Document.ExtendedWkbGeometry.Should().Be(addressWasProposedV2.ExtendedWkbGeometry);
 
                     var feedItem = await context.AddressFeed.SingleOrDefaultAsync(x => x.PersistentLocalId == addressWasProposedV2.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position, addressWasProposedV2);
@@ -195,7 +198,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasProposedV2.GeometrySpecification.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
-                                               && a.NewValue != null)),
+                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
                             AddressWasProposedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -614,6 +617,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.BoxNumber.Should().Be(addressRemovalWasCorrected.BoxNumber);
                     document.Document.PostalCode.Should().Be(addressRemovalWasCorrected.PostalCode ?? string.Empty);
                     document.Document.OfficiallyAssigned.Should().Be(addressRemovalWasCorrected.OfficiallyAssigned);
+                    document.Document.ExtendedWkbGeometry.Should().Be(addressRemovalWasCorrected.ExtendedWkbGeometry);
                     document.LastChangedOn.Should().Be(addressRemovalWasCorrected.Provenance.Timestamp);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -647,7 +651,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressRemovalWasCorrected.GeometrySpecification.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
-                                               && a.NewValue != null)),
+                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
                             AddressRemovalWasCorrected.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -675,6 +679,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.PositionGeometryMethod.Should().Be(addressPositionWasChanged.GeometryMethod.ToString());
                     document.Document.PositionSpecification.Should().Be(addressPositionWasChanged.GeometrySpecification.ToString());
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
+                    document.Document.ExtendedWkbGeometry.Should().Be(addressPositionWasChanged.ExtendedWkbGeometry);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -684,13 +689,50 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
-                                attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
-                                               && a.NewValue!.ToString() == addressPositionWasChanged.GeometryMethod.ToString())
-                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
-                                               && a.NewValue!.ToString() == addressPositionWasChanged.GeometrySpecification.ToString())
-                                && attrs.Any(a => a.Name == AddressAttributeNames.Position
-                                               && a.NewValue != null)),
+                                attrs.Any(a => a.Name == AddressAttributeNames.Position
+                                               && a.OldValue != null && ((List<AddressPositionCloudEventValue>)a.OldValue).Count == 2
+                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
                             AddressPositionWasChanged.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(2));
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressPositionWasCorrectedV2_ThenFeedItemIsAdded()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var addressPositionWasCorrectedV2 = _fixture.Create<AddressPositionWasCorrectedV2>();
+
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(addressWasProposedV2, position),
+                    CreateEnvelope(addressPositionWasCorrectedV2, position + 1))
+                .Then(async context =>
+                {
+                    var document = await context.AddressDocuments.FindAsync(addressPositionWasCorrectedV2.AddressPersistentLocalId);
+                    document.Should().NotBeNull();
+                    document!.LastChangedOn.Should().Be(addressPositionWasCorrectedV2.Provenance.Timestamp);
+                    document.Document.PositionGeometryMethod.Should().Be(addressPositionWasCorrectedV2.GeometryMethod.ToString());
+                    document.Document.PositionSpecification.Should().Be(addressPositionWasCorrectedV2.GeometrySpecification.ToString());
+                    document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
+                    document.Document.ExtendedWkbGeometry.Should().Be(addressPositionWasCorrectedV2.ExtendedWkbGeometry);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressPositionWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            addressPositionWasCorrectedV2.AddressPersistentLocalId.ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.Position
+                                               && a.OldValue != null && ((List<AddressPositionCloudEventValue>)a.OldValue).Count == 2
+                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
+                            AddressPositionWasCorrectedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
 
@@ -821,7 +863,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.GeometrySpecification.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
-                                               && a.NewValue != null)),
+                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
                             AddressWasProposedForMunicipalityMerger.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -975,6 +1017,20 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             feedItem.Operator.Should().Be(@event.Provenance.Operator);
             feedItem.Organisation.Should().Be(@event.Provenance.Organisation);
             feedItem.Reason.Should().Be(@event.Provenance.Reason);
+        }
+
+        private static bool AssertPositionList(List<AddressPositionCloudEventValue> positionList, string gml)
+        {
+            var lambert72 = positionList.SingleOrDefault(p => p.Projection == SystemReferenceId.SrsNameLambert72);
+            lambert72.Should().NotBeNull();
+
+            var lambert08 = positionList.SingleOrDefault(p => p.Projection == SystemReferenceId.SrsNameLambert2008);
+            lambert08.Should().NotBeNull();
+
+            positionList.Count.Should().Be(2);
+            positionList.Should().Contain(p => p.Gml == gml);
+
+            return true;
         }
 
         private Envelope<T> CreateEnvelope<T>(T @event, long position) where T : IMessage

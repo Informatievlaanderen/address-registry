@@ -44,6 +44,7 @@
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Auth.AcmIdm" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Edit" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple" />

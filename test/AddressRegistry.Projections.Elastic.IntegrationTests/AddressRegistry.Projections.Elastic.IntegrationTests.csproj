@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
-  
+
   <ItemGroup>
-    <Content Include="elastic.yml" CopyToOutputDirectory="Always" />    
+    <Content Include="elastic.yml" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
     <Content Include="SearchCases\input.json" CopyToOutputDirectory="Always" />
@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.DockerUtilities" />
 
     <PackageReference Include="AutoFixture" />

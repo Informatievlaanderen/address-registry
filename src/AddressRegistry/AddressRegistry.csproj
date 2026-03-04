@@ -13,6 +13,7 @@
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Provenance" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Common" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" />
 
     <PackageReference Include="SourceLink.Embed.AllSourceFiles" PrivateAssets="all" />
     <PackageReference Include="SourceLink.Copy.PdbFiles" PrivateAssets="all" />

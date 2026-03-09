@@ -9,6 +9,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -46,8 +47,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
                 document.Document.PositionAsGml = geometry.ConvertToGml();
-                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
-                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+                document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
+                document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
                 await context.AddressDocuments.AddAsync(document, ct);
 
@@ -81,8 +82,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
                 document.Document.PositionAsGml = geometry.ConvertToGml();
-                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
-                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+                document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
+                document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
                 await context.AddressDocuments.AddAsync(document, ct);
 
@@ -119,8 +120,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
                 document.Document.PositionAsGml = geometry.ConvertToGml();
-                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
-                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+                document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
+                document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
                 await context.AddressDocuments.AddAsync(document, ct);
 
@@ -161,8 +162,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
                 document.Document.PositionAsGml = geometry.ConvertToGml();
-                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
-                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+                document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
+                document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
                 await context.AddressDocuments.AddAsync(document, ct);
 
@@ -492,8 +493,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var newGeometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
                 document.Document.PositionAsGml = newGeometry.ConvertToGml();
-                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
-                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+                document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
+                document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 var attributes = new List<BaseRegistriesCloudEventAttribute>();
@@ -520,8 +521,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var newGeometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
                 document.Document.PositionAsGml = newGeometry.ConvertToGml();
-                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
-                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+                document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
+                document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 var attributes = new List<BaseRegistriesCloudEventAttribute>();
@@ -682,8 +683,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
                 document.Document.PositionAsGml = geometry.ConvertToGml();
-                document.Document.PositionGeometryMethod = message.Message.GeometryMethod.ToString();
-                document.Document.PositionSpecification = message.Message.GeometrySpecification.ToString();
+                document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
+                document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
@@ -863,6 +864,35 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 AddressStatus.Retired => AdresStatus.Gehistoreerd,
                 AddressStatus.Rejected => AdresStatus.Afgekeurd,
                 _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+            };
+        }
+
+        private static PositieGeometrieMethode MapGeometryMethod(GeometryMethod geometryMethod)
+        {
+            return geometryMethod switch
+            {
+                GeometryMethod.AppointedByAdministrator => PositieGeometrieMethode.AangeduidDoorBeheerder,
+                GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
+                GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
+                _ => throw new ArgumentOutOfRangeException(nameof(geometryMethod), geometryMethod, null)
+            };
+        }
+
+        private static PositieSpecificatie MapGeometrySpecification(GeometrySpecification geometrySpecification)
+        {
+            return geometrySpecification switch
+            {
+                GeometrySpecification.Municipality => PositieSpecificatie.Gemeente,
+                GeometrySpecification.Street => PositieSpecificatie.Straat,
+                GeometrySpecification.Parcel => PositieSpecificatie.Perceel,
+                GeometrySpecification.Lot => PositieSpecificatie.Lot,
+                GeometrySpecification.Stand => PositieSpecificatie.Standplaats,
+                GeometrySpecification.Berth => PositieSpecificatie.Ligplaats,
+                GeometrySpecification.Building => PositieSpecificatie.Gebouw,
+                GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
+                GeometrySpecification.Entry => PositieSpecificatie.Ingang,
+                GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
+                _ => throw new ArgumentOutOfRangeException(nameof(geometrySpecification), geometrySpecification, null)
             };
         }
 

@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -69,12 +70,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
         public string HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
         public string PostalCode { get; set; }
-        public AdresStatus? Status { get; set; }
+        public AdresStatus Status { get; set; }
         public bool OfficiallyAssigned { get; set; }
-        public string? PositionAsGml { get; set; }
-        public string? PositionGeometryMethod { get; set; }
-        public string? PositionSpecification { get; set; }
-        public string? ExtendedWkbGeometry { get; set; }
+        public string PositionAsGml { get; set; }
+        public PositieGeometrieMethode PositionGeometryMethod { get; set; }
+        public PositieSpecificatie PositionSpecification { get; set; }
+        public string ExtendedWkbGeometry { get; set; }
 
         public DateTimeOffset VersionId { get; set; }
 

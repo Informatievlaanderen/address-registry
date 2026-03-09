@@ -21,6 +21,7 @@ namespace AddressRegistry.Projector.Projections
         {
             RegisterConnectionString(Schema.Legacy, configuration.GetConnectionString("LegacyProjections"));
             RegisterConnectionString(Schema.Extract, configuration.GetConnectionString("ExtractProjections"));
+            RegisterConnectionString(Schema.Extract, configuration.GetConnectionString("FeedProjections"));
             RegisterConnectionString(Schema.Wfs, configuration.GetConnectionString("WfsProjections"));
             RegisterConnectionString(Schema.Wms, configuration.GetConnectionString("WmsProjections"));
             RegisterConnectionString(Schema.Integration, configuration.GetConnectionString("IntegrationProjections"));

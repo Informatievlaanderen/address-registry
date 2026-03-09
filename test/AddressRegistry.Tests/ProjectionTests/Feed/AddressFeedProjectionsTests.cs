@@ -12,6 +12,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -57,6 +58,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenAddressWasMigratedToStreetName_ThenFeedItemAndDocumentAreAdded()
         {
+            _fixture.Register(() => AddressStatus.Proposed);
+            _fixture.Register(() => GeometryMethod.AppointedByAdministrator);
+            _fixture.Register(() => GeometrySpecification.Building);
+
             var addressWasMigrated = _fixture.Create<AddressWasMigratedToStreetName>();
 
             var position = 2L;
@@ -79,8 +84,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.BoxNumber.Should().Be(addressWasMigrated.BoxNumber);
                     document.Document.PostalCode.Should().Be(addressWasMigrated.PostalCode ?? string.Empty);
                     document.Document.OfficiallyAssigned.Should().Be(addressWasMigrated.OfficiallyAssigned);
-                    document.Document.PositionGeometryMethod.Should().Be(addressWasMigrated.GeometryMethod.ToString());
-                    document.Document.PositionSpecification.Should().Be(addressWasMigrated.GeometrySpecification.ToString());
+                    document.Document.Status.Should().Be(AdresStatus.Voorgesteld);
+                    document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AangeduidDoorBeheerder);
+                    document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Gebouw);
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
                     document.Document.ExtendedWkbGeometry.Should().Be(addressWasMigrated.ExtendedWkbGeometry);
 
@@ -115,10 +121,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasMigrated.BoxNumber))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasMigrated.GeometryMethod.ToString())
+                                               && a.NewValue!.ToString() == PositieGeometrieMethode.AangeduidDoorBeheerder.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasMigrated.GeometrySpecification.ToString())
+                                               && a.NewValue!.ToString() == PositieSpecificatie.Gebouw.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
                                                && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
@@ -134,6 +140,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenAddressWasProposedV2_ThenFeedItemAndDocumentAreAdded()
         {
+            _fixture.Register(() => GeometryMethod.DerivedFromObject);
+            _fixture.Register(() => GeometrySpecification.BuildingUnit);
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
 
             var position = 1L;
@@ -155,8 +163,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
                     document.Document.Status.Should().Be(AdresStatus.Voorgesteld);
                     document.Document.OfficiallyAssigned.Should().BeTrue();
-                    document.Document.PositionGeometryMethod.Should().Be(addressWasProposedV2.GeometryMethod.ToString());
-                    document.Document.PositionSpecification.Should().Be(addressWasProposedV2.GeometrySpecification.ToString());
+                    document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AfgeleidVanObject);
+                    document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Gebouweenheid);
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
                     document.Document.ExtendedWkbGeometry.Should().Be(addressWasProposedV2.ExtendedWkbGeometry);
 
@@ -192,10 +200,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasProposedV2.BoxNumber))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasProposedV2.GeometryMethod.ToString())
+                                               && a.NewValue!.ToString() == PositieGeometrieMethode.AfgeleidVanObject.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasProposedV2.GeometrySpecification.ToString())
+                                               && a.NewValue!.ToString() == PositieSpecificatie.Gebouweenheid.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
                                                && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
@@ -600,6 +608,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
             var addressWasRemovedV2 = _fixture.Create<AddressWasRemovedV2>();
+            _fixture.Register(() => AddressStatus.Retired);
+            _fixture.Register(() => GeometryMethod.AppointedByAdministrator);
+            _fixture.Register(() => GeometrySpecification.BuildingUnit);
             var addressRemovalWasCorrected = _fixture.Create<AddressRemovalWasCorrected>();
 
             var position = 1L;
@@ -629,7 +640,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
-                                               && a.OldValue == null)
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == nameof(AdresStatus.Gehistoreerd))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.HouseNumber
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == addressRemovalWasCorrected.HouseNumber)
@@ -645,10 +657,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressRemovalWasCorrected.BoxNumber))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressRemovalWasCorrected.GeometryMethod.ToString())
+                                               && a.NewValue!.ToString() == PositieGeometrieMethode.AangeduidDoorBeheerder.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressRemovalWasCorrected.GeometrySpecification.ToString())
+                                               && a.NewValue!.ToString() == PositieSpecificatie.Gebouweenheid.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
                                                && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
@@ -660,10 +672,29 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 });
         }
 
-        [Fact]
-        public async Task WhenAddressPositionWasChanged_ThenFeedItemIsAdded()
+        [Theory]
+        [InlineData(GeometryMethod.AppointedByAdministrator, GeometrySpecification.Entry, PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Ingang)]
+        [InlineData(GeometryMethod.DerivedFromObject, GeometrySpecification.Municipality, PositieGeometrieMethode.AfgeleidVanObject, PositieSpecificatie.Gemeente)]
+        [InlineData(GeometryMethod.AppointedByAdministrator, GeometrySpecification.Parcel, PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Perceel)]
+        [InlineData(GeometryMethod.AppointedByAdministrator, GeometrySpecification.Street, PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Straat)]
+        [InlineData(GeometryMethod.Interpolated, GeometrySpecification.Lot, PositieGeometrieMethode.Geinterpoleerd, PositieSpecificatie.Lot)]
+        [InlineData(GeometryMethod.AppointedByAdministrator, GeometrySpecification.Stand, PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Standplaats)]
+        [InlineData(GeometryMethod.AppointedByAdministrator, GeometrySpecification.Berth, PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Ligplaats)]
+        [InlineData(GeometryMethod.AppointedByAdministrator, GeometrySpecification.Building, PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Gebouw)]
+        [InlineData(GeometryMethod.AppointedByAdministrator, GeometrySpecification.BuildingUnit, PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Gebouweenheid)]
+        [InlineData(GeometryMethod.AppointedByAdministrator, GeometrySpecification.RoadSegment, PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Wegsegment)]
+        public async Task WhenAddressPositionWasChanged_ThenFeedItemIsAdded(
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            PositieGeometrieMethode positieGeometrieMethode,
+            PositieSpecificatie positieSpecificatie)
         {
+            //Make sure value changes
+            _fixture.Register(() => geometryMethod == GeometryMethod.AppointedByAdministrator ? GeometryMethod.DerivedFromObject : GeometryMethod.AppointedByAdministrator);
+            _fixture.Register(() => geometrySpecification == GeometrySpecification.Lot ? GeometrySpecification.Parcel : GeometrySpecification.Lot);
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            _fixture.Register(() => geometryMethod);
+            _fixture.Register(() => geometrySpecification);
             var addressPositionWasChanged = _fixture.Create<AddressPositionWasChanged>();
 
             var position = 1L;
@@ -676,8 +707,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     var document = await context.AddressDocuments.FindAsync(addressPositionWasChanged.AddressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.LastChangedOn.Should().Be(addressPositionWasChanged.Provenance.Timestamp);
-                    document.Document.PositionGeometryMethod.Should().Be(addressPositionWasChanged.GeometryMethod.ToString());
-                    document.Document.PositionSpecification.Should().Be(addressPositionWasChanged.GeometrySpecification.ToString());
+                    document.Document.PositionGeometryMethod.Should().Be(positieGeometrieMethode);
+                    document.Document.PositionSpecification.Should().Be(positieSpecificatie);
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
                     document.Document.ExtendedWkbGeometry.Should().Be(addressPositionWasChanged.ExtendedWkbGeometry);
 
@@ -689,7 +720,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
-                                attrs.Any(a => a.Name == AddressAttributeNames.Position
+                                attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
+                                    && a.OldValue != null && a.NewValue != null
+                                    && a.NewValue.ToString() == positieGeometrieMethode.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
+                                   && a.OldValue != null && a.NewValue != null
+                                   && a.NewValue.ToString() == positieSpecificatie.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue != null && ((List<AddressPositionCloudEventValue>)a.OldValue).Count == 2
                                                && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
                             AddressPositionWasChanged.EventName,
@@ -704,6 +741,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         public async Task WhenAddressPositionWasCorrectedV2_ThenFeedItemIsAdded()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            _fixture.Register(() => GeometryMethod.DerivedFromObject);
+            _fixture.Register(() =>GeometrySpecification.BuildingUnit);
             var addressPositionWasCorrectedV2 = _fixture.Create<AddressPositionWasCorrectedV2>();
 
             var position = 1L;
@@ -716,8 +755,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     var document = await context.AddressDocuments.FindAsync(addressPositionWasCorrectedV2.AddressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.LastChangedOn.Should().Be(addressPositionWasCorrectedV2.Provenance.Timestamp);
-                    document.Document.PositionGeometryMethod.Should().Be(addressPositionWasCorrectedV2.GeometryMethod.ToString());
-                    document.Document.PositionSpecification.Should().Be(addressPositionWasCorrectedV2.GeometrySpecification.ToString());
+                    document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AfgeleidVanObject);
+                    document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Gebouweenheid);
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
                     document.Document.ExtendedWkbGeometry.Should().Be(addressPositionWasCorrectedV2.ExtendedWkbGeometry);
 
@@ -818,6 +857,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenAddressWasProposedForMunicipalityMerger_ThenFeedItemAndDocumentAndTransformAreAdded()
         {
+            _fixture.Register(() => GeometryMethod.DerivedFromObject);
+            _fixture.Register(() => GeometrySpecification.Municipality);
             var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
 
             var position = 1L;
@@ -857,10 +898,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.BoxNumber))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.GeometryMethod.ToString())
+                                               && a.NewValue!.ToString() == PositieGeometrieMethode.AfgeleidVanObject.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.GeometrySpecification.ToString())
+                                               && a.NewValue!.ToString() == PositieSpecificatie.Gemeente.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
                                                && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),

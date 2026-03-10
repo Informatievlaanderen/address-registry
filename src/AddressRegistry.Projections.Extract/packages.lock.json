@@ -1469,7 +1469,7 @@
       },
       "Be.Vlaanderen.Basisregisters.Api": {
         "type": "CentralTransitive",
-        "requested": "[24.1.0, )",
+        "requested": "[24.3.0, )",
         "resolved": "24.0.0",
         "contentHash": "1ohRUYTZWJdpTqsN/DWQg21XRY8u4sIXVAdO15do2uqqBrgf9m17JCb+kLuhsFv+ICCPCocP3p0i0bkwpFE1lw==",
         "dependencies": {

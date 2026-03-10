@@ -90,7 +90,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
                     document.Document.ExtendedWkbGeometry.Should().Be(addressWasMigrated.ExtendedWkbGeometry);
 
-                    var feedItem = await context.AddressFeed.SingleOrDefaultAsync(x => x.PersistentLocalId == addressWasMigrated.AddressPersistentLocalId);
+                    var feedItem = await context.AddressFeed.SingleOrDefaultAsync(x => x.AddressPersistentLocalId == addressWasMigrated.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position, addressWasMigrated);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -168,7 +168,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
                     document.Document.ExtendedWkbGeometry.Should().Be(addressWasProposedV2.ExtendedWkbGeometry);
 
-                    var feedItem = await context.AddressFeed.SingleOrDefaultAsync(x => x.PersistentLocalId == addressWasProposedV2.AddressPersistentLocalId);
+                    var feedItem = await context.AddressFeed.SingleOrDefaultAsync(x => x.AddressPersistentLocalId == addressWasProposedV2.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position, addressWasProposedV2);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -234,7 +234,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document!.Document.Status.Should().Be(AdresStatus.InGebruik);
                     document.LastChangedOn.Should().Be(addressWasApproved.Provenance.Timestamp);
 
-                    var feedItem = await context.AddressFeed.LastAsync(x => x.PersistentLocalId == addressWasApproved.AddressPersistentLocalId);
+                    var feedItem = await context.AddressFeed.LastAsync(x => x.AddressPersistentLocalId == addressWasApproved.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position + 1, addressWasApproved);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -314,7 +314,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document!.Document.Status.Should().Be(AdresStatus.Afgekeurd);
                     document.LastChangedOn.Should().Be(addressWasRejected.Provenance.Timestamp);
 
-                    var feedItem = await context.AddressFeed.LastAsync(x => x.PersistentLocalId == addressWasRejected.AddressPersistentLocalId);
+                    var feedItem = await context.AddressFeed.LastAsync(x => x.AddressPersistentLocalId == addressWasRejected.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position + 1, addressWasRejected);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -393,7 +393,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document!.IsRemoved.Should().BeTrue();
                     document.LastChangedOn.Should().Be(addressWasRemovedV2.Provenance.Timestamp);
 
-                    var feedItem = await context.AddressFeed.LastAsync(x => x.PersistentLocalId == addressWasRemovedV2.AddressPersistentLocalId);
+                    var feedItem = await context.AddressFeed.LastAsync(x => x.AddressPersistentLocalId == addressWasRemovedV2.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position + 1, addressWasRemovedV2);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(

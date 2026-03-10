@@ -863,6 +863,30 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
             var position = 1L;
 
+            var callOrder = new List<string>();
+            ChangeFeedServiceMock.Setup(x => x.CreateCloudEvent(
+                    It.IsAny<long>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<string>(),
+                    It.IsAny<AddressCloudTransformEvent>(),
+                    It.IsAny<Uri>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Callback(() => callOrder.Add("Transform"))
+                .Returns(new CloudEvent());
+            ChangeFeedServiceMock.Setup(x => x.CreateCloudEventWithData(
+                    It.IsAny<long>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<List<string>>(),
+                    It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Callback(() => callOrder.Add("Create"))
+                .Returns(new CloudEvent());
+
             await Sut
                 .Given(CreateEnvelope(addressWasProposedForMunicipalityMerger, position))
                 .Then(async context =>
@@ -921,6 +945,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<string>()),
                         Times.Once);
 
+                    callOrder.Should().ContainInOrder("Transform", "Create");
+
                     ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(2));
                     ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(1, context, It.IsAny<Func<int, Task<int>>>()), Times.Exactly(2));
                 });
@@ -942,6 +968,30 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             ((ISetProvenance)addressWasRejectedBecauseOfMunicipalityMerger).SetProvenance(_fixture.Create<Provenance>());
 
             var position = 1L;
+
+            var callOrder = new List<string>();
+            ChangeFeedServiceMock.Setup(x => x.CreateCloudEvent(
+                    It.IsAny<long>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<string>(),
+                    It.IsAny<AddressCloudTransformEvent>(),
+                    It.IsAny<Uri>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Callback(() => callOrder.Add("Transform"))
+                .Returns(new CloudEvent());
+            ChangeFeedServiceMock.Setup(x => x.CreateCloudEventWithData(
+                    It.IsAny<long>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<List<string>>(),
+                    It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Callback(() => callOrder.Add("Update"))
+                .Returns(new CloudEvent());
 
             await Sut
                 .Given(CreateEnvelope(addressWasProposedV2, position),
@@ -979,6 +1029,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<string>()),
                         Times.Once);
 
+                    // The last two calls should be Transform then Update (for the rejected event)
+                    callOrder.TakeLast(2).Should().ContainInOrder("Transform", "Update");
+
                     ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(3));
                     ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(1, context, It.IsAny<Func<int, Task<int>>>()), Times.Exactly(3));
                 });
@@ -1001,6 +1054,30 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             ((ISetProvenance)addressWasRetiredBecauseOfMunicipalityMerger).SetProvenance(_fixture.Create<Provenance>());
 
             var position = 1L;
+
+            var callOrder = new List<string>();
+            ChangeFeedServiceMock.Setup(x => x.CreateCloudEvent(
+                    It.IsAny<long>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<string>(),
+                    It.IsAny<AddressCloudTransformEvent>(),
+                    It.IsAny<Uri>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Callback(() => callOrder.Add("Transform"))
+                .Returns(new CloudEvent());
+            ChangeFeedServiceMock.Setup(x => x.CreateCloudEventWithData(
+                    It.IsAny<long>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<List<string>>(),
+                    It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Callback(() => callOrder.Add("Update"))
+                .Returns(new CloudEvent());
 
             await Sut
                 .Given(CreateEnvelope(addressWasProposedV2, position),
@@ -1038,6 +1115,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressWasRetiredBecauseOfMunicipalityMerger.EventName,
                             It.IsAny<string>()),
                         Times.Once);
+
+                    // The last two calls should be Transform then Update (for the retired event)
+                    callOrder.TakeLast(2).Should().ContainInOrder("Transform", "Update");
 
                     ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(4));
                     ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(1, context, It.IsAny<Func<int, Task<int>>>()), Times.Exactly(4));

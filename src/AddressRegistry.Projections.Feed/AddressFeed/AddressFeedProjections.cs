@@ -139,14 +139,14 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 if (!string.IsNullOrEmpty(document.Document.BoxNumber))
                     attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.BoxNumber, null, document.Document.BoxNumber));
 
-                await AddCloudEvent(message, document, context, attributes, AddressEventTypes.CreateV1);
-
                 await AddTransformCloudEvent(message, document, context,
                     new AddressCloudTransformEvent
                     {
                         From = [message.Message.MergedAddressPersistentLocalId.ToString()],
                         To = [document.PersistentLocalId.ToString()]
                     });
+
+                await AddCloudEvent(message, document, context, attributes, AddressEventTypes.CreateV1);
             });
 
             When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
@@ -307,13 +307,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
-                var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Afgekeurd;
-                document.LastChangedOn = message.Message.Provenance.Timestamp;
-
-                await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Afgekeurd)
-                ]);
 
                 var transformEvent = new AddressCloudTransformEvent
                 {
@@ -324,6 +317,14 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 };
 
                 await AddTransformCloudEvent(message, document, context, transformEvent);
+
+                var oldStatus = document.Document.Status;
+                document.Document.Status = AdresStatus.Afgekeurd;
+                document.LastChangedOn = message.Message.Provenance.Timestamp;
+
+                await AddCloudEvent(message, document, context, [
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Afgekeurd)
+                ]);
             });
 
             When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (context, message, ct) =>
@@ -389,13 +390,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
-                var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Gehistoreerd;
-                document.LastChangedOn = message.Message.Provenance.Timestamp;
-
-                await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Gehistoreerd)
-                ]);
 
                 var transformEvent = new AddressCloudTransformEvent
                 {
@@ -406,6 +400,14 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 };
 
                 await AddTransformCloudEvent(message, document, context, transformEvent);
+
+                var oldStatus = document.Document.Status;
+                document.Document.Status = AdresStatus.Gehistoreerd;
+                document.LastChangedOn = message.Message.Provenance.Timestamp;
+
+                await AddCloudEvent(message, document, context, [
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Gehistoreerd)
+                ]);
             });
 
             When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (context, message, ct) =>

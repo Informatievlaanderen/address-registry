@@ -271,7 +271,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     new JsonSerializerSettings().ConfigureDefaultForApi()))
                 .AsImplementedInterfaces()
                 .AsSelf()
-                .SingleInstance();
+                .InstancePerLifetimeScope();
 
             builder
                 .RegisterProjectionMigrator<FeedContextMigrationFactory>(

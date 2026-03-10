@@ -204,7 +204,7 @@ namespace AddressRegistry.Api.Oslo.Address
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressFeedResultExample))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-        public async Task<IActionResult> ChangesByNisCode(
+        public async Task<IActionResult> ChangesByPersistentLocalId(
             [FromServices] FeedContext context,
             [FromRoute] int persistentLocalId,
             CancellationToken cancellationToken = default)

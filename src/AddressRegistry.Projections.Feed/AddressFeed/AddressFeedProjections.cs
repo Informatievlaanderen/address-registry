@@ -788,7 +788,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             var addressFeedItem = new AddressFeedItem(
                 position: message.Position,
                 page: page,
-                persistentLocalId: document.PersistentLocalId)
+                addressPersistentLocalId: document.PersistentLocalId)
             {
                 Application = message.Message.Provenance.Application,
                 Modification = message.Message.Provenance.Modification,
@@ -824,7 +824,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             var addressFeedItem = new AddressFeedItem(
                 position: message.Position,
                 page: page,
-                persistentLocalId: document.PersistentLocalId)
+                addressPersistentLocalId: document.PersistentLocalId)
             {
                 Application = message.Message.Provenance.Application,
                 Modification = message.Message.Provenance.Modification,

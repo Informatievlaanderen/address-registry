@@ -43,7 +43,7 @@ namespace AddressRegistry.Projections.Feed.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     Page = table.Column<int>(type: "int", nullable: false),
                     Position = table.Column<long>(type: "bigint", nullable: false),
-                    PersistentLocalId = table.Column<int>(type: "int", nullable: false),
+                    AddressPersistentLocalId = table.Column<int>(type: "int", nullable: false),
                     Application = table.Column<int>(type: "int", nullable: true),
                     Modification = table.Column<int>(type: "int", nullable: true),
                     Operator = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -74,16 +74,16 @@ namespace AddressRegistry.Projections.Feed.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AddressFeed_AddressPersistentLocalId",
+                schema: "AddressRegistryFeed",
+                table: "AddressFeed",
+                column: "AddressPersistentLocalId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AddressFeed_Page",
                 schema: "AddressRegistryFeed",
                 table: "AddressFeed",
                 column: "Page");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AddressFeed_PersistentLocalId",
-                schema: "AddressRegistryFeed",
-                table: "AddressFeed",
-                column: "PersistentLocalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AddressFeed_Position",

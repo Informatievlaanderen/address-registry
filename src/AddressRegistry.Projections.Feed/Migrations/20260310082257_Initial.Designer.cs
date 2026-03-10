@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressRegistry.Projections.Feed.Migrations
 {
     [DbContext(typeof(FeedContext))]
-    [Migration("20260309103755_Initial")]
+    [Migration("20260310082257_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -62,6 +62,9 @@ namespace AddressRegistry.Projections.Feed.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "AddressFeedSequence", "AddressRegistryFeed");
 
+                    b.Property<int>("AddressPersistentLocalId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Application")
                         .HasColumnType("int");
 
@@ -82,9 +85,6 @@ namespace AddressRegistry.Projections.Feed.Migrations
                     b.Property<int>("Page")
                         .HasColumnType("int");
 
-                    b.Property<int>("PersistentLocalId")
-                        .HasColumnType("int");
-
                     b.Property<long>("Position")
                         .HasColumnType("bigint");
 
@@ -95,9 +95,9 @@ namespace AddressRegistry.Projections.Feed.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"));
 
-                    b.HasIndex("Page");
+                    b.HasIndex("AddressPersistentLocalId");
 
-                    b.HasIndex("PersistentLocalId");
+                    b.HasIndex("Page");
 
                     b.HasIndex("Position");
 

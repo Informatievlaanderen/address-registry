@@ -11,7 +11,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
         public int Page { get; set; }
         public long Position { get; set; }
 
-        public int PersistentLocalId { get; set; }
+        public int AddressPersistentLocalId { get; set; }
 
         public Application? Application { get; set; }
         public Modification? Modification { get; set; }
@@ -22,9 +22,9 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
         private AddressFeedItem() { }
 
-        public AddressFeedItem(long position, int page, int persistentLocalId) : this()
+        public AddressFeedItem(long position, int page, int addressPersistentLocalId) : this()
         {
-            PersistentLocalId = persistentLocalId;
+            AddressPersistentLocalId = addressPersistentLocalId;
             Page = page;
             Position = position;
         }
@@ -47,7 +47,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 .HasColumnName("CloudEvent")
                 .IsRequired();
 
-            b.Property(x => x.PersistentLocalId).IsRequired();
+            b.Property(x => x.AddressPersistentLocalId).IsRequired();
 
             b.Property(x => x.Application);
             b.Property(x => x.Modification);
@@ -57,7 +57,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
             b.HasIndex(x => x.Position);
             b.HasIndex(x => x.Page);
-            b.HasIndex(x => x.PersistentLocalId);
+            b.HasIndex(x => x.AddressPersistentLocalId);
         }
     }
 }

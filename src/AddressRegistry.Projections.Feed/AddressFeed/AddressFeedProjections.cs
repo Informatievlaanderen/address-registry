@@ -139,13 +139,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 if (!string.IsNullOrEmpty(document.Document.BoxNumber))
                     attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.BoxNumber, null, document.Document.BoxNumber));
 
-                await AddTransformCloudEvent(message, document, context,
-                    new AddressCloudTransformEvent
-                    {
-                        From = [message.Message.MergedAddressPersistentLocalId.ToString()],
-                        To = [document.PersistentLocalId.ToString()]
-                    });
-
                 await AddCloudEvent(message, document, context, attributes, AddressEventTypes.CreateV1);
             });
 

@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.EventHandling;
@@ -18,6 +19,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.Geometries;
     using StreetName;
+    using StreetName.DataStructures;
     using StreetName.Events;
 
     [ConnectedProjectionName("Feed endpoint adres")]
@@ -301,15 +303,22 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
 
-                var transformEvent = new AddressCloudTransformEvent
+                if (message.Message.NewAddressPersistentLocalId.HasValue)
                 {
-                    From = [document.PersistentLocalId.ToString()],
-                    To = message.Message.NewAddressPersistentLocalId.HasValue
-                        ? [message.Message.NewAddressPersistentLocalId.Value.ToString()]
-                        : []
-                };
+                    var transformEvent = new AddressCloudTransformEvent
+                    {
+                        TransformValues =
+                        [
+                            new AddressCloudTransformEventValue
+                            {
+                                From = document.PersistentLocalId.ToString(),
+                                To = message.Message.NewAddressPersistentLocalId.Value.ToString()
+                            }
+                        ]
+                    };
 
-                await AddTransformCloudEvent(message, document, context, transformEvent);
+                    await AddTransformCloudEvent(message, document, context, transformEvent);
+                }
 
                 var oldStatus = document.Document.Status;
                 document.Document.Status = AdresStatus.Afgekeurd;
@@ -384,15 +393,22 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
 
-                var transformEvent = new AddressCloudTransformEvent
+                if (message.Message.NewAddressPersistentLocalId.HasValue)
                 {
-                    From = [document.PersistentLocalId.ToString()],
-                    To = message.Message.NewAddressPersistentLocalId.HasValue
-                        ? [message.Message.NewAddressPersistentLocalId.Value.ToString()]
-                        : []
-                };
+                    var transformEvent = new AddressCloudTransformEvent
+                    {
+                        TransformValues =
+                        [
+                            new AddressCloudTransformEventValue
+                            {
+                                From = document.PersistentLocalId.ToString(),
+                                To = message.Message.NewAddressPersistentLocalId.Value.ToString()
+                            }
+                        ]
+                    };
 
-                await AddTransformCloudEvent(message, document, context, transformEvent);
+                    await AddTransformCloudEvent(message, document, context, transformEvent);
+                }
 
                 var oldStatus = document.Document.Status;
                 document.Document.Status = AdresStatus.Gehistoreerd;
@@ -591,52 +607,52 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 ]);
             });
 
-            When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
-            {
-                var houseNumberDocument = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
-                var readdressed = message.Message.ReaddressedHouseNumber;
-
-                var oldPostalCode = houseNumberDocument.Document.PostalCode;
-                var oldHouseNumber = houseNumberDocument.Document.HouseNumber;
-                var oldStatus = houseNumberDocument.Document.Status;
-
-                houseNumberDocument.Document.PostalCode = readdressed.SourcePostalCode;
-                houseNumberDocument.Document.HouseNumber = readdressed.DestinationHouseNumber;
-                houseNumberDocument.Document.Status = MapStatus(readdressed.SourceStatus);
-                houseNumberDocument.Document.OfficiallyAssigned = readdressed.SourceIsOfficiallyAssigned;
-                houseNumberDocument.LastChangedOn = message.Message.Provenance.Timestamp;
-
-                List<BaseRegistriesCloudEventAttribute> attributes = [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldPostalCode, readdressed.SourcePostalCode),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, oldHouseNumber, readdressed.DestinationHouseNumber),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, houseNumberDocument.Document.Status)
-                ];
-
-                await AddCloudEvent(message, houseNumberDocument, context, attributes);
-
-                foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
-                {
-                    var boxNumberDocument = await FindDocument(context, readdressedBoxNumber.DestinationAddressPersistentLocalId, ct);
-                    var oldBoxPostalCode = boxNumberDocument.Document.PostalCode;
-                    var oldBoxHouseNumber = boxNumberDocument.Document.HouseNumber;
-                    var oldBoxStatus = boxNumberDocument.Document.Status;
-
-                    boxNumberDocument.Document.PostalCode = readdressedBoxNumber.SourcePostalCode;
-                    boxNumberDocument.Document.HouseNumber = readdressedBoxNumber.DestinationHouseNumber;
-                    boxNumberDocument.Document.BoxNumber = readdressedBoxNumber.SourceBoxNumber;
-                    boxNumberDocument.Document.Status = MapStatus(readdressedBoxNumber.SourceStatus);
-                    boxNumberDocument.Document.OfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned;
-                    boxNumberDocument.LastChangedOn = message.Message.Provenance.Timestamp;
-
-                    List<BaseRegistriesCloudEventAttribute> boxAttributes = [
-                        new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldBoxPostalCode, readdressedBoxNumber.SourcePostalCode),
-                        new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, oldBoxHouseNumber, readdressedBoxNumber.DestinationHouseNumber),
-                        new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldBoxStatus, boxNumberDocument.Document.Status)
-                    ];
-
-                    await AddCloudEvent(message, boxNumberDocument, context, boxAttributes);
-                }
-            });
+            // When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
+            // {
+            //     var houseNumberDocument = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
+            //     var readdressed = message.Message.ReaddressedHouseNumber;
+            //
+            //     var oldPostalCode = houseNumberDocument.Document.PostalCode;
+            //     var oldHouseNumber = houseNumberDocument.Document.HouseNumber;
+            //     var oldStatus = houseNumberDocument.Document.Status;
+            //
+            //     houseNumberDocument.Document.PostalCode = readdressed.SourcePostalCode;
+            //     houseNumberDocument.Document.HouseNumber = readdressed.DestinationHouseNumber;
+            //     houseNumberDocument.Document.Status = MapStatus(readdressed.SourceStatus);
+            //     houseNumberDocument.Document.OfficiallyAssigned = readdressed.SourceIsOfficiallyAssigned;
+            //     houseNumberDocument.LastChangedOn = message.Message.Provenance.Timestamp;
+            //
+            //     List<BaseRegistriesCloudEventAttribute> attributes = [
+            //         new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldPostalCode, readdressed.SourcePostalCode),
+            //         new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, oldHouseNumber, readdressed.DestinationHouseNumber),
+            //         new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, houseNumberDocument.Document.Status)
+            //     ];
+            //
+            //     await AddCloudEvent(message, houseNumberDocument, context, attributes);
+            //
+            //     foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
+            //     {
+            //         var boxNumberDocument = await FindDocument(context, readdressedBoxNumber.DestinationAddressPersistentLocalId, ct);
+            //         var oldBoxPostalCode = boxNumberDocument.Document.PostalCode;
+            //         var oldBoxHouseNumber = boxNumberDocument.Document.HouseNumber;
+            //         var oldBoxStatus = boxNumberDocument.Document.Status;
+            //
+            //         boxNumberDocument.Document.PostalCode = readdressedBoxNumber.SourcePostalCode;
+            //         boxNumberDocument.Document.HouseNumber = readdressedBoxNumber.DestinationHouseNumber;
+            //         boxNumberDocument.Document.BoxNumber = readdressedBoxNumber.SourceBoxNumber;
+            //         boxNumberDocument.Document.Status = MapStatus(readdressedBoxNumber.SourceStatus);
+            //         boxNumberDocument.Document.OfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned;
+            //         boxNumberDocument.LastChangedOn = message.Message.Provenance.Timestamp;
+            //
+            //         List<BaseRegistriesCloudEventAttribute> boxAttributes = [
+            //             new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldBoxPostalCode, readdressedBoxNumber.SourcePostalCode),
+            //             new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, oldBoxHouseNumber, readdressedBoxNumber.DestinationHouseNumber),
+            //             new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldBoxStatus, boxNumberDocument.Document.Status)
+            //         ];
+            //
+            //         await AddCloudEvent(message, boxNumberDocument, context, boxAttributes);
+            //     }
+            // });
 
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
@@ -745,6 +761,77 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 }
             });
 
+            When<Envelope<StreetNameWasReaddressed>>(async (context, message, ct) =>
+            {
+                //first transform
+                var transformValues = new List<AddressCloudTransformEventValue>();
+
+                AddTransformCloudEvent(message, )
+
+                //update documents
+                foreach (var readdressedHouseNumber in message.Message.ReaddressedHouseNumbers)
+                {
+                    var houseNumberDocument = await FindDocument(context, readdressedHouseNumber.AddressPersistentLocalId, ct);
+                    var readdressed = readdressedHouseNumber.ReaddressedHouseNumber;
+
+                    var attributes = UpdateBaseRegistriesCloudEventAttributes(houseNumberDocument, readdressed);
+
+                    await AddCloudEvent(message, houseNumberDocument, context, attributes);
+
+                    foreach (var readdressedBoxNumber in readdressedHouseNumber.ReaddressedBoxNumbers)
+                    {
+                        var boxNumberDocument = await FindDocument(context, readdressedBoxNumber.DestinationAddressPersistentLocalId, ct);
+                        var boxNumberAttributes = UpdateBaseRegistriesCloudEventAttributes(boxNumberDocument, readdressedBoxNumber);
+
+                        await AddCloudEvent(message, boxNumberDocument, context, boxNumberAttributes);
+                    }
+                }
+
+                return;
+
+                List<BaseRegistriesCloudEventAttribute> UpdateBaseRegistriesCloudEventAttributes(AddressDocument addressDocument, ReaddressedAddressData readdressed)
+                {
+                    var oldPostalCode = addressDocument.Document.PostalCode;
+                    var oldHouseNumber = addressDocument.Document.HouseNumber;
+                    var oldBoxNumber = addressDocument.Document.BoxNumber;
+                    var oldStatus = addressDocument.Document.Status;
+                    var oldOfficiallyAssigned = addressDocument.Document.OfficiallyAssigned;
+                    var oldGeometryMethod = addressDocument.Document.PositionGeometryMethod;
+                    var oldGeometrySpecification = addressDocument.Document.PositionSpecification;
+                    var oldEwkb = addressDocument.Document.ExtendedWkbGeometry;
+
+                    addressDocument.Document.PostalCode = readdressed.SourcePostalCode;
+                    addressDocument.Document.HouseNumber = readdressed.DestinationHouseNumber;
+                    addressDocument.Document.Status = MapStatus(readdressed.SourceStatus);
+                    addressDocument.Document.OfficiallyAssigned = readdressed.SourceIsOfficiallyAssigned;
+                    addressDocument.LastChangedOn = message.Message.Provenance.Timestamp;
+
+                    var attributes = new List<BaseRegistriesCloudEventAttribute>();
+                    if(oldHouseNumber != addressDocument.Document.HouseNumber)
+                        attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, oldHouseNumber, readdressed.DestinationHouseNumber));
+                    if(oldBoxNumber != addressDocument.Document.BoxNumber)
+                        attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.BoxNumber, oldBoxNumber, addressDocument.Document.BoxNumber));
+                    if(oldPostalCode != addressDocument.Document.PostalCode)
+                        attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldPostalCode, readdressed.SourcePostalCode));
+                    if(oldStatus != addressDocument.Document.Status)
+                        attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, addressDocument.Document.Status));
+                    if(oldOfficiallyAssigned != addressDocument.Document.OfficiallyAssigned)
+                        attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, oldOfficiallyAssigned, addressDocument.Document.OfficiallyAssigned));
+                    if(oldGeometryMethod != addressDocument.Document.PositionGeometryMethod)
+                        attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, oldGeometryMethod, addressDocument.Document.PositionGeometryMethod));
+                    if(oldGeometrySpecification != addressDocument.Document.PositionSpecification)
+                        attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, oldGeometrySpecification, addressDocument.Document.PositionSpecification));
+                    if(oldEwkb != addressDocument.Document.ExtendedWkbGeometry)
+                    {
+                        var oldPositionValues = oldEwkb is not null ? CreatePositionValues(GmlHelpers.ParseGeometry(oldEwkb)) : null;
+                        var newPositionValues = CreatePositionValues(GmlHelpers.ParseGeometry(addressDocument.Document.ExtendedWkbGeometry));
+                        attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, oldPositionValues, newPositionValues));
+                    }
+
+                    return attributes;
+                }
+            });
+
             // StreetName events that don't affect address documents
             When<Envelope<MigratedStreetNameWasImported>>(DoNothing);
             When<Envelope<StreetNameWasImported>>(DoNothing);
@@ -757,7 +844,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             When<Envelope<StreetNameWasRetired>>(DoNothing);
             When<Envelope<StreetNameWasRetiredBecauseOfMunicipalityMerger>>(DoNothing);
             When<Envelope<StreetNameWasRemoved>>(DoNothing);
-            When<Envelope<StreetNameWasReaddressed>>(DoNothing);
             When<Envelope<StreetNameWasRenamed>>(DoNothing);
         }
 
@@ -847,7 +933,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             await _changeFeedService.CheckToUpdateCacheAsync(
                 page,
                 context,
-                async p => await context.AddressFeed.CountAsync(x => x.Page == p));
+                async p =>
+                {
+                    var localCount = context.AddressFeed.Local
+                        .Count(x => x.Page == page && context.Entry(x).State == EntityState.Added);
+                    return await context.AddressFeed.CountAsync(x => x.Page == p) + localCount - 1; //exclude current item
+                });
         }
 
         private static AdresStatus MapStatus(AddressStatus status)

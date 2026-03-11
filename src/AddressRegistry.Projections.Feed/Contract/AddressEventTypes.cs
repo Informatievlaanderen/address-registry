@@ -26,11 +26,17 @@ namespace AddressRegistry.Projections.Feed.Contract
 
     public sealed class AddressCloudTransformEvent
     {
-        [JsonProperty("vanIds", Order = 0)]
-        public required List<string> From { get; set; }
+        [JsonProperty("transformaties", Order = 0)]
+        public required List<AddressCloudTransformEventValue> TransformValues { get; set; }
+    }
 
-        [JsonProperty("naarIds", Order = 1)]
-        public required List<string> To { get; set; }
+    public sealed class AddressCloudTransformEventValue
+    {
+        [JsonProperty("vanId", Order = 0)]
+        public required string From { get; set; }
+
+        [JsonProperty("naarId", Order = 1)]
+        public required string To { get; set; }
     }
 
     public sealed class AddressPositionCloudEventValue

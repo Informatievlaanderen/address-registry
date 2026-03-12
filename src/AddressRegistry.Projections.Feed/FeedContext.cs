@@ -14,6 +14,8 @@ namespace AddressRegistry.Projections.Feed
 
         public DbSet<AddressFeedItem> AddressFeed => Set<AddressFeedItem>();
 
+        public DbSet<AddressFeedItemAddress> AddressFeedItemAddresses => Set<AddressFeedItemAddress>();
+
         public DbSet<AddressDocument> AddressDocuments => Set<AddressDocument>();
 
         // This needs to be here to please EF
@@ -36,6 +38,7 @@ namespace AddressRegistry.Projections.Feed
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new AddressFeedConfiguration());
+            modelBuilder.ApplyConfiguration(new AddressFeedItemAddressConfiguration());
             modelBuilder.ApplyConfiguration(new AddressDocumentConfiguration(_jsonSerializerSettings));
         }
     }

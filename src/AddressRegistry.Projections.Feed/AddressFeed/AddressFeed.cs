@@ -11,8 +11,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
         public int Page { get; set; }
         public long Position { get; set; }
 
-        public int AddressPersistentLocalId { get; set; }
-
         public Application? Application { get; set; }
         public Modification? Modification { get; set; }
         public string? Operator { get; set; }
@@ -22,11 +20,24 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
         private AddressFeedItem() { }
 
-        public AddressFeedItem(long position, int page, int addressPersistentLocalId) : this()
+        public AddressFeedItem(long position, int page) : this()
         {
-            AddressPersistentLocalId = addressPersistentLocalId;
             Page = page;
             Position = position;
+        }
+    }
+
+    public class AddressFeedItemAddress
+    {
+        public long FeedItemId { get; set; }
+        public int AddressPersistentLocalId { get; set; }
+
+        private AddressFeedItemAddress() { }
+
+        public AddressFeedItemAddress(long feedItemId, int addressPersistentLocalId) : this()
+        {
+            FeedItemId = feedItemId;
+            AddressPersistentLocalId = addressPersistentLocalId;
         }
     }
 
@@ -47,8 +58,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 .HasColumnName("CloudEvent")
                 .IsRequired();
 
-            b.Property(x => x.AddressPersistentLocalId).IsRequired();
-
             b.Property(x => x.Application);
             b.Property(x => x.Modification);
             b.Property(x => x.Operator);
@@ -57,6 +66,19 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
             b.HasIndex(x => x.Position);
             b.HasIndex(x => x.Page);
+        }
+    }
+
+    public class AddressFeedItemAddressConfiguration : IEntityTypeConfiguration<AddressFeedItemAddress>
+    {
+        private const string TableName = "AddressFeedItemAddresses";
+
+        public void Configure(EntityTypeBuilder<AddressFeedItemAddress> b)
+        {
+            b.ToTable(TableName, Schema.Feed)
+                .HasKey(x => new { x.FeedItemId, x.AddressPersistentLocalId });
+
+            b.HasIndex(x => x.FeedItemId);
             b.HasIndex(x => x.AddressPersistentLocalId);
         }
     }

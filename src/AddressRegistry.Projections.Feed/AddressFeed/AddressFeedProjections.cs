@@ -327,7 +327,9 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                         ]
                     };
 
-                    await AddTransformCloudEvent(message, document, context, transformEvent);
+                    await AddTransformCloudEvent(message,
+                        [document.PersistentLocalId, message.Message.NewAddressPersistentLocalId.Value],
+                        context, transformEvent);
                 }
 
                 var oldStatus = document.Document.Status;
@@ -422,7 +424,9 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                         ]
                     };
 
-                    await AddTransformCloudEvent(message, document, context, transformEvent);
+                    await AddTransformCloudEvent(message,
+                        [document.PersistentLocalId, message.Message.NewAddressPersistentLocalId.Value],
+                        context, transformEvent);
                 }
 
                 var oldStatus = document.Document.Status;
@@ -815,15 +819,58 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
             When<Envelope<StreetNameWasReaddressed>>(async (context, message, ct) =>
             {
-                //first transform
-                var transformValues = new List<AddressCloudTransformEventValue>();
-
-                //AddTransformCloudEvent(message, )
-
-                //update documents
+                // first retrieve all documents to ensure they exist
+                var documentsByAddressId = new Dictionary<int, AddressDocument>();
                 foreach (var readdressedHouseNumber in message.Message.ReaddressedHouseNumbers)
                 {
                     var houseNumberDocument = await FindDocument(context, readdressedHouseNumber.AddressPersistentLocalId, ct);
+                    documentsByAddressId[readdressedHouseNumber.AddressPersistentLocalId] = houseNumberDocument;
+
+                    foreach (var readdressedBoxNumber in readdressedHouseNumber.ReaddressedBoxNumbers)
+                    {
+                        var boxNumberDocument = await FindDocument(context, readdressedBoxNumber.DestinationAddressPersistentLocalId, ct);
+                        documentsByAddressId[readdressedBoxNumber.DestinationAddressPersistentLocalId] = boxNumberDocument;
+                    }
+                }
+
+                // build transform event
+                var transformValues = new List<AddressCloudTransformEventValue>();
+                var addressPersistentLocalIds = new List<int>();
+
+                foreach (var readdressedHouseNumber in message.Message.ReaddressedHouseNumbers)
+                {
+                    var readdressed = readdressedHouseNumber.ReaddressedHouseNumber;
+                    transformValues.Add(new AddressCloudTransformEventValue
+                    {
+                        From = readdressed.SourceAddressPersistentLocalId.ToString(),
+                        To = readdressed.DestinationAddressPersistentLocalId.ToString()
+                    });
+                    addressPersistentLocalIds.Add(readdressed.DestinationAddressPersistentLocalId);
+
+                    foreach (var readdressedBoxNumber in readdressedHouseNumber.ReaddressedBoxNumbers)
+                    {
+                        transformValues.Add(new AddressCloudTransformEventValue
+                        {
+                            From = readdressedBoxNumber.SourceAddressPersistentLocalId.ToString(),
+                            To = readdressedBoxNumber.DestinationAddressPersistentLocalId.ToString()
+                        });
+                        addressPersistentLocalIds.Add(readdressedBoxNumber.DestinationAddressPersistentLocalId);
+                    }
+                }
+
+                var nisCode = await GetNisCodeByStreetNamePersistentLocalId(message.Message.StreetNamePersistentLocalId);
+                var transformEvent = new AddressCloudTransformEvent
+                {
+                    TransformValues = transformValues,
+                    NisCodes = [nisCode]
+                };
+
+                await AddTransformCloudEvent(message, addressPersistentLocalIds, context, transformEvent);
+
+                // update documents
+                foreach (var readdressedHouseNumber in message.Message.ReaddressedHouseNumbers)
+                {
+                    var houseNumberDocument = documentsByAddressId[readdressedHouseNumber.AddressPersistentLocalId];
                     var readdressed = readdressedHouseNumber.ReaddressedHouseNumber;
 
                     var attributes = UpdateBaseRegistriesCloudEventAttributes(houseNumberDocument, readdressed);
@@ -832,7 +879,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                     foreach (var readdressedBoxNumber in readdressedHouseNumber.ReaddressedBoxNumbers)
                     {
-                        var boxNumberDocument = await FindDocument(context, readdressedBoxNumber.DestinationAddressPersistentLocalId, ct);
+                        var boxNumberDocument = documentsByAddressId[readdressedBoxNumber.DestinationAddressPersistentLocalId];
                         var boxNumberAttributes = UpdateBaseRegistriesCloudEventAttributes(boxNumberDocument, readdressedBoxNumber);
 
                         await AddCloudEvent(message, boxNumberDocument, context, boxNumberAttributes);
@@ -920,8 +967,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             var page = await context.CalculatePage();
             var addressFeedItem = new AddressFeedItem(
                 position: message.Position,
-                page: page,
-                addressPersistentLocalId: document.PersistentLocalId)
+                page: page)
             {
                 Application = message.Message.Provenance.Application,
                 Modification = message.Message.Provenance.Modification,
@@ -930,6 +976,9 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 Reason = message.Message.Provenance.Reason
             };
             await context.AddressFeed.AddAsync(addressFeedItem);
+            await context.AddressFeedItemAddresses.AddAsync(
+                new AddressFeedItemAddress(addressFeedItem.Id, document.PersistentLocalId));
+
             var nisCode = await GetNisCodeByStreetNamePersistentLocalId(document.Document.StreetNamePersistentLocalId);
 
             var cloudEvent = _changeFeedService.CreateCloudEventWithData(
@@ -964,7 +1013,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
         private async Task AddTransformCloudEvent<T>(
             Envelope<T> message,
-            AddressDocument document,
+            List<int> addressPersistentLocalIds,
             FeedContext context,
             AddressCloudTransformEvent transformEvent)
             where T : IHasProvenance, IMessage
@@ -972,8 +1021,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             var page = await context.CalculatePage();
             var addressFeedItem = new AddressFeedItem(
                 position: message.Position,
-                page: page,
-                addressPersistentLocalId: document.PersistentLocalId)
+                page: page)
             {
                 Application = message.Message.Provenance.Application,
                 Modification = message.Message.Provenance.Modification,
@@ -982,6 +1030,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 Reason = message.Message.Provenance.Reason
             };
             await context.AddressFeed.AddAsync(addressFeedItem);
+
+            foreach (var addressPersistentLocalId in addressPersistentLocalIds)
+            {
+                await context.AddressFeedItemAddresses.AddAsync(
+                    new AddressFeedItemAddress(addressFeedItem.Id, addressPersistentLocalId));
+            }
 
             var cloudEvent = _changeFeedService.CreateCloudEvent(
                 addressFeedItem.Id,

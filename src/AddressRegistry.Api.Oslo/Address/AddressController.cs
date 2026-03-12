@@ -212,8 +212,9 @@ namespace AddressRegistry.Api.Oslo.Address
             var pagination = (PaginationRequest)Request.ExtractPaginationRequest();
 
             var feedItemsEvents = await context
-                .AddressFeed
+                .AddressFeedItemAddresses
                 .Where(x => x.AddressPersistentLocalId == persistentLocalId)
+                .Join(context.AddressFeed, a => a.FeedItemId, f => f.Id, (a, f) => f)
                 .OrderBy(x => x.Id)
                 .Select(x => x.CloudEventAsString)
                 .Skip(pagination.Offset)

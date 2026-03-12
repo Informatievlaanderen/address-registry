@@ -3,7 +3,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Consumer.Read.StreetName;
+    using AddressRegistry.Consumer.Read.StreetName.Projections;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Events;
     using AutoFixture;
@@ -18,6 +21,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
     using CloudNative.CloudEvents;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.EntityFrameworkCore;
@@ -30,8 +34,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
     public sealed class AddressFeedProjectionsTests
     {
+        private const string NisCode = "11001";
         private readonly Fixture _fixture;
         private readonly FeedContext _feedContext;
+        private readonly FakeStreetNameConsumerContext _streetNameConsumerContext;
 
         private ConnectedProjectionTest<FeedContext, AddressFeedProjections> Sut { get; }
         private Mock<IChangeFeedService> ChangeFeedServiceMock { get; }
@@ -40,8 +46,14 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         {
             ChangeFeedServiceMock = new Mock<IChangeFeedService>();
             _feedContext = CreateContext();
+            _streetNameConsumerContext = CreateConsumerContext();
+            var mockStreetNameFactory = new Mock<IDbContextFactory<StreetNameConsumerContext>>();
+            mockStreetNameFactory.Setup(f => f
+                    .CreateDbContextAsync(It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(_streetNameConsumerContext);
+
             Sut = new ConnectedProjectionTest<FeedContext, AddressFeedProjections>(() => _feedContext,
-                () => new AddressFeedProjections(ChangeFeedServiceMock.Object));
+                () => new AddressFeedProjections(ChangeFeedServiceMock.Object, mockStreetNameFactory.Object));
 
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
@@ -51,6 +63,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             _fixture.Customize(new WithValidHouseNumber());
             _fixture.Customize(new WithValidBoxNumber());
             _fixture.Customizations.Insert(0, new WithoutUnknownStreetNameAddressStatus());
+
+            _streetNameConsumerContext.StreetNameLatestItems.Add(
+                new StreetNameLatestItem(_fixture.Create<StreetNamePersistentLocalId>(), NisCode));
+            _streetNameConsumerContext.SaveChanges();
 
             SetupChangeFeedServiceMock();
         }
@@ -99,7 +115,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.CreateV1,
                             addressWasMigrated.AddressPersistentLocalId.ToString(),
                             addressWasMigrated.Provenance.Timestamp.ToBelgianDateTimeOffset(),
-                            It.Is<List<string>>(l => l.Contains(addressWasMigrated.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StreetNameId
                                                && a.OldValue == null
@@ -177,7 +193,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.CreateV1,
                             addressWasProposedV2.AddressPersistentLocalId.ToString(),
                             addressWasProposedV2.Provenance.Timestamp.ToBelgianDateTimeOffset(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StreetNameId
                                                && a.OldValue == null
@@ -243,7 +259,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressWasApproved.AddressPersistentLocalId.ToString(),
                             addressWasApproved.Provenance.Timestamp.ToBelgianDateTimeOffset(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue!.ToString() == nameof(AdresStatus.Voorgesteld)
@@ -283,7 +299,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressWasCorrected.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue!.ToString() == nameof(AdresStatus.InGebruik)
@@ -323,7 +339,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressWasRejected.AddressPersistentLocalId.ToString(),
                             addressWasRejected.Provenance.Timestamp.ToBelgianDateTimeOffset(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue!.ToString() == nameof(AdresStatus.Voorgesteld)
@@ -362,7 +378,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressWasRetiredV2.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue!.ToString() == nameof(AdresStatus.InGebruik)
@@ -402,7 +418,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.DeleteV1,
                             addressWasRemovedV2.AddressPersistentLocalId.ToString(),
                             addressWasRemovedV2.Provenance.Timestamp.ToBelgianDateTimeOffset(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs => attrs.Count == 0),
                             AddressWasRemovedV2.EventName,
                             It.IsAny<string>()),
@@ -417,13 +433,21 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         public async Task WhenAddressPostalCodeWasChangedV2_ThenPostalCodeIsUpdated()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
-            var addressPostalCodeWasChangedV2 = _fixture.Create<AddressPostalCodeWasChangedV2>();
+            var addressBoxWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId + 1))
+                .WithParentAddressPersistentLocalId(new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId))
+                .WithHouseNumber(new HouseNumber(addressWasProposedV2.HouseNumber))
+                .WithBoxNumber(new BoxNumber("1A"))
+                .WithPostalCode(new PostalCode(addressWasProposedV2.PostalCode));
+            var addressPostalCodeWasChangedV2 = _fixture.Create<AddressPostalCodeWasChangedV2>()
+                .WithBoxNumberPersistentLocalIds([new AddressPersistentLocalId(addressBoxWasProposedV2.AddressPersistentLocalId)]);
 
             var position = 1L;
 
             await Sut
                 .Given(CreateEnvelope(addressWasProposedV2, position),
-                    CreateEnvelope(addressPostalCodeWasChangedV2, position + 1))
+                    CreateEnvelope(addressBoxWasProposedV2, position + 1),
+                    CreateEnvelope(addressPostalCodeWasChangedV2, position + 2))
                 .Then(async context =>
                 {
                     var document = await context.AddressDocuments.FindAsync(addressPostalCodeWasChangedV2.AddressPersistentLocalId);
@@ -437,7 +461,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressPostalCodeWasChangedV2.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
                                                && a.OldValue!.ToString() == addressWasProposedV2.PostalCode
@@ -446,7 +470,27 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<string>()),
                         Times.Once);
 
-                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(2));
+                    var boxDocument = await context.AddressDocuments.FindAsync(addressPostalCodeWasChangedV2.BoxNumberPersistentLocalIds.First());
+                    boxDocument.Should().NotBeNull();
+                    boxDocument!.Document.PostalCode.Should().Be(addressPostalCodeWasChangedV2.PostalCode);
+                    boxDocument.LastChangedOn.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressPostalCodeWasChangedV2.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            addressPostalCodeWasChangedV2.BoxNumberPersistentLocalIds.First().ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
+                                               && a.OldValue!.ToString() == addressBoxWasProposedV2.PostalCode
+                                               && a.NewValue!.ToString() == addressPostalCodeWasChangedV2.PostalCode)),
+                            AddressPostalCodeWasChangedV2.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(4));
                 });
         }
 
@@ -454,13 +498,20 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         public async Task WhenAddressHouseNumberWasCorrectedV2_ThenHouseNumberIsUpdated()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
-            var addressHouseNumberWasCorrectedV2 = _fixture.Create<AddressHouseNumberWasCorrectedV2>();
+            var addressBoxWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId + 1))
+                .WithParentAddressPersistentLocalId(new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId))
+                .WithHouseNumber(new HouseNumber(addressWasProposedV2.HouseNumber))
+                .WithBoxNumber(new BoxNumber("1A"));
+            var addressHouseNumberWasCorrectedV2 = _fixture.Create<AddressHouseNumberWasCorrectedV2>()
+                .WithBoxNumberPersistentLocalIds([new AddressPersistentLocalId(addressBoxWasProposedV2.AddressPersistentLocalId)]);
 
             var position = 1L;
 
             await Sut
                 .Given(CreateEnvelope(addressWasProposedV2, position),
-                    CreateEnvelope(addressHouseNumberWasCorrectedV2, position + 1))
+                    CreateEnvelope(addressBoxWasProposedV2, position + 1),
+                    CreateEnvelope(addressHouseNumberWasCorrectedV2, position + 2))
                 .Then(async context =>
                 {
                     var document = await context.AddressDocuments.FindAsync(addressHouseNumberWasCorrectedV2.AddressPersistentLocalId);
@@ -474,7 +525,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressHouseNumberWasCorrectedV2.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.HouseNumber
                                                && a.OldValue!.ToString() == addressWasProposedV2.HouseNumber
@@ -483,7 +534,27 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<string>()),
                         Times.Once);
 
-                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(2));
+                    var boxDocument = await context.AddressDocuments.FindAsync(addressHouseNumberWasCorrectedV2.BoxNumberPersistentLocalIds.First());
+                    boxDocument.Should().NotBeNull();
+                    boxDocument!.Document.HouseNumber.Should().Be(addressHouseNumberWasCorrectedV2.HouseNumber);
+                    boxDocument.LastChangedOn.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressHouseNumberWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            addressHouseNumberWasCorrectedV2.BoxNumberPersistentLocalIds.First().ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.HouseNumber
+                                               && a.OldValue!.ToString() == addressBoxWasProposedV2.HouseNumber
+                                               && a.NewValue!.ToString() == addressHouseNumberWasCorrectedV2.HouseNumber)),
+                            AddressHouseNumberWasCorrectedV2.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(4));
                 });
         }
 
@@ -511,7 +582,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressBoxNumberWasCorrectedV2.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.BoxNumber
                                                && a.OldValue!.ToString() == addressWasProposedV2.BoxNumber
@@ -548,7 +619,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressWasDeregulated.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue!.ToString() == true.ToString()
@@ -590,7 +661,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressWasRegularized.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue!.ToString() == false.ToString()
@@ -637,7 +708,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.CreateV1,
                             addressRemovalWasCorrected.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue == null
@@ -718,7 +789,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressPositionWasChanged.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                     && a.OldValue != null && a.NewValue != null
@@ -766,7 +837,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressPositionWasCorrectedV2.AddressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedV2.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue != null && ((List<AddressPositionCloudEventValue>)a.OldValue).Count == 2
@@ -835,13 +906,21 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         public async Task WhenAddressPostalCodeWasCorrectedV2_ThenPostalCodeIsUpdated()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
-            var addressPostalCodeWasCorrectedV2 = _fixture.Create<AddressPostalCodeWasCorrectedV2>();
+            var addressBoxWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId + 1))
+                .WithParentAddressPersistentLocalId(new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId))
+                .WithHouseNumber(new HouseNumber(addressWasProposedV2.HouseNumber))
+                .WithBoxNumber(new BoxNumber("1A"))
+                .WithPostalCode(new PostalCode(addressWasProposedV2.PostalCode));
+            var addressPostalCodeWasCorrectedV2 = _fixture.Create<AddressPostalCodeWasCorrectedV2>()
+                .WithBoxNumberPersistentLocalIds([new AddressPersistentLocalId(addressBoxWasProposedV2.AddressPersistentLocalId)]);
 
             var position = 1L;
 
             await Sut
                 .Given(CreateEnvelope(addressWasProposedV2, position),
-                    CreateEnvelope(addressPostalCodeWasCorrectedV2, position + 1))
+                    CreateEnvelope(addressBoxWasProposedV2, position + 1),
+                    CreateEnvelope(addressPostalCodeWasCorrectedV2, position + 2))
                 .Then(async context =>
                 {
                     var document = await context.AddressDocuments.FindAsync(addressPostalCodeWasCorrectedV2.AddressPersistentLocalId);
@@ -849,7 +928,42 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document!.Document.PostalCode.Should().Be(addressPostalCodeWasCorrectedV2.PostalCode);
                     document.LastChangedOn.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
 
-                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(2));
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressPostalCodeWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            addressPostalCodeWasCorrectedV2.AddressPersistentLocalId.ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
+                                               && a.OldValue!.ToString() == addressWasProposedV2.PostalCode
+                                               && a.NewValue!.ToString() == addressPostalCodeWasCorrectedV2.PostalCode)),
+                            AddressPostalCodeWasCorrectedV2.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    var boxDocument = await context.AddressDocuments.FindAsync(addressPostalCodeWasCorrectedV2.BoxNumberPersistentLocalIds.First());
+                    boxDocument.Should().NotBeNull();
+                    boxDocument!.Document.PostalCode.Should().Be(addressPostalCodeWasCorrectedV2.PostalCode);
+                    boxDocument.LastChangedOn.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressPostalCodeWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            addressPostalCodeWasCorrectedV2.BoxNumberPersistentLocalIds.First().ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
+                                               && a.OldValue!.ToString() == addressBoxWasProposedV2.PostalCode
+                                               && a.NewValue!.ToString() == addressPostalCodeWasCorrectedV2.PostalCode)),
+                            AddressPostalCodeWasCorrectedV2.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(4));
                 });
         }
 
@@ -876,7 +990,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.CreateV1,
                             addressWasProposedForMunicipalityMerger.AddressPersistentLocalId.ToString(),
                             addressWasProposedForMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset(),
-                            It.Is<List<string>>(l => l.Contains(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StreetNameId
                                                && a.OldValue == null
@@ -918,10 +1032,19 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         public async Task WhenAddressWasRejectedBecauseOfMunicipalityMerger_ThenFeedItemIsAddedWithTransform()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
-
             var streetNamePersistentLocalId = addressWasProposedV2.StreetNamePersistentLocalId;
             var addressPersistentLocalId = addressWasProposedV2.AddressPersistentLocalId;
             var newAddressPersistentLocalId = _fixture.Create<int>();
+
+            var newNisCode = "11002";
+            var newStreetNamePersistentLocalId = _fixture.Create<int>();
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>()
+                .WithStreetNamePersistentLocalId(new StreetNamePersistentLocalId(newStreetNamePersistentLocalId))
+                .WithAddressPersistentLocalId(newAddressPersistentLocalId)
+                .WithMergedAddressPersistentLocalId(new AddressPersistentLocalId(addressPersistentLocalId));
+
+            _streetNameConsumerContext.StreetNameLatestItems.Add(new StreetNameLatestItem(newStreetNamePersistentLocalId, newNisCode));
+            await _streetNameConsumerContext.SaveChangesAsync();
 
             var addressWasRejectedBecauseOfMunicipalityMerger = new AddressWasRejectedBecauseOfMunicipalityMerger(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
@@ -957,7 +1080,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
             await Sut
                 .Given(CreateEnvelope(addressWasProposedV2, position),
-                    CreateEnvelope(addressWasRejectedBecauseOfMunicipalityMerger, position + 1))
+                    CreateEnvelope(addressWasProposedForMunicipalityMerger, position + 1),
+                    CreateEnvelope(addressWasRejectedBecauseOfMunicipalityMerger, position + 2))
                 .Then(async context =>
                 {
                     var document = await context.AddressDocuments.FindAsync(addressPersistentLocalId);
@@ -970,7 +1094,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(streetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue!.ToString() == nameof(AdresStatus.Voorgesteld)
@@ -984,8 +1108,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             addressWasRejectedBecauseOfMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset(),
                             AddressEventTypes.TransformV1,
                             It.Is<AddressCloudTransformEvent>(t =>
-                                t.From.Contains(addressPersistentLocalId.ToString())
-                                && t.To.Contains(newAddressPersistentLocalId.ToString())),
+                                t.NisCodes.Contains(NisCode) && t.NisCodes.Contains(newNisCode)
+                                && t.TransformValues.First().From.Contains(addressPersistentLocalId.ToString())
+                                && t.TransformValues.First().To.Contains(newAddressPersistentLocalId.ToString())),
                             It.IsAny<Uri>(),
                             AddressWasRejectedBecauseOfMunicipalityMerger.EventName,
                             It.IsAny<string>()),
@@ -994,8 +1119,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     // The last two calls should be Transform then Update (for the rejected event)
                     callOrder.TakeLast(2).Should().ContainInOrder("Transform", "Update");
 
-                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(3));
-                    ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(1, context, It.IsAny<Func<int, Task<int>>>()), Times.Exactly(3));
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(4));
+                    ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(1, context, It.IsAny<Func<int, Task<int>>>()), Times.Exactly(4));
                 });
         }
 
@@ -1008,6 +1133,16 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             var streetNamePersistentLocalId = addressWasProposedV2.StreetNamePersistentLocalId;
             var addressPersistentLocalId = addressWasProposedV2.AddressPersistentLocalId;
             var newAddressPersistentLocalId = _fixture.Create<int>();
+
+            var newNisCode = "11002";
+            var newStreetNamePersistentLocalId = _fixture.Create<int>();
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>()
+                .WithStreetNamePersistentLocalId(new StreetNamePersistentLocalId(newStreetNamePersistentLocalId))
+                .WithAddressPersistentLocalId(newAddressPersistentLocalId)
+                .WithMergedAddressPersistentLocalId(new AddressPersistentLocalId(addressPersistentLocalId));
+
+            _streetNameConsumerContext.StreetNameLatestItems.Add(new StreetNameLatestItem(newStreetNamePersistentLocalId, newNisCode));
+            await _streetNameConsumerContext.SaveChangesAsync();
 
             var addressWasRetiredBecauseOfMunicipalityMerger = new AddressWasRetiredBecauseOfMunicipalityMerger(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
@@ -1044,7 +1179,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             await Sut
                 .Given(CreateEnvelope(addressWasProposedV2, position),
                     CreateEnvelope(addressWasApproved, position + 1),
-                    CreateEnvelope(addressWasRetiredBecauseOfMunicipalityMerger, position + 2))
+                    CreateEnvelope(addressWasProposedForMunicipalityMerger, position + 2),
+                    CreateEnvelope(addressWasRetiredBecauseOfMunicipalityMerger, position + 3))
                 .Then(async context =>
                 {
                     var document = await context.AddressDocuments.FindAsync(addressPersistentLocalId);
@@ -1057,7 +1193,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             addressPersistentLocalId.ToString(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains(streetNamePersistentLocalId.ToString())),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue!.ToString() == nameof(AdresStatus.InGebruik)
@@ -1071,8 +1207,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             addressWasRetiredBecauseOfMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset(),
                             AddressEventTypes.TransformV1,
                             It.Is<AddressCloudTransformEvent>(t =>
-                                t.From.Contains(addressPersistentLocalId.ToString())
-                                && t.To.Contains(newAddressPersistentLocalId.ToString())),
+                                t.NisCodes.Contains(NisCode) && t.NisCodes.Contains(newNisCode)
+                                    && t.TransformValues.First().From.Contains(addressPersistentLocalId.ToString())
+                                    && t.TransformValues.First().To.Contains(newAddressPersistentLocalId.ToString())),
                             It.IsAny<Uri>(),
                             AddressWasRetiredBecauseOfMunicipalityMerger.EventName,
                             It.IsAny<string>()),
@@ -1081,8 +1218,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     // The last two calls should be Transform then Update (for the retired event)
                     callOrder.TakeLast(2).Should().ContainInOrder("Transform", "Update");
 
-                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(4));
-                    ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(1, context, It.IsAny<Func<int, Task<int>>>()), Times.Exactly(4));
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(5));
+                    ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(1, context, It.IsAny<Func<int, Task<int>>>()), Times.Exactly(5));
                 });
         }
 
@@ -1168,6 +1305,14 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 .Options;
 
             return new FeedContext(options, new JsonSerializerSettings().ConfigureDefaultForApi());
+        }
+
+        private FakeStreetNameConsumerContext CreateConsumerContext()
+        {
+            var options = new DbContextOptionsBuilder<StreetNameConsumerContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            return new FakeStreetNameConsumerContext(options);
         }
     }
 }

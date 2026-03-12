@@ -12,9 +12,9 @@ namespace AddressRegistry.Projections.Feed
 
         public override string ProjectionStateSchema => Schema.Feed;
 
-        public DbSet<AddressFeedItem> AddressFeed { get; set; }
+        public DbSet<AddressFeedItem> AddressFeed => Set<AddressFeedItem>();
 
-        public DbSet<AddressDocument> AddressDocuments { get; set; }
+        public DbSet<AddressDocument> AddressDocuments => Set<AddressDocument>();
 
         // This needs to be here to please EF
         public FeedContext() { }

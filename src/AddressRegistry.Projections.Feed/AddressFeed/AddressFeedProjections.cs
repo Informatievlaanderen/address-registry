@@ -15,6 +15,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Consumer.Read.StreetName;
     using Contract;
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.Geometries;
@@ -27,10 +28,14 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     public class AddressFeedProjections : ConnectedProjection<FeedContext>
     {
         private readonly IChangeFeedService _changeFeedService;
+        private readonly IDbContextFactory<StreetNameConsumerContext> _streetNameConsumerContextFactory;
 
-        public AddressFeedProjections(IChangeFeedService changeFeedService)
+        public AddressFeedProjections(
+            IChangeFeedService changeFeedService,
+            IDbContextFactory<StreetNameConsumerContext> streetNameConsumerContextFactory)
         {
             _changeFeedService = changeFeedService;
+            _streetNameConsumerContextFactory = streetNameConsumerContextFactory;
 
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
@@ -305,6 +310,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 if (message.Message.NewAddressPersistentLocalId.HasValue)
                 {
+                    var newDocument = await FindDocument(context, message.Message.NewAddressPersistentLocalId.Value, ct);
                     var transformEvent = new AddressCloudTransformEvent
                     {
                         TransformValues =
@@ -314,6 +320,10 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                                 From = document.PersistentLocalId.ToString(),
                                 To = message.Message.NewAddressPersistentLocalId.Value.ToString()
                             }
+                        ],
+                        NisCodes = [
+                            await GetNisCodeByStreetNamePersistentLocalId(document.Document.StreetNamePersistentLocalId),
+                            await GetNisCodeByStreetNamePersistentLocalId(newDocument.Document.StreetNamePersistentLocalId)
                         ]
                     };
 
@@ -395,6 +405,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 if (message.Message.NewAddressPersistentLocalId.HasValue)
                 {
+                    var newDocument = await FindDocument(context, message.Message.NewAddressPersistentLocalId.Value, ct);
                     var transformEvent = new AddressCloudTransformEvent
                     {
                         TransformValues =
@@ -404,6 +415,10 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                                 From = document.PersistentLocalId.ToString(),
                                 To = message.Message.NewAddressPersistentLocalId.Value.ToString()
                             }
+                        ],
+                        NisCodes = [
+                            await GetNisCodeByStreetNamePersistentLocalId(document.Document.StreetNamePersistentLocalId),
+                            await GetNisCodeByStreetNamePersistentLocalId(newDocument.Document.StreetNamePersistentLocalId)
                         ]
                     };
 
@@ -441,6 +456,18 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 await AddCloudEvent(message, document, context, [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldPostalCode, message.Message.PostalCode)
                 ]);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxDocument = await FindDocument(context, boxNumberPersistentLocalId, ct);
+                    var oldBoxPostalCode = boxDocument.Document.PostalCode;
+                    boxDocument.Document.PostalCode = message.Message.PostalCode;
+                    boxDocument.LastChangedOn = message.Message.Provenance.Timestamp;
+
+                    await AddCloudEvent(message, boxDocument, context, [
+                        new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldBoxPostalCode, message.Message.PostalCode)
+                    ]);
+                }
             });
 
             When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
@@ -453,6 +480,18 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 await AddCloudEvent(message, document, context, [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldPostalCode, message.Message.PostalCode)
                 ]);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxDocument = await FindDocument(context, boxNumberPersistentLocalId, ct);
+                    var oldBoxPostalCode = boxDocument.Document.PostalCode;
+                    boxDocument.Document.PostalCode = message.Message.PostalCode;
+                    boxDocument.LastChangedOn = message.Message.Provenance.Timestamp;
+
+                    await AddCloudEvent(message, boxDocument, context, [
+                        new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldBoxPostalCode, message.Message.PostalCode)
+                    ]);
+                }
             });
 
             When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (context, message, ct) =>
@@ -465,6 +504,18 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 await AddCloudEvent(message, document, context, [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, oldHouseNumber, message.Message.HouseNumber)
                 ]);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxDocument = await FindDocument(context, boxNumberPersistentLocalId, ct);
+                    var oldBoxHouseNumber = boxDocument.Document.HouseNumber;
+                    boxDocument.Document.HouseNumber = message.Message.HouseNumber;
+                    boxDocument.LastChangedOn = message.Message.Provenance.Timestamp;
+
+                    await AddCloudEvent(message, boxDocument, context, [
+                        new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, oldBoxHouseNumber, message.Message.HouseNumber)
+                    ]);
+                }
             });
 
             When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (context, message, ct) =>
@@ -607,6 +658,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 ]);
             });
 
+            When<Envelope<AddressHouseNumberWasReaddressed>>(DoNothing);
             // When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
             // {
             //     var houseNumberDocument = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
@@ -766,7 +818,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 //first transform
                 var transformValues = new List<AddressCloudTransformEventValue>();
 
-                AddTransformCloudEvent(message, )
+                //AddTransformCloudEvent(message, )
 
                 //update documents
                 foreach (var readdressedHouseNumber in message.Message.ReaddressedHouseNumbers)
@@ -878,6 +930,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 Reason = message.Message.Provenance.Reason
             };
             await context.AddressFeed.AddAsync(addressFeedItem);
+            var nisCode = await GetNisCodeByStreetNamePersistentLocalId(document.Document.StreetNamePersistentLocalId);
 
             var cloudEvent = _changeFeedService.CreateCloudEventWithData(
                 addressFeedItem.Id,
@@ -885,13 +938,28 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 eventType,
                 document.PersistentLocalId.ToString(),
                 document.LastChangedOnAsDateTimeOffset,
-                [document.Document.StreetNamePersistentLocalId.ToString()],
+                [nisCode],
                 attributes,
                 message.EventName,
                 message.Metadata["CommandId"].ToString()!);
 
             addressFeedItem.CloudEventAsString = _changeFeedService.SerializeCloudEvent(cloudEvent);
             await CheckToUpdateCache(page, context);
+        }
+
+        private async Task<string> GetNisCodeByStreetNamePersistentLocalId(int streetNamePersistentLocalId)
+        {
+            await using var streetNameConsumerContext = await _streetNameConsumerContextFactory.CreateDbContextAsync();
+            var nisCode = await streetNameConsumerContext.StreetNameLatestItems.AsNoTracking()
+                .Where(x => x.PersistentLocalId == streetNamePersistentLocalId)
+                .Select(x => x.NisCode)
+                .FirstOrDefaultAsync();
+
+            if (nisCode is null)
+                throw new InvalidOperationException("Could not find NIS code for street name with persistent local id " +
+                                                    streetNamePersistentLocalId);
+
+            return nisCode;
         }
 
         private async Task AddTransformCloudEvent<T>(

@@ -245,7 +245,10 @@
 
             yield return [new List<ConnectedProjection<FeedContext>>
             {
-                new AddressFeedProjections(Mock.Of<IChangeFeedService>(), Mock.Of<IDbContextFactory<StreetNameConsumerContext>>())
+                new AddressFeedProjections(
+                    Mock.Of<IChangeFeedService>(),
+                    Mock.Of<IDbContextFactory<StreetNameConsumerContext>>(),
+                    Mock.Of<IReadonlyStreamStore>())
             }];
 
             yield return [new List<ConnectedProjection<AddressMatchContext>>

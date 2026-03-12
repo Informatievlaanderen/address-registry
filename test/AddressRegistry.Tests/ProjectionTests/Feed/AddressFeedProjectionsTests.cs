@@ -1407,12 +1407,14 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
         private static async Task<AddressFeedItem?> FindFeedItemByAddressPersistentLocalId(FeedContext context, int addressPersistentLocalId)
         {
-            var feedItemId = await context.AddressFeedItemAddresses
+            var feedItemAddress = await context.AddressFeedItemAddresses
                 .Where(x => x.AddressPersistentLocalId == addressPersistentLocalId)
-                .Select(x => x.FeedItemId)
                 .SingleOrDefaultAsync();
 
-            return await context.AddressFeed.SingleOrDefaultAsync(x => x.Id == feedItemId);
+            if (feedItemAddress is null)
+                return null;
+
+            return await context.AddressFeed.SingleOrDefaultAsync(x => x.Id == feedItemAddress.FeedItemId);
         }
 
         private static async Task<AddressFeedItem> FindLastFeedItemByAddressPersistentLocalId(FeedContext context, int addressPersistentLocalId)

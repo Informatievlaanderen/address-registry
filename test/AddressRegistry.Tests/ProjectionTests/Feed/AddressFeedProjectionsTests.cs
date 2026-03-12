@@ -31,6 +31,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using Projections.Feed;
     using Projections.Feed.AddressFeed;
     using Projections.Feed.Contract;
+    using SqlStreamStore;
     using Xunit;
 
     public sealed class AddressFeedProjectionsTests
@@ -54,7 +55,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     .ReturnsAsync(_streetNameConsumerContext);
 
             Sut = new ConnectedProjectionTest<FeedContext, AddressFeedProjections>(() => _feedContext,
-                () => new AddressFeedProjections(ChangeFeedServiceMock.Object, mockStreetNameFactory.Object));
+                () => new AddressFeedProjections(ChangeFeedServiceMock.Object, mockStreetNameFactory.Object, Mock.Of<IReadonlyStreamStore>()));
 
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());

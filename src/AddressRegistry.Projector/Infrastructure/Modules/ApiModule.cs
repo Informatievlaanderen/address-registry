@@ -280,7 +280,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressFeedProjections, FeedContext>(context =>
                         new AddressFeedProjections(
                             context.Resolve<IChangeFeedService>(),
-                            context.Resolve<IDbContextFactory<StreetNameConsumerContext>>()),
+                            context.Resolve<IDbContextFactory<StreetNameConsumerContext>>(),
+                            context.Resolve<IReadonlyStreamStore>()),
                     ConnectedProjectionSettings.Configure(c =>
                     {
                         c.ConfigureCatchUpPageSize(1);

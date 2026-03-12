@@ -28,6 +28,9 @@ namespace AddressRegistry.Projections.Feed.Contract
     {
         [JsonProperty("transformaties", Order = 0)]
         public required List<AddressCloudTransformEventValue> TransformValues { get; set; }
+
+        [JsonProperty("nisCodes", Order = 1)]
+        public required List<string> NisCodes { get; set; }
     }
 
     public sealed class AddressCloudTransformEventValue

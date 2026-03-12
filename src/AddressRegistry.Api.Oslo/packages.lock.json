@@ -1883,6 +1883,7 @@
       "addressregistry.projections.feed": {
         "type": "Project",
         "dependencies": {
+          "AddressRegistry.Consumer.Read.StreetName": "[1.0.0, )",
           "AddressRegistry.Infrastructure": "[1.0.0, )",
           "Be.Vlaanderen.Basisregisters.EventHandling.Autofac": "[7.0.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed": "[22.8.0, )",

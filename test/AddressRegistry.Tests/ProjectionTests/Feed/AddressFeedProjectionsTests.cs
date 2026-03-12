@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using AddressRegistry.Consumer.Read.StreetName;
     using AddressRegistry.Consumer.Read.StreetName.Projections;
     using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.DataStructures;
     using AddressRegistry.StreetName.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
@@ -106,7 +107,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
                     document.Document.ExtendedWkbGeometry.Should().Be(addressWasMigrated.ExtendedWkbGeometry);
 
-                    var feedItem = await context.AddressFeed.SingleOrDefaultAsync(x => x.AddressPersistentLocalId == addressWasMigrated.AddressPersistentLocalId);
+                    var feedItem = await FindFeedItemByAddressPersistentLocalId(context, addressWasMigrated.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position, addressWasMigrated);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -184,7 +185,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
                     document.Document.ExtendedWkbGeometry.Should().Be(addressWasProposedV2.ExtendedWkbGeometry);
 
-                    var feedItem = await context.AddressFeed.SingleOrDefaultAsync(x => x.AddressPersistentLocalId == addressWasProposedV2.AddressPersistentLocalId);
+                    var feedItem = await FindFeedItemByAddressPersistentLocalId(context, addressWasProposedV2.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position, addressWasProposedV2);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -250,7 +251,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document!.Document.Status.Should().Be(AdresStatus.InGebruik);
                     document.LastChangedOn.Should().Be(addressWasApproved.Provenance.Timestamp);
 
-                    var feedItem = await context.AddressFeed.LastAsync(x => x.AddressPersistentLocalId == addressWasApproved.AddressPersistentLocalId);
+                    var feedItem = await FindLastFeedItemByAddressPersistentLocalId(context, addressWasApproved.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position + 1, addressWasApproved);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -330,7 +331,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document!.Document.Status.Should().Be(AdresStatus.Afgekeurd);
                     document.LastChangedOn.Should().Be(addressWasRejected.Provenance.Timestamp);
 
-                    var feedItem = await context.AddressFeed.LastAsync(x => x.AddressPersistentLocalId == addressWasRejected.AddressPersistentLocalId);
+                    var feedItem = await FindLastFeedItemByAddressPersistentLocalId(context, addressWasRejected.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position + 1, addressWasRejected);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -409,7 +410,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document!.IsRemoved.Should().BeTrue();
                     document.LastChangedOn.Should().Be(addressWasRemovedV2.Provenance.Timestamp);
 
-                    var feedItem = await context.AddressFeed.LastAsync(x => x.AddressPersistentLocalId == addressWasRemovedV2.AddressPersistentLocalId);
+                    var feedItem = await FindLastFeedItemByAddressPersistentLocalId(context, addressWasRemovedV2.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position + 1, addressWasRemovedV2);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -1223,6 +1224,171 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 });
         }
 
+        [Fact]
+        public async Task WhenStreetNameWasReaddressed_ThenTransformAndDocumentsAreUpdated()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var sourceHouseNumberId = 100;
+            var destinationHouseNumberId = 200;
+            var sourceBoxNumberId = 101;
+            var destinationBoxNumberId = 201;
+
+            // Create source documents first via AddressWasProposedV2
+            var sourceHouseProposed = _fixture.Create<AddressWasProposedV2>()
+                .WithStreetNamePersistentLocalId(streetNamePersistentLocalId)
+                .WithAddressPersistentLocalId(sourceHouseNumberId);
+
+            var destHouseProposed = _fixture.Create<AddressWasProposedV2>()
+                .WithStreetNamePersistentLocalId(streetNamePersistentLocalId)
+                .WithAddressPersistentLocalId(destinationHouseNumberId);
+
+            var destBoxProposed = _fixture.Create<AddressWasProposedV2>()
+                .WithStreetNamePersistentLocalId(streetNamePersistentLocalId)
+                .WithAddressPersistentLocalId(destinationBoxNumberId);
+
+            var readdressedHouseNumber = new ReaddressedAddressData(
+                new AddressPersistentLocalId(sourceHouseNumberId),
+                new AddressPersistentLocalId(destinationHouseNumberId),
+                isDestinationNewlyProposed: false,
+                AddressStatus.Current,
+                new HouseNumber("1"),
+                boxNumber: null,
+                new PostalCode("9000"),
+                new AddressGeometry(
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    new ExtendedWkbGeometry(sourceHouseProposed.ExtendedWkbGeometry)),
+                sourceIsOfficiallyAssigned: true);
+
+            var readdressedBoxNumber = new ReaddressedAddressData(
+                new AddressPersistentLocalId(sourceBoxNumberId),
+                new AddressPersistentLocalId(destinationBoxNumberId),
+                isDestinationNewlyProposed: false,
+                AddressStatus.Current,
+                new HouseNumber("1"),
+                new BoxNumber("A"),
+                new PostalCode("9000"),
+                new AddressGeometry(
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    new ExtendedWkbGeometry(destBoxProposed.ExtendedWkbGeometry)),
+                sourceIsOfficiallyAssigned: true);
+
+            var addressHouseNumberWasReaddressed = new AddressHouseNumberWasReaddressed(
+                streetNamePersistentLocalId,
+                new AddressPersistentLocalId(destinationHouseNumberId),
+                readdressedHouseNumber,
+                [readdressedBoxNumber]);
+            ((ISetProvenance)addressHouseNumberWasReaddressed).SetProvenance(_fixture.Create<Provenance>());
+
+            var streetNameWasReaddressed = new StreetNameWasReaddressed(
+                streetNamePersistentLocalId,
+                [addressHouseNumberWasReaddressed]);
+            ((ISetProvenance)streetNameWasReaddressed).SetProvenance(_fixture.Create<Provenance>());
+
+            var position = 1L;
+
+            var callOrder = new List<string>();
+            ChangeFeedServiceMock.Setup(x => x.CreateCloudEvent(
+                    It.IsAny<long>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<string>(),
+                    It.IsAny<AddressCloudTransformEvent>(),
+                    It.IsAny<Uri>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Callback(() => callOrder.Add("Transform"))
+                .Returns(new CloudEvent());
+            ChangeFeedServiceMock.Setup(x => x.CreateCloudEventWithData(
+                    It.IsAny<long>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<List<string>>(),
+                    It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Callback(() => callOrder.Add("Update"))
+                .Returns(new CloudEvent());
+
+            await Sut
+                .Given(
+                    CreateEnvelope(sourceHouseProposed, position),
+                    CreateEnvelope(destHouseProposed, position + 1),
+                    CreateEnvelope(destBoxProposed, position + 2),
+                    CreateEnvelope(streetNameWasReaddressed, position + 3))
+                .Then(async context =>
+                {
+                    // Verify transform event was created with correct values
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEvent(
+                            It.IsAny<long>(),
+                            streetNameWasReaddressed.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.TransformV1,
+                            It.Is<AddressCloudTransformEvent>(t =>
+                                t.NisCodes.Contains(NisCode)
+                                && t.TransformValues.Any(v =>
+                                    v.From == sourceHouseNumberId.ToString()
+                                    && v.To == destinationHouseNumberId.ToString())
+                                && t.TransformValues.Any(v =>
+                                    v.From == sourceBoxNumberId.ToString()
+                                    && v.To == destinationBoxNumberId.ToString())),
+                            It.IsAny<Uri>(),
+                            StreetNameWasReaddressed.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    // Verify update cloud events for house number and box number
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            streetNameWasReaddressed.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            destinationHouseNumberId.ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            StreetNameWasReaddressed.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            streetNameWasReaddressed.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            destinationBoxNumberId.ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            StreetNameWasReaddressed.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    // Verify transform happens before update for the readdressed event
+                    // The first 3 calls are "Update" from the 3 AddressWasProposedV2 creates,
+                    // then the last 3 should be Transform, Update, Update
+                    callOrder.Skip(3).First().Should().Be("Transform");
+
+                    // Verify the transform feed item is linked to both destination addresses
+                    var transformFeedItemAddresses = await context.AddressFeedItemAddresses
+                        .Where(x => x.AddressPersistentLocalId == destinationHouseNumberId
+                                    || x.AddressPersistentLocalId == destinationBoxNumberId)
+                        .ToListAsync();
+
+                    var transformFeedItemId = transformFeedItemAddresses
+                        .GroupBy(x => x.FeedItemId)
+                        .Where(g => g.Count() == 2)
+                        .Select(g => g.Key)
+                        .FirstOrDefault();
+
+                    transformFeedItemId.Should().NotBe(0, "transform feed item should be linked to both destination addresses");
+
+                    // 3 create events + 1 transform + 2 update = 6 serialize calls
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(6));
+                    ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(1, context, It.IsAny<Func<int, Task<int>>>()), Times.Exactly(6));
+                });
+        }
+
         private static void AssertFeedItem(
             AddressFeedItem? feedItem,
             long position,
@@ -1237,6 +1403,29 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             feedItem.Operator.Should().Be(@event.Provenance.Operator);
             feedItem.Organisation.Should().Be(@event.Provenance.Organisation);
             feedItem.Reason.Should().Be(@event.Provenance.Reason);
+        }
+
+        private static async Task<AddressFeedItem?> FindFeedItemByAddressPersistentLocalId(FeedContext context, int addressPersistentLocalId)
+        {
+            var feedItemId = await context.AddressFeedItemAddresses
+                .Where(x => x.AddressPersistentLocalId == addressPersistentLocalId)
+                .Select(x => x.FeedItemId)
+                .SingleOrDefaultAsync();
+
+            return await context.AddressFeed.SingleOrDefaultAsync(x => x.Id == feedItemId);
+        }
+
+        private static async Task<AddressFeedItem> FindLastFeedItemByAddressPersistentLocalId(FeedContext context, int addressPersistentLocalId)
+        {
+            var feedItemIds = await context.AddressFeedItemAddresses
+                .Where(x => x.AddressPersistentLocalId == addressPersistentLocalId)
+                .Select(x => x.FeedItemId)
+                .ToListAsync();
+
+            return await context.AddressFeed
+                .Where(x => feedItemIds.Contains(x.Id))
+                .OrderBy(x => x.Id)
+                .LastAsync();
         }
 
         private static bool AssertPositionList(List<AddressPositionCloudEventValue> positionList, string gml)

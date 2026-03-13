@@ -9,7 +9,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     {
         public static async Task<int> CalculatePage(this FeedContext context, int maxPageSize = ChangeFeedService.DefaultMaxPageSize)
         {
-            if (!await context.AddressFeed.AnyAsync())
+            if (!await context.AddressFeed.AnyAsync() && context.AddressFeed.Local.Count == 0)
             {
                 return 1;
             }

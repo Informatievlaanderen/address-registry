@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressRegistry.Projections.Feed.Migrations
 {
     [DbContext(typeof(FeedContext))]
-    [Migration("20260310082257_Initial")]
+    [Migration("20260313072429_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -62,9 +62,6 @@ namespace AddressRegistry.Projections.Feed.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "AddressFeedSequence", "AddressRegistryFeed");
 
-                    b.Property<int>("AddressPersistentLocalId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("Application")
                         .HasColumnType("int");
 
@@ -95,13 +92,28 @@ namespace AddressRegistry.Projections.Feed.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"));
 
-                    b.HasIndex("AddressPersistentLocalId");
-
                     b.HasIndex("Page");
 
                     b.HasIndex("Position");
 
                     b.ToTable("AddressFeed", "AddressRegistryFeed");
+                });
+
+            modelBuilder.Entity("AddressRegistry.Projections.Feed.AddressFeed.AddressFeedItemAddress", b =>
+                {
+                    b.Property<long>("FeedItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("AddressPersistentLocalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FeedItemId", "AddressPersistentLocalId");
+
+                    b.HasIndex("AddressPersistentLocalId");
+
+                    b.HasIndex("FeedItemId");
+
+                    b.ToTable("AddressFeedItemAddresses", "AddressRegistryFeed");
                 });
 
             modelBuilder.Entity("Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.ProjectionStates.ProjectionStateItem", b =>

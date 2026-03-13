@@ -96,6 +96,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document!.IsRemoved.Should().Be(addressWasMigrated.IsRemoved);
                     document.RecordCreatedAt.Should().Be(addressWasMigrated.Provenance.Timestamp);
                     document.LastChangedOn.Should().Be(addressWasMigrated.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasMigrated.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     document.Document.PersistentLocalId.Should().Be(addressWasMigrated.AddressPersistentLocalId);
                     document.Document.StreetNamePersistentLocalId.Should().Be(addressWasMigrated.StreetNamePersistentLocalId);
@@ -174,6 +175,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document!.IsRemoved.Should().BeFalse();
                     document.RecordCreatedAt.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                     document.LastChangedOn.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasProposedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     document.Document.PersistentLocalId.Should().Be(addressWasProposedV2.AddressPersistentLocalId);
                     document.Document.StreetNamePersistentLocalId.Should().Be(addressWasProposedV2.StreetNamePersistentLocalId);
@@ -252,6 +254,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(AdresStatus.InGebruik);
                     document.LastChangedOn.Should().Be(addressWasApproved.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasApproved.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     var feedItem = await FindLastFeedItemByAddressPersistentLocalId(context, addressWasApproved.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position + 1, addressWasApproved);
@@ -295,6 +298,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(AdresStatus.Voorgesteld);
                     document.LastChangedOn.Should().Be(addressWasCorrected.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -332,6 +336,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(AdresStatus.Afgekeurd);
                     document.LastChangedOn.Should().Be(addressWasRejected.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasRejected.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     var feedItem = await FindLastFeedItemByAddressPersistentLocalId(context, addressWasRejected.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position + 1, addressWasRejected);
@@ -374,6 +379,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(AdresStatus.Gehistoreerd);
                     document.LastChangedOn.Should().Be(addressWasRetiredV2.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasRetiredV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -411,6 +417,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.IsRemoved.Should().BeTrue();
                     document.LastChangedOn.Should().Be(addressWasRemovedV2.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasRemovedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     var feedItem = await FindLastFeedItemByAddressPersistentLocalId(context, addressWasRemovedV2.AddressPersistentLocalId);
                     AssertFeedItem(feedItem, position + 1, addressWasRemovedV2);
@@ -457,6 +464,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.PostalCode.Should().Be(addressPostalCodeWasChangedV2.PostalCode);
                     document.LastChangedOn.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -477,6 +485,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     boxDocument.Should().NotBeNull();
                     boxDocument!.Document.PostalCode.Should().Be(addressPostalCodeWasChangedV2.PostalCode);
                     boxDocument.LastChangedOn.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
+                    boxDocument.Document.VersionId.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -521,6 +530,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.HouseNumber.Should().Be(addressHouseNumberWasCorrectedV2.HouseNumber);
                     document.LastChangedOn.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -541,6 +551,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     boxDocument.Should().NotBeNull();
                     boxDocument!.Document.HouseNumber.Should().Be(addressHouseNumberWasCorrectedV2.HouseNumber);
                     boxDocument.LastChangedOn.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
+                    boxDocument.Document.VersionId.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -578,6 +589,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.BoxNumber.Should().Be(addressBoxNumberWasCorrectedV2.BoxNumber);
                     document.LastChangedOn.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -615,6 +627,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.OfficiallyAssigned.Should().BeFalse();
                     document.LastChangedOn.Should().Be(addressWasDeregulated.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasDeregulated.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -657,6 +670,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.OfficiallyAssigned.Should().BeTrue();
                     document.LastChangedOn.Should().Be(addressWasRegularized.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasRegularized.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -704,6 +718,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.OfficiallyAssigned.Should().Be(addressRemovalWasCorrected.OfficiallyAssigned);
                     document.Document.ExtendedWkbGeometry.Should().Be(addressRemovalWasCorrected.ExtendedWkbGeometry);
                     document.LastChangedOn.Should().Be(addressRemovalWasCorrected.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressRemovalWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -781,6 +796,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     var document = await context.AddressDocuments.FindAsync(addressPositionWasChanged.AddressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.LastChangedOn.Should().Be(addressPositionWasChanged.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressPositionWasChanged.Provenance.Timestamp.ToBelgianDateTimeOffset());
                     document.Document.PositionGeometryMethod.Should().Be(positieGeometrieMethode);
                     document.Document.PositionSpecification.Should().Be(positieSpecificatie);
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
@@ -829,6 +845,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     var document = await context.AddressDocuments.FindAsync(addressPositionWasCorrectedV2.AddressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.LastChangedOn.Should().Be(addressPositionWasCorrectedV2.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressPositionWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
                     document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AfgeleidVanObject);
                     document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Gebouweenheid);
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
@@ -873,6 +890,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     var document = await context.AddressDocuments.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.LastChangedOn.Should().Be(streetNameNamesWereChanged.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(streetNameNamesWereChanged.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(2));
                     ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(1, context, It.IsAny<Func<int, Task<int>>>()), Times.Exactly(2));
@@ -900,6 +918,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(AdresStatus.InGebruik);
                     document.LastChangedOn.Should().Be(addressWasCorrected.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(4));
                 });
@@ -930,6 +949,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.PostalCode.Should().Be(addressPostalCodeWasCorrectedV2.PostalCode);
                     document.LastChangedOn.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -950,6 +970,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     boxDocument.Should().NotBeNull();
                     boxDocument!.Document.PostalCode.Should().Be(addressPostalCodeWasCorrectedV2.PostalCode);
                     boxDocument.LastChangedOn.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
+                    boxDocument.Document.VersionId.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -1091,6 +1112,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(AdresStatus.Afgekeurd);
                     document.LastChangedOn.Should().Be(addressWasRejectedBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasRejectedBecauseOfMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -1191,6 +1213,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(AdresStatus.Gehistoreerd);
                     document.LastChangedOn.Should().Be(addressWasRetiredBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasRetiredBecauseOfMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -1334,6 +1357,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.PostalCode.Should().Be("9000");
                     document.Document.OfficiallyAssigned.Should().BeTrue();
                     document.LastChangedOn.Should().Be(streetNameWasReaddressed.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(streetNameWasReaddressed.Provenance.Timestamp.ToBelgianDateTimeOffset());
                     document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AangeduidDoorBeheerder);
                     document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Ingang);
                     document.Document.ExtendedWkbGeometry.Should().NotBeNull();

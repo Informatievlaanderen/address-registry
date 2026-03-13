@@ -524,6 +524,20 @@
           "System.Diagnostics.EventLog": "6.0.0"
         }
       },
+      "CloudNative.CloudEvents": {
+        "type": "Transitive",
+        "resolved": "2.8.0",
+        "contentHash": "RvabvAQV7u3FZcZL5UlRmFz3/T5nMl86GpChpRvHKRHbO+/I4LBcZ0xRqYnNfAh30gM+h/JkSBHEnbhl0zmGtA=="
+      },
+      "CloudNative.CloudEvents.NewtonsoftJson": {
+        "type": "Transitive",
+        "resolved": "2.8.0",
+        "contentHash": "BIs7Tg73XqRDnk1m60leowADsXNJyg7a9wQnim2zfamory1jXRtrd9N1ppX3DbaTjSd2w5rqRk9ufLfgzIFBcg==",
+        "dependencies": {
+          "CloudNative.CloudEvents": "2.8.0",
+          "Newtonsoft.Json": "13.0.3"
+        }
+      },
       "CompareNETObjects": {
         "type": "Transitive",
         "resolved": "4.83.0",
@@ -2692,7 +2706,7 @@
           "AddressRegistry.Consumer.Read.StreetName": "[1.0.0, )",
           "AspNetCore.HealthChecks.SqlServer": "[9.0.0, )",
           "Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.Abstractions": "[1.0.0, )",
-          "Be.Vlaanderen.Basisregisters.Api": "[24.1.0, )",
+          "Be.Vlaanderen.Basisregisters.Api": "[24.3.0, )",
           "Be.Vlaanderen.Basisregisters.Auth.AcmIdm": "[4.0.1, )",
           "Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency": "[10.0.2, )",
           "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": "[22.8.0, )",
@@ -2853,7 +2867,7 @@
         "dependencies": {
           "AddressRegistry.Infrastructure": "[1.0.0, )",
           "AspNetCore.HealthChecks.SqlServer": "[9.0.0, )",
-          "Be.Vlaanderen.Basisregisters.Api": "[24.1.0, )",
+          "Be.Vlaanderen.Basisregisters.Api": "[24.3.0, )",
           "Be.Vlaanderen.Basisregisters.EventHandling.Autofac": "[7.0.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[22.8.0, )",
           "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer": "[6.0.3, )",
@@ -2870,7 +2884,7 @@
           "AddressRegistry.Infrastructure": "[1.0.0, )",
           "AspNetCore.HealthChecks.NpgSql": "[9.0.0, )",
           "AspNetCore.HealthChecks.SqlServer": "[9.0.0, )",
-          "Be.Vlaanderen.Basisregisters.Api": "[24.1.0, )",
+          "Be.Vlaanderen.Basisregisters.Api": "[24.3.0, )",
           "Be.Vlaanderen.Basisregisters.EventHandling.Autofac": "[7.0.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Legacy": "[22.8.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Notifications": "[22.8.0, )",
@@ -2940,6 +2954,19 @@
           "Be.Vlaanderen.Basisregisters.Shaperon": "[11.0.0, )"
         }
       },
+      "addressregistry.projections.feed": {
+        "type": "Project",
+        "dependencies": {
+          "AddressRegistry.Infrastructure": "[1.0.0, )",
+          "Be.Vlaanderen.Basisregisters.EventHandling.Autofac": "[7.0.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed": "[22.8.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "[22.8.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Extracts": "[22.8.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Oslo": "[22.8.0, )",
+          "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
+          "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )"
+        }
+      },
       "addressregistry.projections.integration": {
         "type": "Project",
         "dependencies": {
@@ -3003,7 +3030,7 @@
       "Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.Abstractions": {
         "type": "Project",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.Api": "[24.1.0, )",
+          "Be.Vlaanderen.Basisregisters.Api": "[24.3.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Edit": "[22.8.0, )",
           "Be.Vlaanderen.Basisregisters.Sqs": "[4.0.1, )",
           "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": "[3.2.3, )",
@@ -3015,7 +3042,7 @@
         "type": "Project",
         "dependencies": {
           "AspNetCore.HealthChecks.SqlServer": "[9.0.0, )",
-          "Be.Vlaanderen.Basisregisters.Api": "[24.1.0, )",
+          "Be.Vlaanderen.Basisregisters.Api": "[24.3.0, )",
           "Datadog.Trace.Bundle": "[3.24.1, )",
           "Elastic.Clients.Elasticsearch": "[8.17.4, )",
           "MediatR": "[12.5.0, )",
@@ -3109,9 +3136,9 @@
       },
       "Be.Vlaanderen.Basisregisters.Api": {
         "type": "CentralTransitive",
-        "requested": "[24.1.0, )",
-        "resolved": "24.1.0",
-        "contentHash": "hcXBIwOflwBM09ZquNLjwBbqGurnpbK2vHNeIse2LhHm4BlbS+sMIOeIlPVW1oMJdwGiJ5DR4s/PNFFihMvRHQ==",
+        "requested": "[24.3.0, )",
+        "resolved": "24.3.0",
+        "contentHash": "nMDsGLvOuSsgjCz/lgrV7iypSOOZ9f4P9twwLP2tIf2T9w4hdefqNzRu4Dqoj2/EL+Y9CqyhuCWNh0r0H4YgqA==",
         "dependencies": {
           "Asp.Versioning.Mvc.ApiExplorer": "8.1.0",
           "Autofac": "8.2.1",
@@ -3253,6 +3280,21 @@
         "requested": "[5.0.0, )",
         "resolved": "5.0.0",
         "contentHash": "YlSC0DHwE0vHgVmEOUQDF/6muu8Q+uv3gZWkS+0lKg6UocSUWa9VpBCciLnwLoSW7oIA+viSuBm4bGMWKrchDg=="
+      },
+      "Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed": {
+        "type": "CentralTransitive",
+        "requested": "[22.8.0, )",
+        "resolved": "22.8.0",
+        "contentHash": "ADN3Qg65kE9OleQS82f6Hv6vbkPd2XKgDYyW6qElIxzL/t+btykoGVNiUmWXaqULs7eoku3p84RYHWydzO9cNQ==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "22.8.0",
+          "Be.Vlaanderen.Basisregisters.GrAr.Legacy": "22.8.0",
+          "Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList": "15.0.1",
+          "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": "5.0.0",
+          "CloudNative.CloudEvents.NewtonsoftJson": "2.8.0",
+          "Microsoft.Extensions.Configuration": "9.0.3",
+          "Newtonsoft.Json": "13.0.3"
+        }
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Common": {
         "type": "CentralTransitive",

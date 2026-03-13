@@ -48,7 +48,7 @@
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing" Version="10.0.2" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac" Version="10.0.2" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit" Version="10.0.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Api" Version="24.1.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.Api" Version="24.3.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Auth.AcmIdm" Version="4.0.1" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Aws.DistributedMutex" Version="5.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Aws.Lambda" Version="5.0.0" />
@@ -75,6 +75,7 @@
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit" Version="15.0.1" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Projector" Version="16.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Crab" Version="5.0.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed" Version="22.8.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Common" Version="22.8.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Contracts" Version="22.8.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" Version="22.8.0" />

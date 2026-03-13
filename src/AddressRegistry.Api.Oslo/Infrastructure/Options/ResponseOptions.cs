@@ -1,5 +1,7 @@
 namespace AddressRegistry.Api.Oslo.Infrastructure.Options
 {
+    using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
+
     public class ResponseOptions
     {
         public string Naamruimte { get; set; }
@@ -22,5 +24,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Options
 
         public string AddressDetailBuildingUnitsLink { get; set; }
         public string AddressDetailParcelsLink { get; set; }
+
+        public ChangeFeedConfig AddressFeed { get; set; }
     }
 }

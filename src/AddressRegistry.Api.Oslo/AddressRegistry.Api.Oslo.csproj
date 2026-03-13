@@ -31,6 +31,7 @@
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.StreetName\AddressRegistry.Consumer.Read.StreetName.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.Postal\AddressRegistry.Consumer.Read.Postal.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\AddressRegistry.Projections.Feed\AddressRegistry.Projections.Feed.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\AddressRegistry.Projections.AddressMatch\AddressRegistry.Projections.AddressMatch.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\AddressRegistry.Projections.Elastic\AddressRegistry.Projections.Elastic.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\AddressRegistry.Projections.Legacy\AddressRegistry.Projections.Legacy.csproj" PrivateAssets="All" />
@@ -63,6 +64,9 @@
     <ItemGroup>
       <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.Projections.Legacy.dll" />
       <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.Projections.Legacy.pdb" />
+
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.Projections.Feed.dll" />
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.Projections.Feed.pdb" />
 
       <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.dll" />
       <BuildOutputInPackage Include="$(MSBuildProjectDirectory)\$(OutputPath)AddressRegistry.pdb" />

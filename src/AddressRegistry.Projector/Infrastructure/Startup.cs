@@ -18,6 +18,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
@@ -155,7 +156,8 @@ namespace AddressRegistry.Projector.Infrastructure
                     }
                 })
                 .Configure<ExtractConfig>(_configuration.GetSection("Extract"))
-                .Configure<IntegrationOptions>(_configuration.GetSection("Integration"));
+                .Configure<IntegrationOptions>(_configuration.GetSection("Integration"))
+                .Configure<ChangeFeedConfig>(_configuration.GetSection("AddressFeed"));
 
             services.AddSingleton<ProjectionsHealthCheck>(
                 c => new ProjectionsHealthCheck(

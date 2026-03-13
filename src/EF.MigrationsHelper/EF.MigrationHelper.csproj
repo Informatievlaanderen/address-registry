@@ -42,6 +42,7 @@
     <ProjectReference Include="..\AddressRegistry.Snapshot.Verifier\AddressRegistry.Snapshot.Verifier.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Elastic\AddressRegistry.Projections.Elastic.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.AddressMatch\AddressRegistry.Projections.AddressMatch.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Projections.Feed\AddressRegistry.Projections.Feed.csproj" />
   </ItemGroup>
 
   <ItemGroup>

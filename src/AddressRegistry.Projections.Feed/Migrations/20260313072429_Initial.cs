@@ -43,7 +43,6 @@ namespace AddressRegistry.Projections.Feed.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     Page = table.Column<int>(type: "int", nullable: false),
                     Position = table.Column<long>(type: "bigint", nullable: false),
-                    AddressPersistentLocalId = table.Column<int>(type: "int", nullable: false),
                     Application = table.Column<int>(type: "int", nullable: true),
                     Modification = table.Column<int>(type: "int", nullable: true),
                     Operator = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -55,6 +54,19 @@ namespace AddressRegistry.Projections.Feed.Migrations
                 {
                     table.PrimaryKey("PK_AddressFeed", x => x.Id)
                         .Annotation("SqlServer:Clustered", true);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AddressFeedItemAddresses",
+                schema: "AddressRegistryFeed",
+                columns: table => new
+                {
+                    FeedItemId = table.Column<long>(type: "bigint", nullable: false),
+                    AddressPersistentLocalId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AddressFeedItemAddresses", x => new { x.FeedItemId, x.AddressPersistentLocalId });
                 });
 
             migrationBuilder.CreateTable(
@@ -74,12 +86,6 @@ namespace AddressRegistry.Projections.Feed.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AddressFeed_AddressPersistentLocalId",
-                schema: "AddressRegistryFeed",
-                table: "AddressFeed",
-                column: "AddressPersistentLocalId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AddressFeed_Page",
                 schema: "AddressRegistryFeed",
                 table: "AddressFeed",
@@ -90,6 +96,18 @@ namespace AddressRegistry.Projections.Feed.Migrations
                 schema: "AddressRegistryFeed",
                 table: "AddressFeed",
                 column: "Position");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AddressFeedItemAddresses_AddressPersistentLocalId",
+                schema: "AddressRegistryFeed",
+                table: "AddressFeedItemAddresses",
+                column: "AddressPersistentLocalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AddressFeedItemAddresses_FeedItemId",
+                schema: "AddressRegistryFeed",
+                table: "AddressFeedItemAddresses",
+                column: "FeedItemId");
         }
 
         /// <inheritdoc />
@@ -101,6 +119,10 @@ namespace AddressRegistry.Projections.Feed.Migrations
 
             migrationBuilder.DropTable(
                 name: "AddressFeed",
+                schema: "AddressRegistryFeed");
+
+            migrationBuilder.DropTable(
+                name: "AddressFeedItemAddresses",
                 schema: "AddressRegistryFeed");
 
             migrationBuilder.DropTable(

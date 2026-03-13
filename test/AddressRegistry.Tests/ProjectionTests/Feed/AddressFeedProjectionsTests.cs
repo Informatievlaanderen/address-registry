@@ -21,6 +21,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using CloudNative.CloudEvents;
     using EventExtensions;
     using FluentAssertions;
@@ -1089,6 +1090,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     var document = await context.AddressDocuments.FindAsync(addressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(AdresStatus.Afgekeurd);
+                    document.LastChangedOn.Should().Be(addressWasRejectedBecauseOfMunicipalityMerger.Provenance.Timestamp);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -1188,6 +1190,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     var document = await context.AddressDocuments.FindAsync(addressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(AdresStatus.Gehistoreerd);
+                    document.LastChangedOn.Should().Be(addressWasRetiredBecauseOfMunicipalityMerger.Provenance.Timestamp);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -1242,7 +1245,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
             var destHouseProposed = _fixture.Create<AddressWasProposedV2>()
                 .WithStreetNamePersistentLocalId(streetNamePersistentLocalId)
-                .WithAddressPersistentLocalId(destinationHouseNumberId);
+                .WithAddressPersistentLocalId(destinationHouseNumberId)
+                .WithExtendedWkbGeometry(GeometryHelpers.ExampleExtendedWkb.ToHexString());
 
             var destBoxProposed = _fixture.Create<AddressWasProposedV2>()
                 .WithStreetNamePersistentLocalId(streetNamePersistentLocalId)
@@ -1322,6 +1326,20 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     CreateEnvelope(streetNameWasReaddressed, position + 3))
                 .Then(async context =>
                 {
+                    var document = await context.AddressDocuments.FindAsync(destinationHouseNumberId);
+                    document.Should().NotBeNull();
+                    document!.Document.Status.Should().Be(AdresStatus.InGebruik);
+                    document.Document.HouseNumber.Should().Be("1");
+                    document.Document.BoxNumber.Should().BeNullOrEmpty();
+                    document.Document.PostalCode.Should().Be("9000");
+                    document.Document.OfficiallyAssigned.Should().BeTrue();
+                    document.LastChangedOn.Should().Be(streetNameWasReaddressed.Provenance.Timestamp);
+                    document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AangeduidDoorBeheerder);
+                    document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Ingang);
+                    document.Document.ExtendedWkbGeometry.Should().NotBeNull();
+                    document.Document.ExtendedWkbGeometry.Should().BeEquivalentTo(readdressedHouseNumber.SourceExtendedWkbGeometry);
+                    document.Document.PositionAsGml = GmlHelpers.ParseGeometry(readdressedHouseNumber.SourceExtendedWkbGeometry).ConvertToGml();
+
                     // Verify transform event was created with correct values
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEvent(
                             It.IsAny<long>(),

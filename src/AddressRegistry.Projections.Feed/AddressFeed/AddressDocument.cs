@@ -28,7 +28,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
         public Instant LastChangedOn
         {
             get => Instant.FromDateTimeOffset(LastChangedOnAsDateTimeOffset);
-            set => LastChangedOnAsDateTimeOffset = value.ToBelgianDateTimeOffset();
+            set
+            {
+                var belgianDateTimeOffset = value.ToBelgianDateTimeOffset();
+                LastChangedOnAsDateTimeOffset = belgianDateTimeOffset;
+                Document.VersionId = belgianDateTimeOffset;
+            }
         }
 
         private AddressDocument()
@@ -46,7 +51,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             Instant createdTimestamp)
         {
             PersistentLocalId = persistentLocalId;
-            LastChangedOn = createdTimestamp;
             RecordCreatedAt = createdTimestamp;
 
             Document = new AddressDocumentContent
@@ -58,8 +62,9 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 PostalCode = postalCode,
                 Status = AdresStatus.Voorgesteld,
                 OfficiallyAssigned = true,
-                VersionId = createdTimestamp.ToBelgianDateTimeOffset()
             };
+
+            LastChangedOn = createdTimestamp;
         }
     }
 

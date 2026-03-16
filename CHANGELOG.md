@@ -1,3 +1,10 @@
+# [5.8.0](https://github.com/informatievlaanderen/address-registry/compare/v5.7.0...v5.8.0) (2026-03-16)
+
+
+### Features
+
+* add lambert08 support ([e8a177f](https://github.com/informatievlaanderen/address-registry/commit/e8a177fab1e1d58c675597a3ec3c149e882abb9d))
+
 # [5.7.0](https://github.com/informatievlaanderen/address-registry/compare/v5.6.0...v5.7.0) (2026-02-17)
 
 

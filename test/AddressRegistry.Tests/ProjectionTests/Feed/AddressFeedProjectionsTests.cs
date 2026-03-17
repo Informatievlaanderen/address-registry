@@ -692,6 +692,129 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         }
 
         [Fact]
+        public async Task WhenAddressRegularizationWasCorrected_ThenOfficiallyAssignedIsFalseAndStatusIsInGebruik()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var addressWasRegularized = _fixture.Create<AddressWasRegularized>();
+            var addressRegularizationWasCorrected = _fixture.Create<AddressRegularizationWasCorrected>();
+
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(addressWasProposedV2, position),
+                    CreateEnvelope(addressWasRegularized, position + 1),
+                    CreateEnvelope(addressRegularizationWasCorrected, position + 2))
+                .Then(async context =>
+                {
+                    var document = await context.AddressDocuments.FindAsync(addressRegularizationWasCorrected.AddressPersistentLocalId);
+                    document.Should().NotBeNull();
+                    document!.Document.OfficiallyAssigned.Should().BeFalse();
+                    document.Document.Status.Should().Be(AdresStatus.InGebruik);
+                    document.LastChangedOn.Should().Be(addressRegularizationWasCorrected.Provenance.Timestamp);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressRegularizationWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            addressRegularizationWasCorrected.AddressPersistentLocalId.ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
+                                               && a.OldValue!.ToString() == true.ToString()
+                                               && a.NewValue!.ToString() == false.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.StatusName
+                                               && a.OldValue!.ToString() == nameof(AdresStatus.Voorgesteld)
+                                               && a.NewValue!.ToString() == nameof(AdresStatus.InGebruik))),
+                            AddressRegularizationWasCorrected.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(3));
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressRegularizationWasCorrected_WhenStatusAlreadyInGebruik_ThenStatusAttributeIsNotIncluded()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var addressRegularizationWasCorrected = _fixture.Create<AddressRegularizationWasCorrected>();
+
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(addressWasProposedV2, position),
+                    CreateEnvelope(addressWasApproved, position + 1),
+                    CreateEnvelope(addressRegularizationWasCorrected, position + 2))
+                .Then(async context =>
+                {
+                    var document = await context.AddressDocuments.FindAsync(addressRegularizationWasCorrected.AddressPersistentLocalId);
+                    document.Should().NotBeNull();
+                    document!.Document.OfficiallyAssigned.Should().BeFalse();
+                    document.Document.Status.Should().Be(AdresStatus.InGebruik);
+                    document.LastChangedOn.Should().Be(addressRegularizationWasCorrected.Provenance.Timestamp);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressRegularizationWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            addressRegularizationWasCorrected.AddressPersistentLocalId.ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
+                                               && a.OldValue!.ToString() == true.ToString()
+                                               && a.NewValue!.ToString() == false.ToString())
+                                && !attrs.Any(a => a.Name == AddressAttributeNames.StatusName)),
+                            AddressRegularizationWasCorrected.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(3));
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressDeregulationWasCorrected_ThenOfficiallyAssignedIsTrue()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var addressWasDeregulated = _fixture.Create<AddressWasDeregulated>();
+            var addressDeregulationWasCorrected = _fixture.Create<AddressDeregulationWasCorrected>();
+
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(addressWasProposedV2, position),
+                    CreateEnvelope(addressWasDeregulated, position + 1),
+                    CreateEnvelope(addressDeregulationWasCorrected, position + 2))
+                .Then(async context =>
+                {
+                    var document = await context.AddressDocuments.FindAsync(addressDeregulationWasCorrected.AddressPersistentLocalId);
+                    document.Should().NotBeNull();
+                    document!.Document.OfficiallyAssigned.Should().BeTrue();
+                    document.LastChangedOn.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressDeregulationWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            addressDeregulationWasCorrected.AddressPersistentLocalId.ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
+                                               && a.OldValue!.ToString() == false.ToString()
+                                               && a.NewValue!.ToString() == true.ToString())),
+                            AddressDeregulationWasCorrected.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(3));
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressRemovalWasCorrected_ThenDocumentIsRestored()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
@@ -991,7 +1114,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 });
         }
 
-
         [Fact]
         public async Task WhenAddressWasProposedForMunicipalityMerger_ThenFeedItemAndDocumentAndTransformAreAdded()
         {
@@ -1020,7 +1142,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.StatusName
-                                               && a.OldValue == null)
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == AdresStatus.Voorgesteld.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.HouseNumber
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.HouseNumber)

@@ -59,7 +59,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
-                document.Document.PositionAsGml = geometry.ConvertToGml();
+                document.Document.PositionAsGml = geometry.ConvertToGml(false);
                 document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
                 document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
@@ -94,7 +94,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
-                document.Document.PositionAsGml = geometry.ConvertToGml();
+                document.Document.PositionAsGml = geometry.ConvertToGml(false);
                 document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
                 document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
@@ -132,7 +132,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
-                document.Document.PositionAsGml = geometry.ConvertToGml();
+                document.Document.PositionAsGml = geometry.ConvertToGml(false);
                 document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
                 document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
@@ -167,7 +167,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
-                document.Document.PositionAsGml = geometry.ConvertToGml();
+                document.Document.PositionAsGml = geometry.ConvertToGml(false);
                 document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
                 document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
@@ -564,7 +564,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 var newGeometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
-                document.Document.PositionAsGml = newGeometry.ConvertToGml();
+                document.Document.PositionAsGml = newGeometry.ConvertToGml(false);
                 document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
                 document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
@@ -592,7 +592,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 var newGeometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
-                document.Document.PositionAsGml = newGeometry.ConvertToGml();
+                document.Document.PositionAsGml = newGeometry.ConvertToGml(false);
                 document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
                 document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
@@ -761,7 +761,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
                 document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
-                document.Document.PositionAsGml = geometry.ConvertToGml();
+                document.Document.PositionAsGml = geometry.ConvertToGml(false);
                 document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
                 document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
@@ -1057,7 +1057,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             addressDocument.Document.PositionGeometryMethod = MapGeometryMethod(readdressed.SourceGeometryMethod);
             addressDocument.Document.PositionSpecification = MapGeometrySpecification(readdressed.SourceGeometrySpecification);
             addressDocument.Document.ExtendedWkbGeometry = readdressed.SourceExtendedWkbGeometry;
-            addressDocument.Document.PositionAsGml = GmlHelpers.ParseGeometry(readdressed.SourceExtendedWkbGeometry).ConvertToGml();
+            addressDocument.Document.PositionAsGml = GmlHelpers.ParseGeometry(readdressed.SourceExtendedWkbGeometry).ConvertToGml(false);
             addressDocument.LastChangedOn = timestamp;
 
             var attributes = new List<BaseRegistriesCloudEventAttribute>();
@@ -1129,7 +1129,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
         private static List<AddressPositionCloudEventValue> CreatePositionValues(Geometry positionGeometry)
         {
             var list = new List<AddressPositionCloudEventValue>();
-            var gml = positionGeometry.ConvertToGml();
+            var gml = positionGeometry.ConvertToGml(false);
             switch (positionGeometry.SRID)
             {
                 case SystemReferenceId.SridLambert72:
@@ -1137,13 +1137,13 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     list.Add(new AddressPositionCloudEventValue(gml, SystemReferenceId.SrsNameLambert72));
 
                     var lambert08Geometry = positionGeometry.TransformFromLambert72To08();
-                    list.Add(new AddressPositionCloudEventValue(lambert08Geometry.ConvertToGml(), SystemReferenceId.SrsNameLambert2008));
+                    list.Add(new AddressPositionCloudEventValue(lambert08Geometry.ConvertToGml(false), SystemReferenceId.SrsNameLambert2008));
                     break;
                 }
                 case SystemReferenceId.SridLambert2008:
                 {
                     var lambert72Geometry = positionGeometry.TransformFromLambert08To72();
-                    list.Add(new AddressPositionCloudEventValue(lambert72Geometry.ConvertToGml(), SystemReferenceId.SrsNameLambert72));
+                    list.Add(new AddressPositionCloudEventValue(lambert72Geometry.ConvertToGml(false), SystemReferenceId.SrsNameLambert72));
                     list.Add(new AddressPositionCloudEventValue(gml, SystemReferenceId.SrsNameLambert2008));
                     break;
                 }

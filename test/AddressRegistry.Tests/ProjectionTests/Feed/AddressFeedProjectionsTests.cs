@@ -1607,6 +1607,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             positionList.Count.Should().Be(2);
             positionList.Should().Contain(p => p.Gml == gml);
 
+            gml.Should().ContainAny(SystemReferenceId.SrsNameLambert72, SystemReferenceId.SrsNameLambert2008);
+
             return true;
         }
 

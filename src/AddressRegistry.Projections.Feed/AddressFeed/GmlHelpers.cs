@@ -11,10 +11,5 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             var reader = WKBReaderFactory.CreateForEwkbAsHex(extendedWkbGeometryHex);
             return reader.Read(extendedWkbGeometryHex.ToByteArray());
         }
-
-        public static string ConvertToGml(string extendedWkbGeometryHex)
-        {
-            return ParseGeometry(extendedWkbGeometryHex).ConvertToGml();
-        }
     }
 }

@@ -1,3 +1,10 @@
+# [5.9.0](https://github.com/informatievlaanderen/address-registry/compare/v5.8.0...v5.9.0) (2026-03-27)
+
+
+### Features
+
+* **feed:** add feed projections ([77f5784](https://github.com/informatievlaanderen/address-registry/commit/77f5784637930640ed000cc3a30f21d77655d9f5))
+
 # [5.8.0](https://github.com/informatievlaanderen/address-registry/compare/v5.7.0...v5.8.0) (2026-03-16)
 
 

@@ -17,6 +17,7 @@
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.AddressMatch\AddressRegistry.Projections.AddressMatch.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Elastic\AddressRegistry.Projections.Elastic.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Extract\AddressRegistry.Projections.Extract.csproj" />
+    <ProjectReference Include="..\..\src\AddressRegistry.Projections.Feed\AddressRegistry.Projections.Feed.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Integration\AddressRegistry.Projections.Integration.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.LastChangedList\AddressRegistry.Projections.LastChangedList.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Wfs\AddressRegistry.Projections.Wfs.csproj" />

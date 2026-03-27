@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Producer
+﻿namespace AddressRegistry.Infrastructure
 {
     using System.Collections.Generic;
 

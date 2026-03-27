@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Consumer.Read.Municipality.Infrastructure.Modules;
     using Consumer.Read.Postal.Infrastructure.Modules;
     using Consumer.Read.StreetName.Infrastructure.Modules;
@@ -15,7 +16,9 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using Projections.AddressMatch;
+    using Projections.Feed;
     using Projections.Legacy;
 
     public class ApiModule : Module
@@ -53,6 +56,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
         {
             builder
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new FeedModule(_configuration, _services, _loggerFactory, new JsonSerializerSettings().ConfigureDefaultForApi()))
                 .RegisterModule(new AddressMatchModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new PostalConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory))

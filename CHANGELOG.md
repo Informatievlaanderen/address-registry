@@ -1,3 +1,10 @@
+## [5.9.1](https://github.com/informatievlaanderen/address-registry/compare/v5.9.0...v5.9.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* **feed:** handle non srid extendedwkb in events ([c048d66](https://github.com/informatievlaanderen/address-registry/commit/c048d66b1926909a375903efdc98e7401818b993))
+
 # [5.9.0](https://github.com/informatievlaanderen/address-registry/compare/v5.8.0...v5.9.0) (2026-03-27)
 
 

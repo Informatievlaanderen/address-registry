@@ -238,6 +238,90 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         }
 
         [Fact]
+        public async Task WhenAddressWasProposedV2WithExtendedGeometryWithoutSrid_ThenFeedItemAndDocumentAreAdded()
+        {
+            _fixture.Register(() => GeometryMethod.DerivedFromObject);
+            _fixture.Register(() => GeometrySpecification.BuildingUnit);
+            var ewkb = _fixture.Create<ExtendedWkbGeometry>();
+            var geom = WKBReaderFactory.CreateForEwkbAsHex(ewkb.ToString()).Read(ewkb);
+            geom.SRID = 0;
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(geom.AsBinary()));
+
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(addressWasProposedV2, position))
+                .Then(async context =>
+                {
+                    var document = await context.AddressDocuments.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
+                    document.Should().NotBeNull();
+                    document!.IsRemoved.Should().BeFalse();
+                    document.RecordCreatedAt.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    document.LastChangedOn.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasProposedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
+
+                    document.Document.PersistentLocalId.Should().Be(addressWasProposedV2.AddressPersistentLocalId);
+                    document.Document.StreetNamePersistentLocalId.Should().Be(addressWasProposedV2.StreetNamePersistentLocalId);
+                    document.Document.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
+                    document.Document.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
+                    document.Document.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
+                    document.Document.Status.Should().Be(AdresStatus.Voorgesteld);
+                    document.Document.OfficiallyAssigned.Should().BeTrue();
+                    document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AfgeleidVanObject);
+                    document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Gebouweenheid);
+                    document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
+                    document.Document.ExtendedWkbGeometry.Should().Be(addressWasProposedV2.ExtendedWkbGeometry);
+
+                    var feedItem = await FindFeedItemByAddressPersistentLocalId(context, addressWasProposedV2.AddressPersistentLocalId);
+                    AssertFeedItem(feedItem, position, addressWasProposedV2);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressWasProposedV2.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.CreateV1,
+                            addressWasProposedV2.AddressPersistentLocalId.ToString(),
+                            addressWasProposedV2.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.StreetNameId
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasProposedV2.StreetNamePersistentLocalId.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.StatusName
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == nameof(AdresStatus.Voorgesteld))
+                                && attrs.Any(a => a.Name == AddressAttributeNames.HouseNumber
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasProposedV2.HouseNumber)
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasProposedV2.PostalCode)
+                                && attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == true.ToString())
+                                && (string.IsNullOrEmpty(addressWasProposedV2.BoxNumber)
+                                    || attrs.Any(a => a.Name == AddressAttributeNames.BoxNumber
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == addressWasProposedV2.BoxNumber))
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == PositieGeometrieMethode.AfgeleidVanObject.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == PositieSpecificatie.Gebouweenheid.ToString())
+                                && attrs.Any(a => a.Name == AddressAttributeNames.Position
+                                               && a.OldValue == null
+                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
+                            AddressWasProposedV2.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Once);
+                    ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(1, context, It.IsAny<Func<int, Task<int>>>()), Times.Once);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasApproved_ThenStatusIsUpdated()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

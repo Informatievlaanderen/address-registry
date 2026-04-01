@@ -9,6 +9,8 @@ namespace AddressRegistry.StreetName
 
     public class ExtendedWkbGeometry : ByteArrayValueObject<ExtendedWkbGeometry>
     {
+        private static readonly WKBWriter WkbWriter = new WKBWriter { Strict = false, HandleSRID = true };
+
         public const int SridLambert72 = SystemReferenceId.SridLambert72;
 
         public ExtendedWkbGeometry(byte[] ewkbBytes) : base(ewkbBytes) { }
@@ -17,18 +19,41 @@ namespace AddressRegistry.StreetName
 
         public override string ToString() => Value.ToHexString();
 
-        public static ExtendedWkbGeometry CreateEWkb(byte[] wkb)
+        public static ExtendedWkbGeometry? CreateEWkb(byte[]? wkb, int useSrid = SridLambert72)
         {
             if (wkb == null)
                 return null;
+
             try
             {
-                wkb.TryReadSrid(out var srid);
-                var reader = Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology.WKBReaderFactory.CreateForEwkb(wkb);
-                var geometry = reader.Read(wkb);
-                geometry.SRID = srid;
-                var wkbWriter = new WKBWriter { Strict = false, HandleSRID = true };
-                return new ExtendedWkbGeometry(wkbWriter.Write(geometry));
+                if (!wkb.TryReadSrid(out var srid))
+                {
+                    if (useSrid == SridLambert72)
+                    {
+                        var geometry = WKBReaderFactory.CreateForLambert72().Read(wkb);
+                        return new ExtendedWkbGeometry(WkbWriter.Write(geometry));
+                    }
+
+                    if (useSrid == SystemReferenceId.SridLambert2008)
+                    {
+                        var geometry = WKBReaderFactory.CreateForLambert2008().Read(wkb);
+                        return new ExtendedWkbGeometry(WkbWriter.Write(geometry));
+                    }
+
+                    return null;
+                }
+
+                if (srid != useSrid)
+                    throw new InvalidOperationException("SRID in EWKB does not match the expected SRID.");
+
+                var reader = WKBReaderFactory.CreateForEwkb(wkb);
+                var ewkbGeometry = reader.Read(wkb);
+                ewkbGeometry.SRID = srid;
+                return new ExtendedWkbGeometry(WkbWriter.Write(ewkbGeometry));
+            }
+            catch (ParseException)
+            {
+                return null;
             }
             catch (ArgumentException)
             {

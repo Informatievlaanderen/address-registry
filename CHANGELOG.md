@@ -1,3 +1,10 @@
+## [5.9.2](https://github.com/informatievlaanderen/address-registry/compare/v5.9.1...v5.9.2) (2026-04-03)
+
+
+### Bug Fixes
+
+* **feed:** disable cache + update packages ([c92558f](https://github.com/informatievlaanderen/address-registry/commit/c92558fbd99d1c33572d334598f1896b65d3ef53))
+
 ## [5.9.1](https://github.com/informatievlaanderen/address-registry/compare/v5.9.0...v5.9.1) (2026-04-01)
 
 

@@ -28,7 +28,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     using StreetName.Events;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
-    [ConnectedProjectionName("Feed endpoint adres")]
+    [ConnectedProjectionName("Feed endpoint adres (cloudevents)")]
     [ConnectedProjectionDescription("Projectie die de adres data voor de adres cloudevent feed voorziet.")]
     public class AddressFeedProjections : ConnectedProjection<FeedContext>
     {

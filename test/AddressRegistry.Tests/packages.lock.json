@@ -2880,7 +2880,7 @@
       "addressregistry.producer.snapshot.oslo": {
         "type": "Project",
         "dependencies": {
-          "AWSSDK.Extensions.NETCore.Setup": "[3.7.400, )",
+          "AWSSDK.Extensions.NETCore.Setup": "[3.7.400.1, )",
           "AddressRegistry.Infrastructure": "[1.0.0, )",
           "AspNetCore.HealthChecks.NpgSql": "[9.0.0, )",
           "AspNetCore.HealthChecks.SqlServer": "[9.0.0, )",
@@ -3091,9 +3091,9 @@
       },
       "AWSSDK.Extensions.NETCore.Setup": {
         "type": "CentralTransitive",
-        "requested": "[3.7.400, )",
-        "resolved": "3.7.400",
-        "contentHash": "i4ta6n+QuGKt1RBCIbRU2wohz5DYJ+wRPR9EI7YkzC8eaWSbmMXTNL+s4HpYUsoxM7uyUrYoW0gC52/9KnK7xw==",
+        "requested": "[3.7.400.1, )",
+        "resolved": "3.7.400.1",
+        "contentHash": "GsIvwaoSnRnQ+nBDv5jWLXilHlZUXcrGYf8EarVD/9fS1bH6bXobEYFZta27WNghYcEBkuZA5HsFAoXtfarbfA==",
         "dependencies": {
           "AWSSDK.Core": "3.7.402",
           "Microsoft.Extensions.Configuration.Abstractions": "2.0.0",

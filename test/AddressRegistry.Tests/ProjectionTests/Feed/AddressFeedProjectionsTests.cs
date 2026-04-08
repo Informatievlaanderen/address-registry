@@ -75,13 +75,49 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         }
 
         [Fact]
+        public async Task WhenRemovedAddressWasMigratedToStreetName_ThenFeedItemAndDocumentAreNotAdded()
+        {
+            var addressWasMigrated = _fixture.Create<AddressWasMigratedToStreetName>()
+                .WithRemoved();
+
+            await Sut
+                .Given(
+                    _fixture.Create<MigratedStreetNameWasImported>(),
+                    CreateEnvelope(addressWasMigrated, 2))
+                .Then(async context =>
+                {
+                    var document = await context.AddressDocuments.FindAsync(addressWasMigrated.AddressPersistentLocalId);
+                    document.Should().BeNull();
+
+                    var feedItem = await FindFeedItemByAddressPersistentLocalId(context, addressWasMigrated.AddressPersistentLocalId);
+                    feedItem.Should().BeNull();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<string>(),
+                            It.IsAny<string>(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Never);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Never);
+                    ChangeFeedServiceMock.Verify(x => x.CheckToUpdateCacheAsync(It.IsAny<int>(), It.IsAny<FeedContext>(), It.IsAny<Func<int, Task<int>>>()), Times.Never);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasMigratedToStreetName_ThenFeedItemAndDocumentAreAdded()
         {
             _fixture.Register(() => AddressStatus.Proposed);
             _fixture.Register(() => GeometryMethod.AppointedByAdministrator);
             _fixture.Register(() => GeometrySpecification.Building);
 
-            var addressWasMigrated = _fixture.Create<AddressWasMigratedToStreetName>();
+            var addressWasMigrated = _fixture.Create<AddressWasMigratedToStreetName>()
+                .WithNotRemoved();
 
             var position = 2L;
 

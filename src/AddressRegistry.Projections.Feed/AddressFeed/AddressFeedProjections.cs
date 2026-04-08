@@ -45,6 +45,9 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
+                if (message.Message.IsRemoved)
+                    return;
+
                 var document = new AddressDocument(
                     message.Message.AddressPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,

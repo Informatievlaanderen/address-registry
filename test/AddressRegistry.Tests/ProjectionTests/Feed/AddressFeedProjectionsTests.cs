@@ -75,8 +75,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         }
 
         [Fact]
-        public async Task WhenRemovedAddressWasMigratedToStreetName_ThenFeedItemAndDocumentAreNotAdded()
+        public async Task WhenRemovedAddressWasMigratedToStreetName_ThenFeedItemIsNotAddedAndDocumentIsNotAdded()
         {
+            _fixture.Register(() => AddressStatus.Proposed);
+            _fixture.Register(() => GeometryMethod.AppointedByAdministrator);
+            _fixture.Register(() => GeometrySpecification.Building);
             var addressWasMigrated = _fixture.Create<AddressWasMigratedToStreetName>()
                 .WithRemoved();
 
@@ -87,7 +90,23 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 .Then(async context =>
                 {
                     var document = await context.AddressDocuments.FindAsync(addressWasMigrated.AddressPersistentLocalId);
-                    document.Should().BeNull();
+                    document.Should().NotBeNull();
+                    document!.IsRemoved.Should().BeTrue();
+                    document.RecordCreatedAt.Should().Be(addressWasMigrated.Provenance.Timestamp);
+                    document.LastChangedOn.Should().Be(addressWasMigrated.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasMigrated.Provenance.Timestamp.ToBelgianDateTimeOffset());
+
+                    document.Document.PersistentLocalId.Should().Be(addressWasMigrated.AddressPersistentLocalId);
+                    document.Document.StreetNamePersistentLocalId.Should().Be(addressWasMigrated.StreetNamePersistentLocalId);
+                    document.Document.HouseNumber.Should().Be(addressWasMigrated.HouseNumber);
+                    document.Document.BoxNumber.Should().Be(addressWasMigrated.BoxNumber);
+                    document.Document.PostalCode.Should().Be(addressWasMigrated.PostalCode ?? string.Empty);
+                    document.Document.OfficiallyAssigned.Should().Be(addressWasMigrated.OfficiallyAssigned);
+                    document.Document.Status.Should().Be(AdresStatus.Voorgesteld);
+                    document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AangeduidDoorBeheerder);
+                    document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Gebouw);
+                    document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
+                    document.Document.ExtendedWkbGeometry.Should().Be(addressWasMigrated.ExtendedWkbGeometry);
 
                     var feedItem = await FindFeedItemByAddressPersistentLocalId(context, addressWasMigrated.AddressPersistentLocalId);
                     feedItem.Should().BeNull();

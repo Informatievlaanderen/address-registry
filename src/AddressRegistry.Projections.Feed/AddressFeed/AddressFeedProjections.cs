@@ -45,9 +45,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
-                if (message.Message.IsRemoved)
-                    return;
-
                 var document = new AddressDocument(
                     message.Message.AddressPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
@@ -67,6 +64,9 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
 
                 await context.AddressDocuments.AddAsync(document, ct);
+
+                if (message.Message.IsRemoved)
+                    return;
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, message.Message.StreetNamePersistentLocalId),

@@ -1,3 +1,11 @@
+## [5.9.3](https://github.com/informatievlaanderen/address-registry/compare/v5.9.2...v5.9.3) (2026-04-09)
+
+
+### Bug Fixes
+
+* **feed:** not add migrated removed address in feed ([afe901a](https://github.com/informatievlaanderen/address-registry/commit/afe901ac2c32d1f7aff7631e8137fc96d85aa855))
+* **feed:** removed migrated address add doc but not event ([6d4dfce](https://github.com/informatievlaanderen/address-registry/commit/6d4dfcefda92cfaa55478d9607d69e8a0de97c64))
+
 ## [5.9.2](https://github.com/informatievlaanderen/address-registry/compare/v5.9.1...v5.9.2) (2026-04-03)
 
 

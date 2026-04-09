@@ -495,61 +495,6 @@ jobs:
         WORKSPACE: ${{ github.workspace }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
-  publish_to_atlassian:
-    needs: [ release ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
-    name: Publish to Atlassian
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Parse repository name
-        run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
-        shell: bash
-
-      - name: Cache Python
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-pip
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Install Python dependencies
-        shell: bash
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests markdown argparse
-
-      - name: Restore build-pipeline
-        shell: bash
-        run: ./pre-restore.sh
-
-      - name: Publish to Confluence
-        shell: bash
-        run: bash ./.build/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
-        env:
-          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
-
-     # - name: Create Jira Release
-     #   shell: bash
-     #   run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
-     #   env:
-     #     CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-     #     CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-     #     CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
-     #     JIRA_PREFIX: Address
-     #     JIRA_PROJECT: GAWR
-     #     JIRA_VERSION: ${{ needs.release.outputs.version }}
-
   push_images:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]

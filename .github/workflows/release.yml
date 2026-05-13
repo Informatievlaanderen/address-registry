@@ -552,6 +552,9 @@ jobs:
         run: |
           echo $IMAGE:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/address/$IMAGE:$SEMVER
+
+          docker tag $BUILD_DOCKER_REGISTRY/address/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           IMAGE: ${{ matrix.image }}

@@ -21,6 +21,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.Geometries;
+    using Newtonsoft.Json;
     using NodaTime;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
@@ -35,6 +36,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     {
         private readonly IChangeFeedService _changeFeedService;
         private readonly IDbContextFactory<StreetNameConsumerContext> _streetNameConsumerContextFactory;
+        private JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings().ConfigureDefaultForEvents();
 
         public AddressFeedProjections(
             IChangeFeedService changeFeedService,
@@ -690,9 +692,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 // Combine all AddressHouseNumberWasReaddressed events belonging to the same readdress action
                 // and produce the new StreetNameWasReaddressed event.
-                var streamPages = new List<ReadStreamPage>();
-                var streamPage = await streamStore.ReadStreamForwards(
-                    new StreetNameStreamId(new StreetNamePersistentLocalId(message.Message.StreetNamePersistentLocalId)),
+                var streamPages = new List<ReadAllPage>();
+                var streamPage = await streamStore.ReadAllForwards(
                     houseNumberWasReaddressedPositions.BeginPosition,
                     houseNumberWasReaddressedPositions.EndPosition - houseNumberWasReaddressedPositions.BeginPosition + 1,
                     cancellationToken: ct);
@@ -704,11 +705,22 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     streamPages.Add(streamPage);
                 }
 
+                var relevantMessages = streamPages.SelectMany(x => x.Messages)
+                    .Where(x =>
+                        x.Type == AddressHouseNumberWasReaddressed.EventName
+                        && x.StreamId == new StreetNameStreamId(new StreetNamePersistentLocalId(message.Message.StreetNamePersistentLocalId)).ToString())
+                    .ToList();
+
                 var eventsToBatch = new List<AddressHouseNumberWasReaddressed>();
-                foreach (var streamMessage in streamPages.SelectMany(x => x.Messages).OrderBy(x => x.Position))
+                foreach (var streamMessage in relevantMessages.OrderBy(x => x.Position))
                 {
                     if (streamMessage.Type != AddressHouseNumberWasReaddressed.EventName) continue;
-                    var @event = await streamMessage.GetJsonDataAs<AddressHouseNumberWasReaddressed>(cancellationToken: ct);
+                    var jsonData = await streamMessage.GetJsonData(ct);
+                    var @event = JsonConvert.DeserializeObject<AddressHouseNumberWasReaddressed>(jsonData, _jsonSerializerSettings);
+
+                    if(@event is null)
+                        throw new InvalidOperationException("Could not deserialize AddressHouseNumberWasReaddressed event");
+
                     eventsToBatch.Add(@event);
                 }
 
@@ -722,8 +734,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     eventsToBatch);
 
                 ((ISetProvenance)readdressedEvent).SetProvenance(message.Message.Provenance.ToProvenance());
+                var metadata = new Dictionary<string, object>(message.Metadata)
+                {
+                    [Envelope.EventNameMetadataKey] = StreetNameWasReaddressed.EventName
+                }.AsReadOnly();
 
-                await HandleStreetNameWasReaddressed(new Envelope<StreetNameWasReaddressed>(new Envelope(readdressedEvent, message.Metadata)), context, ct);
+                await HandleStreetNameWasReaddressed(new Envelope<StreetNameWasReaddressed>(new Envelope(readdressedEvent, metadata)), context, ct);
             });
 
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>

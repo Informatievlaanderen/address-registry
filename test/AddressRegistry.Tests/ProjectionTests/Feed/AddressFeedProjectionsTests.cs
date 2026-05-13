@@ -44,6 +44,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     public sealed class AddressFeedProjectionsTests
     {
         private const int ImportedReaddressExpectedCloudEventCount = 20;
+        private const int ImportedReaddressSourceAddressPersistentLocalId = 997383;
+        private const int ImportedReaddressTargetAddressPersistentLocalId = 30314500;
+        private const int ImportedReaddressSecondSourceAddressPersistentLocalId = 3749895;
+        private const int ImportedReaddressSecondTargetAddressPersistentLocalId = 30314505;
         private const int ImportedReaddressStreetNamePersistentLocalId = 12784;
         private const long ImportedReaddressBeginPosition = 140601953;
         private const long ImportedReaddressEndPosition = 140601972;
@@ -1725,15 +1729,15 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 .Given(arrange)
                 .Then(async context =>
                 {
-                    var document = await context.AddressDocuments.FindAsync(30314500);
+                    var document = await context.AddressDocuments.FindAsync(ImportedReaddressTargetAddressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(AdresStatus.InGebruik);
                     document.Document.HouseNumber.Should().Be("102");
                     document.Document.PostalCode.Should().Be("2490");
                     document.Document.OfficiallyAssigned.Should().BeTrue();
 
-                    var lastFeedItem = await FindLastFeedItemByAddressPersistentLocalId(context, 30314500);
-                    lastFeedItem.Position.Should().Be(140601972);
+                    var lastFeedItem = await FindLastFeedItemByAddressPersistentLocalId(context, ImportedReaddressTargetAddressPersistentLocalId);
+                    lastFeedItem.Position.Should().Be(ImportedReaddressEndPosition);
                     lastFeedItem.CloudEventAsString.Should().NotBeNullOrEmpty();
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEvent(
@@ -1743,8 +1747,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(ImportedReaddressNisCode)
                                 && t.TransformValues.Count == ImportedReaddressExpectedCloudEventCount
-                                && t.TransformValues.Any(v => v.From == "997383" && v.To == "30314500")
-                                && t.TransformValues.Any(v => v.From == "3749895" && v.To == "30314505")),
+                                && t.TransformValues.Any(v => v.From == ImportedReaddressSourceAddressPersistentLocalId.ToString() && v.To == ImportedReaddressTargetAddressPersistentLocalId.ToString())
+                                && t.TransformValues.Any(v => v.From == ImportedReaddressSecondSourceAddressPersistentLocalId.ToString() && v.To == ImportedReaddressSecondTargetAddressPersistentLocalId.ToString())),
                             It.IsAny<Uri>(),
                             StreetNameWasReaddressed.EventName,
                             It.IsAny<string>()),
@@ -1841,11 +1845,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 .Where(x => x.Position is >= ImportedReaddressBeginPosition and <= ImportedReaddressEndPosition)
                 .Select(x => (AddressHouseNumberWasReaddressed)x.Event)
                 .ToList();
+            var aggregatedReaddressEvent = readdressEvents[^1];
 
             var @event = new StreetNameWasReaddressed(
                 new StreetNamePersistentLocalId(ImportedReaddressStreetNamePersistentLocalId),
                 readdressEvents);
-            ((ISetProvenance)@event).SetProvenance(readdressEvents[^1].Provenance.ToProvenance());
+            // The imported batch represents one readdress action completed at the final position, so the aggregated event uses that event's provenance.
+            ((ISetProvenance)@event).SetProvenance(aggregatedReaddressEvent.Provenance.ToProvenance());
 
             return CreateEnvelope(@event, ImportedReaddressEndPosition);
         }

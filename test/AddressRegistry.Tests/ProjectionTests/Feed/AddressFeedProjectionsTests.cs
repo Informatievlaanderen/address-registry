@@ -1866,8 +1866,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                         PageReadStatus.Success,
                         fromVersionInclusive,
                         fromVersionInclusive,
-                        fromVersionInclusive,
-                        fromVersionInclusive,
+                        -1,
+                        -1,
                         ReadDirection.Forward,
                         true,
                         messages: Array.Empty<StreamMessage>()));

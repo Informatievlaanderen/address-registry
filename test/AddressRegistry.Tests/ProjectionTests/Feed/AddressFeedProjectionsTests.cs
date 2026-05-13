@@ -39,6 +39,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using Projections.Feed.AddressFeed;
     using Projections.Feed.Contract;
     using SqlStreamStore;
+    using SqlStreamStore.Streams;
     using Xunit;
 
     public sealed class AddressFeedProjectionsTests
@@ -56,6 +57,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         private readonly Fixture _fixture;
         private readonly FeedContext _feedContext;
         private readonly FakeStreetNameConsumerContext _streetNameConsumerContext;
+        private readonly Mock<IReadonlyStreamStore> _streamStoreMock;
 
         private ConnectedProjectionTest<FeedContext, AddressFeedProjections> Sut { get; }
         private Mock<IChangeFeedService> ChangeFeedServiceMock { get; }
@@ -65,13 +67,14 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             ChangeFeedServiceMock = new Mock<IChangeFeedService>();
             _feedContext = CreateContext();
             _streetNameConsumerContext = CreateConsumerContext();
+            _streamStoreMock = new Mock<IReadonlyStreamStore>();
             var mockStreetNameFactory = new Mock<IDbContextFactory<StreetNameConsumerContext>>();
             mockStreetNameFactory.Setup(f => f
                     .CreateDbContextAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(_streetNameConsumerContext);
 
             Sut = new ConnectedProjectionTest<FeedContext, AddressFeedProjections>(() => _feedContext,
-                () => new AddressFeedProjections(ChangeFeedServiceMock.Object, mockStreetNameFactory.Object, Mock.Of<IReadonlyStreamStore>()));
+                () => new AddressFeedProjections(ChangeFeedServiceMock.Object, mockStreetNameFactory.Object, _streamStoreMock.Object));
 
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
@@ -1850,6 +1853,25 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
         private void SetupChangeFeedServiceMock()
         {
+            _streamStoreMock
+                .Setup(x => x.ReadStreamForwards(
+                    It.IsAny<StreamId>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((StreamId streamId, int fromVersionInclusive, int maxCount, bool prefetchJsonData, CancellationToken cancellationToken) =>
+                    new ReadStreamPage(
+                        streamId,
+                        PageReadStatus.Success,
+                        fromVersionInclusive,
+                        fromVersionInclusive,
+                        fromVersionInclusive,
+                        fromVersionInclusive,
+                        ReadDirection.Forward,
+                        true,
+                        messages: Array.Empty<StreamMessage>()));
+
             ChangeFeedServiceMock.Setup(x => x.CreateCloudEventWithData(
                     It.IsAny<long>(),
                     It.IsAny<DateTimeOffset>(),

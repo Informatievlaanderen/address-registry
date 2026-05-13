@@ -1853,6 +1853,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
         private void SetupChangeFeedServiceMock()
         {
+            const int streamEndMarker = StreamVersion.End;
+            const long emptyStreamPosition = -1;
+
             _streamStoreMock
                 .Setup(x => x.ReadStreamForwards(
                     It.IsAny<StreamId>(),
@@ -1865,9 +1868,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                         streamId,
                         PageReadStatus.Success,
                         fromVersionInclusive,
-                        fromVersionInclusive,
-                        -1,
-                        -1,
+                        streamEndMarker,
+                        streamEndMarker,
+                        emptyStreamPosition,
                         ReadDirection.Forward,
                         true,
                         messages: Array.Empty<StreamMessage>()));

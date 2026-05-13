@@ -2,6 +2,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -30,6 +32,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using Microsoft.EntityFrameworkCore;
     using Moq;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using NodaTime;
+    using NodaTime.Text;
     using Projections.Feed;
     using Projections.Feed.AddressFeed;
     using Projections.Feed.Contract;
@@ -1698,6 +1703,62 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressHouseNumberWasReaddressedFromImportedCase_ThenReaddressCloudEventsAreCreated()
+        {
+            var importedCase = LoadImportedReaddressCase();
+            _streetNameConsumerContext.StreetNameLatestItems.Add(new StreetNameLatestItem(12784, "13003"));
+            _streetNameConsumerContext.SaveChanges();
+
+            var arrange = importedCase
+                .Where(x => x.Position < 140601953)
+                .Select(CreateImportedEnvelope)
+                .Concat([CreateImportedReaddressEnvelope(importedCase)])
+                .ToArray();
+
+            await Sut
+                .Given(arrange)
+                .Then(async context =>
+                {
+                    var document = await context.AddressDocuments.FindAsync(30314500);
+                    document.Should().NotBeNull();
+                    document!.Document.Status.Should().Be(AdresStatus.InGebruik);
+                    document.Document.HouseNumber.Should().Be("102");
+                    document.Document.PostalCode.Should().Be("2490");
+                    document.Document.OfficiallyAssigned.Should().BeTrue();
+
+                    var lastFeedItem = await FindLastFeedItemByAddressPersistentLocalId(context, 30314500);
+                    lastFeedItem.Position.Should().Be(140601972);
+                    lastFeedItem.CloudEventAsString.Should().Be("serialized cloud event");
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEvent(
+                            It.IsAny<long>(),
+                            It.IsAny<DateTimeOffset>(),
+                            AddressEventTypes.TransformV1,
+                            It.Is<AddressCloudTransformEvent>(t =>
+                                t.NisCodes.Contains("13003")
+                                && t.TransformValues.Count == 20
+                                && t.TransformValues.Any(v => v.From == "997383" && v.To == "30314500")
+                                && t.TransformValues.Any(v => v.From == "3749895" && v.To == "30314505")),
+                            It.IsAny<Uri>(),
+                            StreetNameWasReaddressed.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            It.IsAny<DateTimeOffset>(),
+                            AddressEventTypes.UpdateV1,
+                            It.IsAny<string>(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains("13003")),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            StreetNameWasReaddressed.EventName,
+                            It.IsAny<string>()),
+                        Times.Exactly(20));
+                });
+        }
+
         private static void AssertFeedItem(
             AddressFeedItem? feedItem,
             long position,
@@ -1755,6 +1816,34 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             return true;
         }
 
+        private object CreateImportedEnvelope(ImportedFeedCaseEvent importedEvent)
+        {
+            return importedEvent.Event switch
+            {
+                MigratedStreetNameWasImported @event => CreateEnvelope(@event, importedEvent.Position),
+                AddressWasMigratedToStreetName @event => CreateEnvelope(@event, importedEvent.Position),
+                AddressWasProposedBecauseOfReaddress @event => CreateEnvelope(@event, importedEvent.Position),
+                AddressWasRetiredBecauseOfReaddress @event => CreateEnvelope(@event, importedEvent.Position),
+                AddressPositionWasChanged @event => CreateEnvelope(@event, importedEvent.Position),
+                _ => throw new NotSupportedException($"Unsupported imported event type {importedEvent.Event.GetType().Name}")
+            };
+        }
+
+        private object CreateImportedReaddressEnvelope(IReadOnlyCollection<ImportedFeedCaseEvent> importedCase)
+        {
+            var readdressEvents = importedCase
+                .Where(x => x.Position is >= 140601953 and <= 140601972)
+                .Select(x => (AddressHouseNumberWasReaddressed)x.Event)
+                .ToList();
+
+            var @event = new StreetNameWasReaddressed(
+                new StreetNamePersistentLocalId(readdressEvents[0].StreetNamePersistentLocalId),
+                readdressEvents);
+            ((ISetProvenance)@event).SetProvenance(readdressEvents[^1].Provenance.ToProvenance());
+
+            return CreateEnvelope(@event, 140601972);
+        }
+
         private Envelope<T> CreateEnvelope<T>(T @event, long position) where T : IMessage
         {
             var metadata = new Dictionary<string, object>
@@ -1800,6 +1889,89 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 It.IsAny<Func<int, Task<int>>>()));
         }
 
+        private static List<ImportedFeedCaseEvent> LoadImportedReaddressCase()
+        {
+            return File.ReadLines(GetImportedReaddressCasePath())
+                .Skip(1)
+                .Select(line =>
+                {
+                    var parts = line.Split(';', 2);
+                    return new ImportedFeedCaseEvent(
+                        long.Parse(parts[0], CultureInfo.InvariantCulture),
+                        DeserializeImportedEvent(parts[1]));
+                })
+                .ToList();
+        }
+
+        private static IMessage DeserializeImportedEvent(string json)
+        {
+            var data = JObject.Parse(json);
+
+            if (data["addressId"] is not null)
+                return JsonConvert.DeserializeObject<AddressWasMigratedToStreetName>(json, CreateImportedCaseSerializerSettings())!;
+
+            if (data["streetNameId"] is not null)
+            {
+                var @event = new MigratedStreetNameWasImported(
+                    new StreetNameId(Guid.Parse(data["streetNameId"]!.Value<string>()!)),
+                    new StreetNamePersistentLocalId(data["streetNamePersistentLocalId"]!.Value<int>()),
+                    new MunicipalityId(Guid.Parse(data["municipalityId"]!.Value<string>()!)),
+                    new NisCode(data["nisCode"]!.Value<string>()!),
+                    data["streetNameStatus"]!.ToObject<AddressRegistry.StreetName.StreetNameStatus>()!);
+                ((ISetProvenance)@event).SetProvenance(DeserializeImportedProvenance(data["provenance"]!));
+                return @event;
+            }
+
+            if (data["readdressedHouseNumber"] is not null)
+                return JsonConvert.DeserializeObject<AddressHouseNumberWasReaddressed>(json, CreateImportedCaseSerializerSettings())!;
+
+            if (data["sourceAddressPersistentLocalId"] is not null)
+                return JsonConvert.DeserializeObject<AddressWasProposedBecauseOfReaddress>(json, CreateImportedCaseSerializerSettings())!;
+
+            if (data["geometryMethod"] is not null)
+                return JsonConvert.DeserializeObject<AddressPositionWasChanged>(json, CreateImportedCaseSerializerSettings())!;
+
+            return JsonConvert.DeserializeObject<AddressWasRetiredBecauseOfReaddress>(json, CreateImportedCaseSerializerSettings())!;
+        }
+
+        private static JsonSerializerSettings CreateImportedCaseSerializerSettings()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                DateParseHandling = DateParseHandling.None
+            };
+
+            return settings.ConfigureDefaultForApi();
+        }
+
+        private static Provenance DeserializeImportedProvenance(JToken token)
+        {
+            var timestampToken = token["timestamp"]!;
+            var timestamp = timestampToken.Type == JTokenType.Date
+                ? Instant.FromDateTimeUtc(DateTime.SpecifyKind(timestampToken.Value<DateTime>(), DateTimeKind.Utc))
+                : InstantPattern.General.Parse(timestampToken.Value<string>()!).Value;
+
+            return new Provenance(
+                timestamp,
+                Enum.Parse<Application>(token["application"]!.Value<string>()!, true),
+                new Reason(token["reason"]!.Value<string>()!),
+                new Operator(token["operator"]!.Value<string>()!),
+                Enum.Parse<Modification>(token["modification"]!.Value<string>()!, true),
+                Enum.Parse<Organisation>(token["organisation"]!.Value<string>()!, true));
+        }
+
+        private static string GetImportedReaddressCasePath()
+        {
+            return Path.GetFullPath(Path.Combine(
+                AppContext.BaseDirectory,
+                "..",
+                "..",
+                "..",
+                "ProjectionTests",
+                "Feed",
+                "housenumberwasreaddressed-case.csv"));
+        }
+
         private FeedContext CreateContext()
         {
             var options = new DbContextOptionsBuilder<FeedContext>()
@@ -1816,5 +1988,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 .Options;
             return new FakeStreetNameConsumerContext(options);
         }
+
+        private sealed record ImportedFeedCaseEvent(long Position, IMessage Event);
     }
 }

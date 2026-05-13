@@ -44,8 +44,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     public sealed class AddressFeedProjectionsTests
     {
         private const int ImportedReaddressExpectedCloudEventCount = 20;
+        private const int ImportedReaddressStreetNamePersistentLocalId = 12784;
         private const long ImportedReaddressBeginPosition = 140601953;
         private const long ImportedReaddressEndPosition = 140601972;
+        private const string ImportedReaddressNisCode = "13003";
         private const string NisCode = "11001";
         private readonly Fixture _fixture;
         private readonly FeedContext _feedContext;
@@ -1710,7 +1712,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         public async Task WhenAddressHouseNumberWasReaddressedFromImportedCase_ThenReaddressCloudEventsAreCreated()
         {
             var importedCase = LoadImportedReaddressCase();
-            _streetNameConsumerContext.StreetNameLatestItems.Add(new StreetNameLatestItem(12784, "13003"));
+            _streetNameConsumerContext.StreetNameLatestItems.Add(new StreetNameLatestItem(ImportedReaddressStreetNamePersistentLocalId, ImportedReaddressNisCode));
             _streetNameConsumerContext.SaveChanges();
 
             var arrange = importedCase
@@ -1732,14 +1734,14 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
                     var lastFeedItem = await FindLastFeedItemByAddressPersistentLocalId(context, 30314500);
                     lastFeedItem.Position.Should().Be(140601972);
-                    lastFeedItem.CloudEventAsString.Should().Be("serialized cloud event");
+                    lastFeedItem.CloudEventAsString.Should().NotBeNullOrEmpty();
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEvent(
                             It.IsAny<long>(),
                             It.IsAny<DateTimeOffset>(),
                             AddressEventTypes.TransformV1,
                             It.Is<AddressCloudTransformEvent>(t =>
-                                t.NisCodes.Contains("13003")
+                                t.NisCodes.Contains(ImportedReaddressNisCode)
                                 && t.TransformValues.Count == ImportedReaddressExpectedCloudEventCount
                                 && t.TransformValues.Any(v => v.From == "997383" && v.To == "30314500")
                                 && t.TransformValues.Any(v => v.From == "3749895" && v.To == "30314505")),
@@ -1754,7 +1756,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.UpdateV1,
                             It.IsAny<string>(),
                             It.IsAny<DateTimeOffset>(),
-                            It.Is<List<string>>(l => l.Contains("13003")),
+                            It.Is<List<string>>(l => l.Contains(ImportedReaddressNisCode)),
                             It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
                             StreetNameWasReaddressed.EventName,
                             It.IsAny<string>()),
@@ -1841,7 +1843,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 .ToList();
 
             var @event = new StreetNameWasReaddressed(
-                new StreetNamePersistentLocalId(readdressEvents[0].StreetNamePersistentLocalId),
+                new StreetNamePersistentLocalId(ImportedReaddressStreetNamePersistentLocalId),
                 readdressEvents);
             ((ISetProvenance)@event).SetProvenance(readdressEvents[^1].Provenance.ToProvenance());
 

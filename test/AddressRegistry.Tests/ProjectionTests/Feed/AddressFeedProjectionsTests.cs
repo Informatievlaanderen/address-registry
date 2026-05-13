@@ -43,6 +43,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
     public sealed class AddressFeedProjectionsTests
     {
+        private const int ImportedReaddressExpectedCloudEventCount = 20;
+        private const long ImportedReaddressBeginPosition = 140601953;
+        private const long ImportedReaddressEndPosition = 140601972;
         private const string NisCode = "11001";
         private readonly Fixture _fixture;
         private readonly FeedContext _feedContext;
@@ -1711,7 +1714,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             _streetNameConsumerContext.SaveChanges();
 
             var arrange = importedCase
-                .Where(x => x.Position < 140601953)
+                .Where(x => x.Position < ImportedReaddressBeginPosition)
                 .Select(CreateImportedEnvelope)
                 .Concat([CreateImportedReaddressEnvelope(importedCase)])
                 .ToArray();
@@ -1737,7 +1740,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             AddressEventTypes.TransformV1,
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains("13003")
-                                && t.TransformValues.Count == 20
+                                && t.TransformValues.Count == ImportedReaddressExpectedCloudEventCount
                                 && t.TransformValues.Any(v => v.From == "997383" && v.To == "30314500")
                                 && t.TransformValues.Any(v => v.From == "3749895" && v.To == "30314505")),
                             It.IsAny<Uri>(),
@@ -1755,7 +1758,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
                             StreetNameWasReaddressed.EventName,
                             It.IsAny<string>()),
-                        Times.Exactly(20));
+                        Times.Exactly(ImportedReaddressExpectedCloudEventCount));
                 });
         }
 
@@ -1823,6 +1826,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 MigratedStreetNameWasImported @event => CreateEnvelope(@event, importedEvent.Position),
                 AddressWasMigratedToStreetName @event => CreateEnvelope(@event, importedEvent.Position),
                 AddressWasProposedBecauseOfReaddress @event => CreateEnvelope(@event, importedEvent.Position),
+                AddressHouseNumberWasReaddressed @event => CreateEnvelope(@event, importedEvent.Position),
                 AddressWasRetiredBecauseOfReaddress @event => CreateEnvelope(@event, importedEvent.Position),
                 AddressPositionWasChanged @event => CreateEnvelope(@event, importedEvent.Position),
                 _ => throw new NotSupportedException($"Unsupported imported event type {importedEvent.Event.GetType().Name}")
@@ -1832,7 +1836,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         private object CreateImportedReaddressEnvelope(IReadOnlyCollection<ImportedFeedCaseEvent> importedCase)
         {
             var readdressEvents = importedCase
-                .Where(x => x.Position is >= 140601953 and <= 140601972)
+                .Where(x => x.Position is >= ImportedReaddressBeginPosition and <= ImportedReaddressEndPosition)
                 .Select(x => (AddressHouseNumberWasReaddressed)x.Event)
                 .ToList();
 
@@ -1841,7 +1845,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 readdressEvents);
             ((ISetProvenance)@event).SetProvenance(readdressEvents[^1].Provenance.ToProvenance());
 
-            return CreateEnvelope(@event, 140601972);
+            return CreateEnvelope(@event, ImportedReaddressEndPosition);
         }
 
         private Envelope<T> CreateEnvelope<T>(T @event, long position) where T : IMessage
@@ -1931,7 +1935,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             if (data["geometryMethod"] is not null)
                 return JsonConvert.DeserializeObject<AddressPositionWasChanged>(json, CreateImportedCaseSerializerSettings())!;
 
-            return JsonConvert.DeserializeObject<AddressWasRetiredBecauseOfReaddress>(json, CreateImportedCaseSerializerSettings())!;
+            if (data["addressPersistentLocalId"] is not null && data["provenance"] is not null)
+                return JsonConvert.DeserializeObject<AddressWasRetiredBecauseOfReaddress>(json, CreateImportedCaseSerializerSettings())!;
+
+            throw new NotSupportedException($"Could not determine imported event type for payload: {json}");
         }
 
         private static JsonSerializerSettings CreateImportedCaseSerializerSettings()
@@ -1962,14 +1969,25 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
         private static string GetImportedReaddressCasePath()
         {
-            return Path.GetFullPath(Path.Combine(
-                AppContext.BaseDirectory,
-                "..",
-                "..",
-                "..",
-                "ProjectionTests",
-                "Feed",
-                "housenumberwasreaddressed-case.csv"));
+            var current = new DirectoryInfo(AppContext.BaseDirectory);
+
+            while (current is not null)
+            {
+                var candidate = Path.Combine(
+                    current.FullName,
+                    "test",
+                    "AddressRegistry.Tests",
+                    "ProjectionTests",
+                    "Feed",
+                    "housenumberwasreaddressed-case.csv");
+
+                if (File.Exists(candidate))
+                    return candidate;
+
+                current = current.Parent;
+            }
+
+            throw new FileNotFoundException("Could not locate housenumberwasreaddressed-case.csv from the test output directory.");
         }
 
         private FeedContext CreateContext()

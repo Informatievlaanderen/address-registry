@@ -1717,12 +1717,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         {
             var importedCase = LoadImportedReaddressCase();
             _streetNameConsumerContext.StreetNameLatestItems.Add(new StreetNameLatestItem(ImportedReaddressStreetNamePersistentLocalId, ImportedReaddressNisCode));
-            _streetNameConsumerContext.SaveChanges();
+            await _streetNameConsumerContext.SaveChangesAsync();
 
             var arrange = importedCase
-                .Where(x => x.Position < ImportedReaddressBeginPosition)
                 .Select(CreateImportedEnvelope)
-                .Concat([CreateImportedReaddressEnvelope(importedCase)])
                 .ToArray();
 
             await Sut
@@ -1834,26 +1832,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 AddressWasProposedBecauseOfReaddress @event => CreateEnvelope(@event, importedEvent.Position),
                 AddressHouseNumberWasReaddressed @event => CreateEnvelope(@event, importedEvent.Position),
                 AddressWasRetiredBecauseOfReaddress @event => CreateEnvelope(@event, importedEvent.Position),
-                AddressPositionWasChanged @event => CreateEnvelope(@event, importedEvent.Position),
+                AddressPositionWasCorrectedV2 @event => CreateEnvelope(@event, importedEvent.Position),
                 _ => throw new NotSupportedException($"Unsupported imported event type {importedEvent.Event.GetType().Name}")
             };
-        }
-
-        private object CreateImportedReaddressEnvelope(IReadOnlyCollection<ImportedFeedCaseEvent> importedCase)
-        {
-            var readdressEvents = importedCase
-                .Where(x => x.Position is >= ImportedReaddressBeginPosition and <= ImportedReaddressEndPosition)
-                .Select(x => (AddressHouseNumberWasReaddressed)x.Event)
-                .ToList();
-            var aggregatedReaddressEvent = readdressEvents[^1];
-
-            var @event = new StreetNameWasReaddressed(
-                new StreetNamePersistentLocalId(ImportedReaddressStreetNamePersistentLocalId),
-                readdressEvents);
-            // The imported batch represents one readdress action completed at the final position, so the aggregated event uses that event's provenance.
-            ((ISetProvenance)@event).SetProvenance(aggregatedReaddressEvent.Provenance.ToProvenance());
-
-            return CreateEnvelope(@event, ImportedReaddressEndPosition);
         }
 
         private Envelope<T> CreateEnvelope<T>(T @event, long position) where T : IMessage
@@ -1907,46 +1888,42 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 .Skip(1)
                 .Select(line =>
                 {
-                    var parts = line.Split(';', 2);
+                    var parts = line.Split(';', 3);
                     return new ImportedFeedCaseEvent(
                         long.Parse(parts[0], CultureInfo.InvariantCulture),
-                        DeserializeImportedEvent(parts[1]));
+                        DeserializeImportedEvent(parts[1], parts[2]));
                 })
                 .ToList();
         }
 
-        private static IMessage DeserializeImportedEvent(string json)
+        private static IMessage DeserializeImportedEvent(string type, string json)
         {
             var data = JObject.Parse(json);
 
-            if (data["addressId"] is not null)
-                return JsonConvert.DeserializeObject<AddressWasMigratedToStreetName>(json, CreateImportedCaseSerializerSettings())!;
-
-            if (data["streetNameId"] is not null)
+            switch (type)
             {
-                var @event = new MigratedStreetNameWasImported(
-                    new StreetNameId(Guid.Parse(data["streetNameId"]!.Value<string>()!)),
-                    new StreetNamePersistentLocalId(data["streetNamePersistentLocalId"]!.Value<int>()),
-                    new MunicipalityId(Guid.Parse(data["municipalityId"]!.Value<string>()!)),
-                    new NisCode(data["nisCode"]!.Value<string>()!),
-                    data["streetNameStatus"]!.ToObject<AddressRegistry.StreetName.StreetNameStatus>()!);
-                ((ISetProvenance)@event).SetProvenance(DeserializeImportedProvenance(data["provenance"]!));
-                return @event;
+
+                case MigratedStreetNameWasImported.EventName:
+                    return JsonConvert.DeserializeObject<MigratedStreetNameWasImported>(json, CreateImportedCaseSerializerSettings())!;
+
+                case AddressWasMigratedToStreetName.EventName:
+                    return JsonConvert.DeserializeObject<AddressWasMigratedToStreetName>(json, CreateImportedCaseSerializerSettings())!;
+
+                case AddressWasProposedBecauseOfReaddress.EventName:
+                    return JsonConvert.DeserializeObject<AddressWasProposedBecauseOfReaddress>(json, CreateImportedCaseSerializerSettings())!;
+
+                case AddressHouseNumberWasReaddressed.EventName:
+                    return JsonConvert.DeserializeObject<AddressHouseNumberWasReaddressed>(json, CreateImportedCaseSerializerSettings())!;
+
+                case AddressWasRetiredBecauseOfReaddress.EventName:
+                    return JsonConvert.DeserializeObject<AddressWasRetiredBecauseOfReaddress>(json, CreateImportedCaseSerializerSettings())!;
+
+                case AddressPositionWasCorrectedV2.EventName:
+                    return JsonConvert.DeserializeObject<AddressPositionWasCorrectedV2>(json, CreateImportedCaseSerializerSettings())!;
+
+                default:
+                    throw new NotSupportedException($"Unsupported imported event type {type}");
             }
-
-            if (data["readdressedHouseNumber"] is not null)
-                return JsonConvert.DeserializeObject<AddressHouseNumberWasReaddressed>(json, CreateImportedCaseSerializerSettings())!;
-
-            if (data["sourceAddressPersistentLocalId"] is not null)
-                return JsonConvert.DeserializeObject<AddressWasProposedBecauseOfReaddress>(json, CreateImportedCaseSerializerSettings())!;
-
-            if (data["geometryMethod"] is not null)
-                return JsonConvert.DeserializeObject<AddressPositionWasChanged>(json, CreateImportedCaseSerializerSettings())!;
-
-            if (data["addressPersistentLocalId"] is not null && data["provenance"] is not null)
-                return JsonConvert.DeserializeObject<AddressWasRetiredBecauseOfReaddress>(json, CreateImportedCaseSerializerSettings())!;
-
-            throw new NotSupportedException($"Could not determine imported event type for payload: {json}");
         }
 
         private static JsonSerializerSettings CreateImportedCaseSerializerSettings()
@@ -1957,22 +1934,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             };
 
             return settings.ConfigureDefaultForApi();
-        }
-
-        private static Provenance DeserializeImportedProvenance(JToken token)
-        {
-            var timestampToken = token["timestamp"]!;
-            var timestamp = timestampToken.Type == JTokenType.Date
-                ? Instant.FromDateTimeUtc(DateTime.SpecifyKind(timestampToken.Value<DateTime>(), DateTimeKind.Utc))
-                : InstantPattern.General.Parse(timestampToken.Value<string>()!).Value;
-
-            return new Provenance(
-                timestamp,
-                Enum.Parse<Application>(token["application"]!.Value<string>()!, true),
-                new Reason(token["reason"]!.Value<string>()!),
-                new Operator(token["operator"]!.Value<string>()!),
-                Enum.Parse<Modification>(token["modification"]!.Value<string>()!, true),
-                Enum.Parse<Organisation>(token["organisation"]!.Value<string>()!, true));
         }
 
         private static string GetImportedReaddressCasePath()

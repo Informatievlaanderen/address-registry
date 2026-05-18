@@ -1,3 +1,10 @@
+## [5.9.10](https://github.com/informatievlaanderen/address-registry/compare/v5.9.9...v5.9.10) (2026-05-18)
+
+
+### Bug Fixes
+
+* **feed:** readdress feed rebuild to streenamewasreaddressed ([6a74b6f](https://github.com/informatievlaanderen/address-registry/commit/6a74b6f9a0c6850fbb5ad6ba28a24f5a95d72b85))
+
 ## [5.9.9](https://github.com/informatievlaanderen/address-registry/compare/v5.9.8...v5.9.9) (2026-05-18)
 
 

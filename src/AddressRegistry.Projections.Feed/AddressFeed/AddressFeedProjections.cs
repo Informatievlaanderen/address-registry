@@ -699,12 +699,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     cancellationToken: ct);
                 streamPages.Add(streamPage);
 
-                while (!streamPage.IsEnd)
-                {
-                    streamPage = await streamPage.ReadNext(ct);
-                    streamPages.Add(streamPage);
-                }
-
                 var relevantMessages = streamPages.SelectMany(x => x.Messages)
                     .Where(x =>
                         x.Type == AddressHouseNumberWasReaddressed.EventName

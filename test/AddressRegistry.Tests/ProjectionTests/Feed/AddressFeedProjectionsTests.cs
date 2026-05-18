@@ -1867,11 +1867,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
         private Envelope<T> CreateEnvelope<T>(T @event, long position) where T : IMessage
         {
-            var metadata = new Dictionary<string, object>
+            var metadata = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
-                { "Position", position },
-                { "EventName", @event.GetType().Name },
-                { "CommandId", Guid.NewGuid().ToString() }
+                { "position", position },
+                { "eventName", @event.GetType().Name },
+                { "commandId", Guid.NewGuid().ToString() }
             };
             return new Envelope<T>(new Envelope(@event, metadata));
         }

@@ -728,7 +728,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     eventsToBatch);
 
                 ((ISetProvenance)readdressedEvent).SetProvenance(message.Message.Provenance.ToProvenance());
-                var metadata = new Dictionary<string, object>(message.Metadata)
+                var metadata = new Dictionary<string, object>(message.Metadata, StringComparer.OrdinalIgnoreCase)
                 {
                     [Envelope.EventNameMetadataKey] = StreetNameWasReaddressed.EventName
                 }.AsReadOnly();

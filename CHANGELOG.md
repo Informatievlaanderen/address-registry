@@ -1,3 +1,10 @@
+## [5.9.9](https://github.com/informatievlaanderen/address-registry/compare/v5.9.8...v5.9.9) (2026-05-18)
+
+
+### Bug Fixes
+
+* **feed:** readdress no paging when reading from stream ([1d4e29b](https://github.com/informatievlaanderen/address-registry/commit/1d4e29b40baed89461c9cf03690a7c901e70de07))
+
 ## [5.9.8](https://github.com/informatievlaanderen/address-registry/compare/v5.9.7...v5.9.8) (2026-05-13)
 
 

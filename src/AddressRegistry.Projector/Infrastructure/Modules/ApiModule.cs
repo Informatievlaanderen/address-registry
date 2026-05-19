@@ -13,6 +13,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Integration;
     using AddressRegistry.Projections.Integration.Infrastructure;
     using AddressRegistry.Projections.Integration.LatestItem;
+    using AddressRegistry.Projections.Integration.LatestItemV2;
     using AddressRegistry.Projections.Integration.Merger;
     using AddressRegistry.Projections.Integration.Version;
     using AddressRegistry.Projections.LastChangedList;
@@ -128,6 +129,9 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressLatestItemProjections, IntegrationContext>(
                     context => new AddressLatestItemProjections(context.Resolve<IOptions<IntegrationOptions>>()),
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<AddressLatestItemProjectionsV2, IntegrationContext>(
+                    context => new AddressLatestItemProjectionsV2(context.Resolve<IOptions<IntegrationOptions>>()),
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressIdAddressPersistentLocalIdRelationProjections, IntegrationContext>(
                     _ => new AddressIdAddressPersistentLocalIdRelationProjections(),

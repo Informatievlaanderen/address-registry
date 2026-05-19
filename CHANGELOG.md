@@ -1,3 +1,10 @@
+## [5.9.12](https://github.com/informatievlaanderen/address-registry/compare/v5.9.11...v5.9.12) (2026-05-19)
+
+
+### Bug Fixes
+
+* **integration:** add new latest v2 to projector ([9afd6bf](https://github.com/informatievlaanderen/address-registry/commit/9afd6bf49eb85d3d7775870d1568df43363712bb))
+
 ## [5.9.11](https://github.com/informatievlaanderen/address-registry/compare/v5.9.10...v5.9.11) (2026-05-19)
 
 

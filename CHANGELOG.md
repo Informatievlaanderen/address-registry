@@ -1,3 +1,10 @@
+## [5.9.11](https://github.com/informatievlaanderen/address-registry/compare/v5.9.10...v5.9.11) (2026-05-19)
+
+
+### Bug Fixes
+
+* **integration:** boxnumber position when readdressing ([2fcbdd6](https://github.com/informatievlaanderen/address-registry/commit/2fcbdd6efa919c26b49086ed429974549eaca601))
+
 ## [5.9.10](https://github.com/informatievlaanderen/address-registry/compare/v5.9.9...v5.9.10) (2026-05-18)
 
 

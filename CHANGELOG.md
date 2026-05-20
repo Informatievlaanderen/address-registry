@@ -1,3 +1,10 @@
+## [5.9.13](https://github.com/informatievlaanderen/address-registry/compare/v5.9.12...v5.9.13) (2026-05-20)
+
+
+### Bug Fixes
+
+* **producer:** old readdress events GAWR-7604 ([a8e7a61](https://github.com/informatievlaanderen/address-registry/commit/a8e7a61a026dd25bed36040019b8023de5bfeded))
+
 ## [5.9.12](https://github.com/informatievlaanderen/address-registry/compare/v5.9.11...v5.9.12) (2026-05-19)
 
 

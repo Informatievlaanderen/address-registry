@@ -1,0 +1,107 @@
+name: Release Communicatie naar Marcom
+
+on:
+  workflow_dispatch:
+    inputs:
+      bevestiging:
+        description: 'Ik bevestig dat releasedoc.md volledig ingevuld is'
+        required: true
+        type: boolean
+
+jobs:
+  valideer-en-verstuur:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Valideer releasedoc.md
+        run: |
+          python3 << 'PYEOF'
+          import sys, re
+
+          with open('releasedoc.md', 'r') as f:
+              content = f.read()
+
+          errors = []
+
+          verplichte_velden = ['release_version', 'release_date', 'breaking_change', 'target_audience']
+          for veld in verplichte_velden:
+              match = re.search(rf'^{veld}:\s*"?(.+?)"?\s*$', content, re.MULTILINE)
+              if not match or not match.group(1).strip() or match.group(1).strip() == '""':
+                  errors.append(f'Verplicht veld ontbreekt of is leeg: {veld}')
+
+          verplichte_secties = [
+              'Instructies voor Marcom',
+              'Samenvatting',
+              'Functionele release notes',
+              'Website nieuwsbericht',
+              'Nieuwsbriefinhoud',
+          ]
+          for sectie in verplichte_secties:
+              pattern = rf'# {sectie}\n(.*?)(?=\n# |\Z)'
+              match = re.search(pattern, content, re.DOTALL)
+              if not match or not match.group(1).strip() or match.group(1).strip().startswith('<!--'):
+                  errors.append(f'Sectie is leeg of enkel een commentaar: {sectie}')
+
+          if errors:
+              print('Validatie mislukt:')
+              for e in errors:
+                  print(f'  - {e}')
+              sys.exit(1)
+
+          print('Validatie geslaagd — alle velden en secties aanwezig.')
+          PYEOF
+
+      - name: Stuur payload naar Power Automate
+        env:
+          WEBHOOK_URL: ${{ secrets.POWER_AUTOMATE_WEBHOOK_URL }}
+        run: |
+          python3 << 'PYEOF'
+          import re, json, os, urllib.request
+
+          with open('releasedoc.md', 'r') as f:
+              content = f.read()
+
+          def get_field(veld, tekst):
+              match = re.search(rf'^{veld}:\s*"?(.+?)"?\s*$', tekst, re.MULTILINE)
+              return match.group(1).strip() if match else ''
+
+          def get_sectie(naam, tekst):
+              pattern = rf'# {naam}\n(.*?)(?=\n# |\Z)'
+              match = re.search(pattern, tekst, re.DOTALL)
+              if not match:
+                  return ''
+              inhoud = match.group(1).strip()
+              regels = [r for r in inhoud.splitlines() if not r.strip().startswith('<!--') and not r.strip() == '-->']
+              return '\n'.join(regels).strip()
+
+          payload = {
+              'release_version':        get_field('release_version', content),
+              'release_date':           get_field('release_date', content),
+              'breaking_change':        get_field('breaking_change', content),
+              'target_audience':        get_field('target_audience', content),
+              'mailing_list':           get_field('mailing_list', content),
+              'instructies_marcom':     get_sectie('Instructies voor Marcom', content),
+              'samenvatting':           get_sectie('Samenvatting', content),
+              'functionele_notes':      get_sectie('Functionele release notes', content),
+              'website_nieuwsbericht':  get_sectie('Website nieuwsbericht', content),
+              'nieuwsbriefinhoud':      get_sectie('Nieuwsbriefinhoud', content),
+              'referenties':            get_sectie('Referenties', content),
+          }
+
+          print('Payload:')
+          print(json.dumps(payload, indent=2, ensure_ascii=False))
+
+          data = json.dumps(payload).encode('utf-8')
+          req = urllib.request.Request(
+              os.environ['WEBHOOK_URL'],
+              data=data,
+              headers={'Content-Type': 'application/json'},
+              method='POST'
+          )
+          with urllib.request.urlopen(req) as resp:
+              print(f'HTTP status: {resp.status}')
+              print('Payload succesvol verstuurd naar Power Automate.')
+          PYEOF

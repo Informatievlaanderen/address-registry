@@ -15,9 +15,9 @@ namespace AddressRegistry.Producer.Infrastructure.Configuration
 
         public Task Invoke(HttpContext context)
         {
-            context.Response.Headers.Add(HeaderNames.CacheControl, "no-store, no-cache, must-revalidate");
-            context.Response.Headers.Add(HeaderNames.Pragma, "no-cache");
-            context.Response.Headers.Add(HeaderNames.Expires, "0");
+            context.Response.Headers.Append(HeaderNames.CacheControl, "no-store, no-cache, must-revalidate");
+            context.Response.Headers.Append(HeaderNames.Pragma, "no-cache");
+            context.Response.Headers.Append(HeaderNames.Expires, "0");
 
             return _next(context);
         }

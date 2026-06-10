@@ -30,7 +30,7 @@ jobs:
 
     steps:
     - name: Notify deployment started
-      uses: slackapi/slack-github-action@v2.0.0
+      uses: slackapi/slack-github-action@v3
       with:
         method: chat.postMessage
         token: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
@@ -98,7 +98,7 @@ jobs:
 
     steps:
     - name: Notify deployment finished
-      uses: slackapi/slack-github-action@v2.0.0
+      uses: slackapi/slack-github-action@v3
       with:
         method: chat.postMessage
         token: ${{ secrets.VBR_SLACK_BOT_TOKEN }}

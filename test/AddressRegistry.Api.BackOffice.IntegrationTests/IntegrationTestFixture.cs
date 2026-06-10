@@ -6,15 +6,21 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Autofac;
+    using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.DockerUtilities;
-    using IdentityModel;
-    using IdentityModel.Client;
+    using Duende.IdentityModel;
+    using Duende.IdentityModel.Client;
     using Infrastructure;
+    using Infrastructure.Modules;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Xunit;
 
     public class IntegrationTestFixture : IAsyncLifetime
@@ -43,13 +49,26 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
 
             await CreateDatabase();
 
-            var hostBuilder = new WebHostBuilder()
-                .UseConfiguration(configuration)
-                .UseStartup<Startup>()
-                .ConfigureLogging(loggingBuilder => loggingBuilder.AddConsole())
-                .UseTestServer();
+            var hostBuilder = new HostBuilder()
+                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                .ConfigureContainer<ContainerBuilder>(builder =>
+                {
+                    var services = new ServiceCollection();
+                    var loggerFactory = new NullLoggerFactory();
+                    builder.RegisterModule(new ApiModule(configuration, services, loggerFactory));
+                })
+                .ConfigureWebHost(webhostBuilder =>
+                {
+                    webhostBuilder.UseConfiguration(configuration)
+                        .UseStartup<Startup>()
+                        .ConfigureLogging(loggingBuilder => loggingBuilder.AddConsole())
+                        .UseTestServer();
+                })
+                .Build();
 
-            TestServer = new TestServer(hostBuilder);
+            await hostBuilder.StartAsync();
+
+            TestServer = hostBuilder.GetTestServer();
         }
 
         private async Task WaitForSqlServerToBecomeAvailable()

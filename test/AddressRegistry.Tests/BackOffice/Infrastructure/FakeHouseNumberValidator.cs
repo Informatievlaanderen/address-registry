@@ -4,8 +4,6 @@
     using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Moq;
 
     public static class FakeHouseNumberValidator
@@ -26,15 +24,12 @@
                     }))
             };
 
-            var actionContextAccessor = new Mock<IActionContextAccessor>();
-            actionContextAccessor
-                .Setup(x => x.ActionContext)
-                .Returns(new ActionContext
-                {
-                    HttpContext = httpContext
-                });
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            httpContextAccessor
+                .Setup(x => x.HttpContext)
+                .Returns(httpContext);
 
-            return new HouseNumberValidator(actionContextAccessor.Object);
+            return new HouseNumberValidator(httpContextAccessor.Object);
         }
     }
 }

@@ -24,6 +24,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
     using Elastic.Clients.Elasticsearch;
+    using FluentValidation;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -31,8 +32,10 @@ namespace AddressRegistry.Projector.Infrastructure
     using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Microsoft.OpenApi.Models;
+    using Microsoft.OpenApi;
     using Modules;
+    using Serilog;
+    using Serilog.Extensions.Logging;
     using HealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 
     /// <summary>Represents the startup process for the application.</summary>
@@ -40,23 +43,19 @@ namespace AddressRegistry.Projector.Infrastructure
     {
         private const string DatabaseTag = "db";
 
-        private IContainer _applicationContainer;
-
         private readonly IConfiguration _configuration;
-        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILoggerFactory _loggerFactory = new SerilogLoggerFactory(Log.Logger);
+
         private readonly CancellationTokenSource _projectionsCancellationTokenSource = new CancellationTokenSource();
 
-        public Startup(
-            IConfiguration configuration,
-            ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            _loggerFactory = loggerFactory;
         }
 
         /// <summary>Configures services for the application.</summary>
         /// <param name="services">The collection of services to configure the application with.</param>
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             var baseUrl = _configuration.GetValue<string>("BaseUrl");
             var baseUrlForExceptions = baseUrl.EndsWith("/")
@@ -96,8 +95,6 @@ namespace AddressRegistry.Projector.Infrastructure
                     },
                     MiddlewareHooks =
                     {
-                        FluentValidation = fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>(),
-
                         AfterHealthChecks = health =>
                         {
                             var connectionStrings = _configuration
@@ -155,6 +152,7 @@ namespace AddressRegistry.Projector.Infrastructure
                         }
                     }
                 })
+                .AddValidatorsFromAssemblyContaining<Startup>()
                 .Configure<ExtractConfig>(_configuration.GetSection("Extract"))
                 .Configure<IntegrationOptions>(_configuration.GetSection("Integration"))
                 .Configure<ChangeFeedConfig>(_configuration.GetSection("AddressFeed"));
@@ -167,13 +165,6 @@ namespace AddressRegistry.Projector.Infrastructure
             services.AddHostedService(
                 c => new ProjectionAutoRestartBackgroundService(
                     c.GetRequiredService<IConnectedProjectionsManager>(), _loggerFactory));
-
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule(new LoggingModule(_configuration, services));
-            containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));
-            _applicationContainer = containerBuilder.Build();
-
-            return new AutofacServiceProvider(_applicationContainer);
         }
 
         public void Configure(
@@ -192,7 +183,7 @@ namespace AddressRegistry.Projector.Infrastructure
                 {
                     Common =
                     {
-                        ApplicationContainer = _applicationContainer,
+                        ApplicationContainer = serviceProvider.GetAutofacRoot(),
                         ServiceProvider = serviceProvider,
                         HostingEnvironment = env,
                         ApplicationLifetime = appLifetime,
@@ -226,17 +217,17 @@ namespace AddressRegistry.Projector.Infrastructure
             appLifetime.ApplicationStopping.Register(() => _projectionsCancellationTokenSource.Cancel());
             appLifetime.ApplicationStarted.Register(() =>
             {
-                var projectionsManager = _applicationContainer.Resolve<IConnectedProjectionsManager>();
+                var projectionsManager = serviceProvider.GetRequiredService<IConnectedProjectionsManager>();
                 projectionsManager.Resume(_projectionsCancellationTokenSource.Token);
             });
 
             var elasticIndices = new ElasticIndexBase[]
             {
                 new AddressSearchElasticIndex(
-                    _applicationContainer.Resolve<ElasticsearchClient>(),
+                    serviceProvider.GetRequiredService<ElasticsearchClient>(),
                     _configuration),
                 new AddressListElasticIndex(
-                    _applicationContainer.Resolve<ElasticsearchClient>(),
+                    serviceProvider.GetRequiredService<ElasticsearchClient>(),
                     _configuration)
             };
             foreach (var elasticIndex in elasticIndices)

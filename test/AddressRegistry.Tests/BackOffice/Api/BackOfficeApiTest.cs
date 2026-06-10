@@ -8,8 +8,6 @@ namespace AddressRegistry.Tests.BackOffice.Api
     using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Infrastructure.Options;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using StreetName;
-    using Tests;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
@@ -19,11 +17,9 @@ namespace AddressRegistry.Tests.BackOffice.Api
     using global::AutoFixture;
     using MediatR;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Options;
     using Moq;
-    using StreetName.Exceptions;
+    using StreetName;
     using Xunit.Abstractions;
 
     public class BackOfficeApiTest : AddressRegistryTest
@@ -33,7 +29,7 @@ namespace AddressRegistry.Tests.BackOffice.Api
 
         protected IOptions<TicketingOptions> TicketingOptions { get; }
         protected Mock<IMediator> MockMediator { get; }
-        protected Mock<IActionContextAccessor> MockActionContext { get; set; }
+        protected Mock<IHttpContextAccessor> MockHttpContext { get; set; }
 
         protected BackOfficeApiTest(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
@@ -44,8 +40,8 @@ namespace AddressRegistry.Tests.BackOffice.Api
 
             MockMediator = new Mock<IMediator>();
 
-            MockActionContext = new Mock<IActionContextAccessor>();
-            MockActionContext.SetupProperty(x => x.ActionContext, new ActionContext{ HttpContext = new DefaultHttpContext()});
+            MockHttpContext = new Mock<IHttpContextAccessor>();
+            MockHttpContext.SetupProperty(x => x.HttpContext, new DefaultHttpContext());
         }
 
         protected Uri CreateTicketUri(Guid ticketId)
@@ -59,8 +55,8 @@ namespace AddressRegistry.Tests.BackOffice.Api
                 typeof(TApiController),
                 MockMediator.Object,
                 TicketingOptions,
-                MockActionContext.Object,
-                new AcmIdmProvenanceFactory(Application.AddressRegistry, MockActionContext.Object)) as TApiController;
+                MockHttpContext.Object,
+                new AcmIdmProvenanceFactory(Application.AddressRegistry, MockHttpContext.Object)) as TApiController;
 
             var claims = new List<Claim>
             {

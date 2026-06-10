@@ -4,10 +4,10 @@ namespace AddressRegistry.Api.Extract.Infrastructure
     using System.Linq;
     using System.Reflection;
     using Asp.Versioning.ApiExplorer;
-    using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
     using Configuration;
+    using FluentValidation;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -15,30 +15,23 @@ namespace AddressRegistry.Api.Extract.Infrastructure
     using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Microsoft.OpenApi.Models;
-    using Modules;
+    using Microsoft.OpenApi;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
     {
         private const string DatabaseTag = "db";
 
-        private IContainer _applicationContainer;
-
         private readonly IConfiguration _configuration;
-        private readonly ILoggerFactory _loggerFactory;
 
-        public Startup(
-            IConfiguration configuration,
-            ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            _loggerFactory = loggerFactory;
         }
 
         /// <summary>Configures services for the application.</summary>
         /// <param name="services">The collection of services to configure the application with.</param>
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             var baseUrl = _configuration.GetValue<string>("BaseUrl");
             var baseUrlForExceptions = baseUrl.EndsWith("/")
@@ -78,8 +71,6 @@ namespace AddressRegistry.Api.Extract.Infrastructure
                     },
                     MiddlewareHooks =
                     {
-                        FluentValidation = fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>(),
-
                         AfterHealthChecks = health =>
                         {
                             var connectionStrings = _configuration
@@ -93,13 +84,8 @@ namespace AddressRegistry.Api.Extract.Infrastructure
                                     tags: new[] { DatabaseTag, "sql", "sqlserver" });
                         }
                     }
-                });
-
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));
-            _applicationContainer = containerBuilder.Build();
-
-            return new AutofacServiceProvider(_applicationContainer);
+                })
+                .AddValidatorsFromAssemblyContaining<Startup>();
         }
 
         public void Configure(
@@ -118,7 +104,7 @@ namespace AddressRegistry.Api.Extract.Infrastructure
                 {
                     Common =
                     {
-                        ApplicationContainer = _applicationContainer,
+                        ApplicationContainer = serviceProvider.GetAutofacRoot(),
                         ServiceProvider = serviceProvider,
                         HostingEnvironment = env,
                         ApplicationLifetime = appLifetime,

@@ -2,7 +2,7 @@
 {
     using System.Text.RegularExpressions;
     using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Http;
     using StreetName;
 
     public class HouseNumberValidator
@@ -10,16 +10,16 @@
         internal static readonly Regex DecentraleBijwerkerHouseNumberFormatRegex =
             new("^[1-9]([0-9]{0,8}([A-H]|[K-N]|[P]|[R-T]|[V-Z]){0,1}|[0-9]{0,9})$", RegexOptions.Compiled);
 
-        private readonly IActionContextAccessor _actionContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public HouseNumberValidator(IActionContextAccessor actionContextAccessor)
+        public HouseNumberValidator(IHttpContextAccessor httpContextAccessor)
         {
-            _actionContextAccessor = actionContextAccessor;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public bool Validate(string houseNumber)
         {
-            return _actionContextAccessor.ActionContext!.HttpContext.IsInterneBijwerker()
+            return _httpContextAccessor.HttpContext!.IsInterneBijwerker()
                 ? HouseNumber.HasValidFormat(houseNumber)
                 : DecentraleBijwerkerHouseNumberFormatRegex.IsMatch(houseNumber);
         }

@@ -1,100 +1,99 @@
 {
   "version": 2,
   "dependencies": {
-    "net9.0": {
+    "net10.0": {
       "Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting": {
         "type": "Direct",
-        "requested": "[10.0.2, )",
-        "resolved": "10.0.2",
-        "contentHash": "pt6T22yVKp1u/cdntwGdo1kPN5yCxQPx1e3gJKOEP4M+BZfzlMIHKJrITe27/gNzJNCAwy+6OVmspwXtcXIf2Q==",
+        "requested": "[11.0.0, )",
+        "resolved": "11.0.0",
+        "contentHash": "/I0RKqJva5Gm4MMPdCOFTB83QaIGSeYxaGMIQ7U47BrlE9a7hpAhFB9yXprHjkPO/1VyXgcCJTiODrdN+ayJEA==",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.AggregateSource": "10.0.2"
+          "Be.Vlaanderen.Basisregisters.AggregateSource": "11.0.0"
         }
       },
       "Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore": {
         "type": "Direct",
-        "requested": "[10.0.2, )",
-        "resolved": "10.0.2",
-        "contentHash": "XpuEbk+CPEoGDg8RKV1VVRUK8xo31Z4F8qO2lLUDkSDWMDSw+/ynOtrWOqgrIkB0s9no28XqY96tVphlGCSarw==",
+        "requested": "[11.0.0, )",
+        "resolved": "11.0.0",
+        "contentHash": "dn/of75WifyUX8PExpuCyFEndX6gxyJ03zLpsl3pGokmaXozoVzfEHtQC/IIYsdkECr/cbiUTLg//EFBQRA1xw==",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.AggregateSource": "10.0.2",
-          "Be.Vlaanderen.Basisregisters.CommandHandling": "10.0.2",
-          "Be.Vlaanderen.Basisregisters.EventHandling": "7.0.0",
-          "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": "5.0.0",
+          "Be.Vlaanderen.Basisregisters.AggregateSource": "11.0.0",
+          "Be.Vlaanderen.Basisregisters.CommandHandling": "11.0.0",
+          "Be.Vlaanderen.Basisregisters.EventHandling": "7.1.0",
+          "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": "5.1.0",
           "SqlStreamStore": "1.2.0"
         }
       },
       "Be.Vlaanderen.Basisregisters.Crab": {
         "type": "Direct",
-        "requested": "[5.0.1, )",
-        "resolved": "5.0.1",
-        "contentHash": "or0wpQBcvjZ+npSzPl8EBVJrt8AuYIX3/prR4F5pnf6UuZVkRKs+griZXSb0L6QMKB/YQxNssGr1haryUknfOQ==",
+        "requested": "[5.1.0, )",
+        "resolved": "5.1.0",
+        "contentHash": "4P0hqjpAENqvncO3DU10VKWhL7rn9XTAqIC42MkT7unNjmvnlC+8gZAfebPWLUuk8wap/EUhiRAI6HoMhnhDtQ==",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.AggregateSource": "10.0.2",
-          "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": "5.0.0",
+          "Be.Vlaanderen.Basisregisters.AggregateSource": "11.0.0",
+          "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": "5.1.0",
           "GeoJSON.NET": "1.4.1",
-          "Microsoft.Extensions.Logging.Abstractions": "9.0.3",
-          "NodaTime": "3.2.2"
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.8",
+          "NodaTime": "3.3.2"
         }
       },
       "Be.Vlaanderen.Basisregisters.EventHandling": {
         "type": "Direct",
-        "requested": "[7.0.0, )",
-        "resolved": "7.0.0",
-        "contentHash": "+KRMy1JBvzh8FF2tPZevMbLAZWkKUHQMyxAR1pBz2DbGiZ91rEjmlRbXnDbIlamZZI4DCcxtgbDMntuhIWCMOg==",
+        "requested": "[7.1.0, )",
+        "resolved": "7.1.0",
+        "contentHash": "iSvBdLox7XZQCtMScU8kF227nOTxDZkStKApIsoKPYMu/VWBcKJ0828y9MbmZ9x2eUAYbxSpPwoGEiCX9i4M9A==",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.Converters.TrimString": "5.0.0",
-          "Newtonsoft.Json": "13.0.3",
-          "NodaTime.Serialization.JsonNet": "3.2.0"
+          "Be.Vlaanderen.Basisregisters.Converters.TrimString": "5.1.0",
+          "Newtonsoft.Json": "13.0.4",
+          "NodaTime.Serialization.JsonNet": "3.2.1"
         }
       },
       "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": {
         "type": "Direct",
-        "requested": "[5.0.0, )",
-        "resolved": "5.0.0",
-        "contentHash": "YlSC0DHwE0vHgVmEOUQDF/6muu8Q+uv3gZWkS+0lKg6UocSUWa9VpBCciLnwLoSW7oIA+viSuBm4bGMWKrchDg=="
+        "requested": "[5.1.0, )",
+        "resolved": "5.1.0",
+        "contentHash": "2WB1iVxqU35ULl7ATujoTlWNb4fCEv3CWytmfq1WqIrZvy5oLbfKmgKkTCAehQwZD4bIgQvPQQ4crifcQO3PSg=="
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Common": {
         "type": "Direct",
-        "requested": "[22.11.0, )",
-        "resolved": "22.11.0",
-        "contentHash": "beh70Fg73mGhg/BXEG23D0jb1OxejFto7ns0qDrk4AhyTj2zoc+vWAttP1vRB2LwU9/hW5U+8kO6QvK5o8seEA==",
+        "requested": "[24.1.0, )",
+        "resolved": "24.1.0",
+        "contentHash": "lvhTpJST/yIAq3kI5w9EEiZaiyxgu6JEKANdXjZVj1jI7RbIJ9qsu+fLun/J5B2zlzHBayY3uRznIsdR7pGnxw==",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.AggregateSource": "10.0.2",
-          "Be.Vlaanderen.Basisregisters.CommandHandling": "10.0.2",
+          "Be.Vlaanderen.Basisregisters.AggregateSource": "11.0.0",
+          "Be.Vlaanderen.Basisregisters.CommandHandling": "11.0.0",
           "NetTopologySuite": "2.6.0",
-          "NodaTime": "3.2.2"
+          "NodaTime": "3.3.2"
         }
       },
       "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": {
         "type": "Direct",
-        "requested": "[22.11.0, )",
-        "resolved": "22.11.0",
-        "contentHash": "w/Vj2eWXJ/S4bsqL+CyKqxoRQinzZ90EnwFXWhr2XUPQQ7mUe3PbeUd8GCSRJOvJ0VL87GDgzzpe2GQ+eYsDxA==",
+        "requested": "[24.1.0, )",
+        "resolved": "24.1.0",
+        "contentHash": "m5f15aXBfskISdPW1PISUXs1wZJriF+VwDwVKi3hDQVosuIihMhONyfdNexQdj6IwHt2NBsb0tTU09DEHXS+0A==",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.GrAr.Common": "22.11.0",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "24.1.0",
           "NetTopologySuite.Features": "2.2.0"
         }
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Provenance": {
         "type": "Direct",
-        "requested": "[22.11.0, )",
-        "resolved": "22.11.0",
-        "contentHash": "5UtjMGfGjBbNnAh7ps24Stg6JZoGnVkJx9f+iBzGosS4nlRAG/CIZP1HPcS2Yrn8znoZzr9psgEKXXIFZL0YQg==",
+        "requested": "[24.1.0, )",
+        "resolved": "24.1.0",
+        "contentHash": "e5sYrj0IpVCoBsxG4fIlyEKcTOE/e+HU4tIBiznbIC1sX7vUHr2sltFbgWOheSUohsRotdF5V+qwxzS3J8fBVg==",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.CommandHandling": "10.0.2",
-          "Be.Vlaanderen.Basisregisters.Crab": "5.0.1",
-          "Be.Vlaanderen.Basisregisters.GrAr.Common": "22.11.0",
-          "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": "5.0.0",
-          "CompareNETObjects": "4.83.0",
-          "Microsoft.CSharp": "4.7.0"
+          "Be.Vlaanderen.Basisregisters.CommandHandling": "11.0.0",
+          "Be.Vlaanderen.Basisregisters.Crab": "5.1.0",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "24.1.0",
+          "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": "5.1.0",
+          "CompareNETObjects": "4.84.0"
         }
       },
       "Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor": {
         "type": "Direct",
-        "requested": "[5.0.0, )",
-        "resolved": "5.0.0",
-        "contentHash": "DI3ETyL4lW+/SQcVAHE1F2fkNLZ5UV8GtVMoPZxX73gTdlfcKHASnsKrxVS/IcQu/5dzwQR70OIpC7kKTQzKcg=="
+        "requested": "[5.1.0, )",
+        "resolved": "5.1.0",
+        "contentHash": "ASn875qbPXLUt0oJ368bl2JWbX9gXf7KwBxdQKlv78GQAbcusQonOlcAj8u9JZPUI73QoX8WwU0lh+aI9VZvxw=="
       },
       "NetTopologySuite": {
         "type": "Direct",
@@ -104,9 +103,9 @@
       },
       "NodaTime": {
         "type": "Direct",
-        "requested": "[3.2.2, )",
-        "resolved": "3.2.2",
-        "contentHash": "dmju5W0UYC3QP/UJM0juKAZkH0HSDMp0gH91A0+mT9M0kgyM2Jm67hUZPl/WRQLq8Lijjqmdk8kyAViWFWM7dA=="
+        "requested": "[3.3.2, )",
+        "resolved": "3.3.2",
+        "contentHash": "8hI5b1ENTKQCaPyU6YHpYiMwj5aJKZ4Mnv0bLbhk65Dd44gQsXenUohMzyiIphANa8LdW6vcOvpY/l1urvx4dw=="
       },
       "SourceLink.Copy.PdbFiles": {
         "type": "Direct",
@@ -122,55 +121,51 @@
       },
       "Be.Vlaanderen.Basisregisters.AggregateSource": {
         "type": "Transitive",
-        "resolved": "10.0.2",
-        "contentHash": "Yl/b3hX+eL00r2hs/vIFbr4BX+4dapcj5AFBguPhO4QBb2Hwzgzm/jjuoS3bziUg5PAb1TWn+jQxcw63c886RA==",
+        "resolved": "11.0.0",
+        "contentHash": "lhNphZSw/4nT+xl1KyO7xjEqg77eaYVVYT5V7tGO3J3KTk7eJ3GRX3kdMZZWTpI6EYKecLlHN30PTIDHvwL7Tg==",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.Utilities.HashCodeCalculator": "5.0.0",
-          "Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor": "5.0.0",
-          "Be.Vlaanderen.Basisregisters.Utilities.ToStringBuilder": "4.0.8",
-          "Newtonsoft.Json": "13.0.3",
-          "NodaTime": "3.2.2",
-          "System.Collections.Immutable": "9.0.3"
+          "Be.Vlaanderen.Basisregisters.Utilities.HashCodeCalculator": "5.1.0",
+          "Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor": "5.1.0",
+          "Be.Vlaanderen.Basisregisters.Utilities.ToStringBuilder": "4.1.0",
+          "Newtonsoft.Json": "13.0.4",
+          "NodaTime": "3.3.2"
         }
       },
       "Be.Vlaanderen.Basisregisters.CommandHandling": {
         "type": "Transitive",
-        "resolved": "10.0.2",
-        "contentHash": "kF9PkiM+9/iqXSSg4B+rXLAgNGgMAdIxtFsQsXlmQ6/tnqXU1FMbRJ0rAHCFKABwv+GW0b113NvDAdAA9V1x9Q==",
-        "dependencies": {
-          "System.Collections.Immutable": "9.0.3"
-        }
+        "resolved": "11.0.0",
+        "contentHash": "1jDwnB96MHLvOAGZgJA/dKfrOgfoQCl1U3CzzfA6jlZkASOM01Dp5UH4+Pgj4Ll8ueYNCITRizBCCfwPG1GKJA=="
       },
       "Be.Vlaanderen.Basisregisters.Converters.TrimString": {
         "type": "Transitive",
-        "resolved": "5.0.0",
-        "contentHash": "LVMiWd/VIVKgbcmtiQgYBi/yGMxSEybDrruUTOVEa4hQc0eMMd55a/KyMmaqsT0afMQwgqwO6ld25RagB7sQoA==",
+        "resolved": "5.1.0",
+        "contentHash": "wqxONDr0cPep5v+bS+Is8Xl7BzDxZ2mvm0CfWSN+dC7adndzieFepWIfyGyVrSpIfrvCvMx7YPbRQtT1xhHnMQ==",
         "dependencies": {
-          "Newtonsoft.Json": "13.0.3"
+          "Newtonsoft.Json": "13.0.4"
         }
       },
       "Be.Vlaanderen.Basisregisters.Utilities.HashCodeCalculator": {
         "type": "Transitive",
-        "resolved": "5.0.0",
-        "contentHash": "zb1i6RL8RkQQNa+gv553tMNe+q/6C41G4nia1p1u13COa4zCMVBmBs2ypFYuw2VTLmwAUhTZJDqGYwGVnC38YA=="
+        "resolved": "5.1.0",
+        "contentHash": "Ty+Cepnjy0L96peVFpi8nJWhF2qnDpVreNzTjTVmLiTSlCIsTKRnAQYNo8fqPa2ASu4F5E2lsMO421zek5pNmg=="
       },
       "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": {
         "type": "Transitive",
-        "resolved": "5.0.0",
-        "contentHash": "OVyzqSCZKdjIke/oXSqp874O5vZvpwnec5wZkCmffjITjK+G/4nQk1jeV3wDAvusjcIEscdGOmhgYGCnUWoQkQ==",
+        "resolved": "5.1.0",
+        "contentHash": "cvaIm1DzRkV1mB8ZambUqqNXIOG83bzCGa7PD0nsqLcEXqxDpI1NSk9QeCuC+sO7PM4SQze4oyJkty68jwbJfQ==",
         "dependencies": {
-          "Newtonsoft.Json": "13.0.3"
+          "Newtonsoft.Json": "13.0.4"
         }
       },
       "Be.Vlaanderen.Basisregisters.Utilities.ToStringBuilder": {
         "type": "Transitive",
-        "resolved": "4.0.8",
-        "contentHash": "jzp8ifH4bBjvhxGe4bBDeDGEXVbiXco7cZX2iKghOTulus30lKk/oj9mOz2gMusQHGEppvXhtHgoJsX3XNYRng=="
+        "resolved": "4.1.0",
+        "contentHash": "3XxDslyPVdZ43RCahDBM+K7xaCgvfbh2CYsgCm/vF6D5zAyBpJUnePl8M2Ebw/Xtiv7kzM9V2b8nmO+Ac9twxQ=="
       },
       "CompareNETObjects": {
         "type": "Transitive",
-        "resolved": "4.83.0",
-        "contentHash": "KNpF1bgvuifzKB5BId3ZHXaBdI/rgJNpq0ZvM2wtdc1Oe8rh4rUUQUnBgHOJQ353eVGNxoXwvlOPuZqg/5cjdg==",
+        "resolved": "4.84.0",
+        "contentHash": "OkAQ9RYkiQkgDc+eLDYMNE+rJB99rQAbnUqZTVLlzxt5YkPuLFQHgV+Nk2iRlffPxaq5DDoM577EC8lyR6OOnQ==",
         "dependencies": {
           "System.Configuration.Configurationmanager": "8.0.0",
           "System.Drawing.Common": "8.0.0"
@@ -184,22 +179,17 @@
           "Newtonsoft.Json": "13.0.3"
         }
       },
-      "Microsoft.CSharp": {
-        "type": "Transitive",
-        "resolved": "4.7.0",
-        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
-      },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "TfaHPSe39NyL2wxkisRxXK7xvHGZYBZ+dy3r+mqGvnxKgAPdHkMu3QMQZI4pquP6W5FIQBqs8FJpWV8ffCgDqQ=="
+        "resolved": "10.0.8",
+        "contentHash": "21nbDV60SRPWGIivsyl6lqBeEJNG1sginhhfWgRrr3Ais7aQ12To25OAHQxgoiJkjqy1aQ6RxpZBGYuTi7Ge6A=="
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "H/MBMLt9A/69Ux4OrV7oCKt3DcMT04o5SCqDolulzQA66TLFEpYYb4qedMs/uwrLtyHXGuDGWKZse/oa8W9AZw==",
+        "resolved": "10.0.8",
+        "contentHash": "fdVadZmsC8jRP0KvKy8mO8f6GV/HyBvElfcSxEhd+5FM5boAw/01iSaCto5G3G37ApJira4A3pNaVvBv8cUiLQ==",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.3"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.8"
         }
       },
       "Microsoft.Win32.SystemEvents": {
@@ -217,13 +207,13 @@
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
-        "resolved": "13.0.3",
-        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+        "resolved": "13.0.4",
+        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
       },
       "NodaTime.Serialization.JsonNet": {
         "type": "Transitive",
-        "resolved": "3.2.0",
-        "contentHash": "zf4dQoRBaFxJ5Hf1SqVVHCPcMViKMZK/P0YnJUuhB8g58IxNGOkSxsPPX9jFp3fMjGrEER/ehyO+y86ubD4OKw==",
+        "resolved": "3.2.1",
+        "contentHash": "/8eeaH/LNIcpIEiBTg/0M/hwsMis0cKVWPyLYnQhXrH2k+9zNrnsOin9Vym6OclSGGndOnNNa6EHUln4S70HKg==",
         "dependencies": {
           "Newtonsoft.Json": "13.0.3",
           "NodaTime": "[3.0.0, 4.0.0)"
@@ -232,15 +222,7 @@
       "SqlStreamStore": {
         "type": "Transitive",
         "resolved": "1.2.0",
-        "contentHash": "AlHlvqhwSkC9MbhlUQRMTtgf4d6qk8xs0n1jDiiCM6cJlp8w/aGJxdI5/+dQwXWlN79FFZFc/vunkfheHmX/2g==",
-        "dependencies": {
-          "Microsoft.CSharp": "4.7.0"
-        }
-      },
-      "System.Collections.Immutable": {
-        "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "CfYi30Pbpw9aGpXVLcoGt+yM0egrE8M1DUOOwdAWOAQ2QZkXkSgjonqZYvtKdxUF1XJaLCp0OdTXueeAeUHSlQ=="
+        "contentHash": "AlHlvqhwSkC9MbhlUQRMTtgf4d6qk8xs0n1jDiiCM6cJlp8w/aGJxdI5/+dQwXWlN79FFZFc/vunkfheHmX/2g=="
       },
       "System.Configuration.ConfigurationManager": {
         "type": "Transitive",
@@ -270,7 +252,7 @@
         "contentHash": "+TUFINV2q2ifyXauQXRwy4CiBhqvDEDZeVJU7qfxya4aRYOKzVBpN+4acx25VcPB9ywUN6C0n8drWl110PhZEg=="
       }
     },
-    "net9.0/linux-arm64": {
+    "net10.0/linux-arm64": {
       "Microsoft.Win32.SystemEvents": {
         "type": "Transitive",
         "resolved": "8.0.0",
@@ -282,7 +264,7 @@
         "contentHash": "fdYxcRjQqTTacKId/2IECojlDSFvp7LP5N78+0z/xH7v/Tuw5ZAxu23Y6PTCRinqyu2ePx+Gn1098NC6jM6d+A=="
       }
     },
-    "net9.0/linux-x64": {
+    "net10.0/linux-x64": {
       "Microsoft.Win32.SystemEvents": {
         "type": "Transitive",
         "resolved": "8.0.0",
@@ -294,7 +276,7 @@
         "contentHash": "fdYxcRjQqTTacKId/2IECojlDSFvp7LP5N78+0z/xH7v/Tuw5ZAxu23Y6PTCRinqyu2ePx+Gn1098NC6jM6d+A=="
       }
     },
-    "net9.0/win-x64": {
+    "net10.0/win-x64": {
       "Microsoft.Win32.SystemEvents": {
         "type": "Transitive",
         "resolved": "8.0.0",

@@ -12,6 +12,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
     using Consumer.Read.Postal.Infrastructure.Modules;
     using Consumer.Read.StreetName.Infrastructure.Modules;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +47,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 .As<IIfMatchHeaderValidator>()
                 .AsSelf();
 
-            builder.Register(c => new AcmIdmProvenanceFactory(Application.AddressRegistry, c.Resolve<IActionContextAccessor>()))
+            builder.Register(c => new AcmIdmProvenanceFactory(Application.AddressRegistry, c.Resolve<IHttpContextAccessor>()))
                 .As<IProvenanceFactory>()
                 .InstancePerLifetimeScope()
                 .AsSelf();

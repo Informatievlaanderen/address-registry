@@ -1,3 +1,15 @@
+# [6.0.0](https://github.com/informatievlaanderen/address-registry/compare/v5.9.13...v6.0.0) (2026-06-11)
+
+
+### Features
+
+* update packages + upgrade to dotnet 10 ([acf3025](https://github.com/informatievlaanderen/address-registry/commit/acf30258e8d36ce5aa20650f3af1f29dc2ab9ab5))
+
+
+### BREAKING CHANGES
+
+* update to dotnet 10
+
 ## [5.9.13](https://github.com/informatievlaanderen/address-registry/compare/v5.9.12...v5.9.13) (2026-05-20)
 
 

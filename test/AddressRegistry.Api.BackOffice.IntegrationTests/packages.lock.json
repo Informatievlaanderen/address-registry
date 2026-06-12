@@ -1320,7 +1320,7 @@
           "Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy": "[4.0.0, )",
           "CsvHelper": "[33.1.0, )",
           "Datadog.Trace.Bundle": "[3.45.0, )",
-          "MediatR": "[12.5.0, 13.0.0)"
+          "MediatR": "[12.5.0, 14.1.0]"
         }
       },
       "addressregistry.consumer.read.municipality": {
@@ -1832,7 +1832,7 @@
       },
       "MediatR": {
         "type": "CentralTransitive",
-        "requested": "[12.5.0, 13.0.0)",
+        "requested": "[12.5.0, 14.1.0]",
         "resolved": "12.5.0",
         "contentHash": "vqm2H8/nqL5NAJHPhsG1JOPwfkmbVrPyh4svdoRzu+uZh6Ex7PRoHBGsLYC0/RWCEJFqD1ohHNpteQvql9OktA==",
         "dependencies": {

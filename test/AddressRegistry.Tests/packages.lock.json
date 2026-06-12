@@ -1706,7 +1706,7 @@
           "Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy": "[4.0.0, )",
           "CsvHelper": "[33.1.0, )",
           "Datadog.Trace.Bundle": "[3.45.0, )",
-          "MediatR": "[12.5.0, 13.0.0)"
+          "MediatR": "[12.5.0, 14.1.0]"
         }
       },
       "addressregistry.api.backoffice.handlers.lambda": {
@@ -1721,7 +1721,7 @@
           "Be.Vlaanderen.Basisregisters.Sqs.Lambda": "[5.3.0, )",
           "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": "[4.0.0, )",
           "Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy": "[4.0.0, )",
-          "MediatR": "[12.5.0, 13.0.0)",
+          "MediatR": "[12.5.0, 14.1.0]",
           "Microsoft.EntityFrameworkCore.SqlServer": "[10.0.9, )",
           "Microsoft.Extensions.Configuration.Binder": "[10.0.9, )",
           "Microsoft.Extensions.Configuration.EnvironmentVariables": "[10.0.9, )",
@@ -2034,7 +2034,7 @@
           "Be.Vlaanderen.Basisregisters.Api": "[27.0.0, )",
           "Datadog.Trace.Bundle": "[3.45.0, )",
           "Elastic.Clients.Elasticsearch": "[8.17.4, )",
-          "MediatR": "[12.5.0, 13.0.0)",
+          "MediatR": "[12.5.0, 14.1.0]",
           "MediatR.Contracts": "[2.0.1, )"
         }
       },
@@ -2599,7 +2599,7 @@
       },
       "MediatR": {
         "type": "CentralTransitive",
-        "requested": "[12.5.0, 13.0.0)",
+        "requested": "[12.5.0, 14.1.0]",
         "resolved": "12.5.0",
         "contentHash": "vqm2H8/nqL5NAJHPhsG1JOPwfkmbVrPyh4svdoRzu+uZh6Ex7PRoHBGsLYC0/RWCEJFqD1ohHNpteQvql9OktA==",
         "dependencies": {

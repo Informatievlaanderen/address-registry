@@ -10,12 +10,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\net9.0\AddressRegistry.Api.BackOffice.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net10.0\AddressRegistry.Api.BackOffice.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP;NET9_0</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP;NET10_0</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net9.0\AddressRegistry.Api.BackOffice.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net10.0\AddressRegistry.Api.BackOffice.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
 

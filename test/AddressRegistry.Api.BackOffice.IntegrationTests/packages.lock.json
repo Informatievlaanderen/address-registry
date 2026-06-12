@@ -366,10 +366,15 @@
         "resolved": "8.0.1",
         "contentHash": "P3bNPAiyYh15VuDZP/xE7Y8ohhQloiW2KdiBzzJh3m26sPQJ3Wuxj4ur6X+A9m0qhdwx2kLeh4so0a2nEslHmw=="
       },
+      "Elastic.Esql": {
+        "type": "Transitive",
+        "resolved": "0.11.0",
+        "contentHash": "frYrulxZxDLsAk5vBw6oVG4dOYcGFSOPBsJ+1EfLn/sEB/fS56zVEbEitdVxreY3xREdhZwS9dtUkAqsAt037g=="
+      },
       "Elastic.Transport": {
         "type": "Transitive",
-        "resolved": "0.5.9",
-        "contentHash": "RXoJAeXKaXq67SeLhyDMBPpvlkG940jqJWd5l+rKglMRLJn6X0dkLNlWehpDuouicNdwnYdcuADnqdSOiSvASw=="
+        "resolved": "0.17.1",
+        "contentHash": "PpDoD+6zxtYgK/DAqQEiVSlkC2Zt1x0JKGaygAx8Oqrkft9Nr1VTuysOWZ6NKsav9WtB4jyHuU/eIZXuc2oZuw=="
       },
       "FluentValidation": {
         "type": "Transitive",
@@ -1382,7 +1387,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[16.0.0, )",
           "Datadog.Trace.Bundle": "[3.45.0, )",
           "Destructurama.JsonNet": "[4.0.2, )",
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.4.2, )",
           "Microsoft.Extensions.Hosting": "[10.0.9, )",
           "Serilog": "[4.3.1, )",
           "Serilog.Enrichers.Environment": "[3.0.1, )",
@@ -1413,7 +1418,7 @@
       "addressregistry.infrastructure.elastic": {
         "type": "Project",
         "dependencies": {
-          "Elastic.Clients.Elasticsearch": "[8.17.4, )",
+          "Elastic.Clients.Elasticsearch": "[9.4.2, )",
           "Microsoft.Extensions.Configuration": "[10.0.9, )"
         }
       },
@@ -1823,11 +1828,12 @@
       },
       "Elastic.Clients.Elasticsearch": {
         "type": "CentralTransitive",
-        "requested": "[8.17.4, )",
-        "resolved": "8.17.4",
-        "contentHash": "7zZ4xmQv96PlGZiQBfmuicgh3cUoAV9aZlY/vPdba02vWGz307XW+TbI3HaQrm4EPKrvD2PFNQmkJVBvhMZgxw==",
+        "requested": "[9.4.2, )",
+        "resolved": "9.4.2",
+        "contentHash": "sMzOK9HgGqlSBjmX2ad88vDLQ0ySWXi4bYGe9T6xHVmhz41ikRYZ8G0VgkOYmRGgVwpkvupGDFztF+6KyPiYEw==",
         "dependencies": {
-          "Elastic.Transport": "0.5.9"
+          "Elastic.Esql": "0.11.0",
+          "Elastic.Transport": "0.17.1"
         }
       },
       "MediatR": {

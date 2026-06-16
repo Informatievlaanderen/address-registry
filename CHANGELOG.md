@@ -1,3 +1,10 @@
+## [6.0.1](https://github.com/informatievlaanderen/address-registry/compare/v6.0.0...v6.0.1) (2026-06-16)
+
+
+### Bug Fixes
+
+* **api:** api xml docs ([61c4a3e](https://github.com/informatievlaanderen/address-registry/commit/61c4a3ed81bbad1eea231a1fdbb9d6c4e13afee6))
+
 # [6.0.0](https://github.com/informatievlaanderen/address-registry/compare/v5.9.13...v6.0.0) (2026-06-11)
 
 

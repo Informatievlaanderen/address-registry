@@ -55,7 +55,7 @@
                         )
                         .TokenFilters(descriptor =>
                         {
-                            descriptor.EdgeNGram("edge_ngram", e => e.MinGram(1).MaxGram(20));
+                            descriptor.EdgeNGram("edge_ngram", e => e.MinGram(1).MaxGram(50));
                             AddDutchSynonymWordsFilter(descriptor);
                         })
                         .Normalizers(descriptor =>

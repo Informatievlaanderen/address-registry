@@ -5,7 +5,6 @@ namespace AddressRegistry.Projector.Infrastructure
     using System.Reflection;
     using System.Threading;
     using AddressRegistry.Infrastructure.Elastic;
-    using AddressRegistry.Infrastructure.Modules;
     using AddressRegistry.Projections.Elastic;
     using AddressRegistry.Projections.Elastic.AddressList;
     using AddressRegistry.Projections.Elastic.AddressSearch;
@@ -15,7 +14,6 @@ namespace AddressRegistry.Projector.Infrastructure
     using AddressRegistry.Projections.Wfs;
     using AddressRegistry.Projections.Wms;
     using Asp.Versioning.ApiExplorer;
-    using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
@@ -33,7 +31,6 @@ namespace AddressRegistry.Projector.Infrastructure
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi;
-    using Modules;
     using Serilog;
     using Serilog.Extensions.Logging;
     using HealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
@@ -217,17 +214,17 @@ namespace AddressRegistry.Projector.Infrastructure
             appLifetime.ApplicationStopping.Register(() => _projectionsCancellationTokenSource.Cancel());
             appLifetime.ApplicationStarted.Register(() =>
             {
-                var projectionsManager = serviceProvider.GetRequiredService<IConnectedProjectionsManager>();
+                var projectionsManager = app.ApplicationServices.GetRequiredService<IConnectedProjectionsManager>();
                 projectionsManager.Resume(_projectionsCancellationTokenSource.Token);
             });
 
             var elasticIndices = new ElasticIndexBase[]
             {
                 new AddressSearchElasticIndex(
-                    serviceProvider.GetRequiredService<ElasticsearchClient>(),
+                    app.ApplicationServices.GetRequiredService<ElasticsearchClient>(),
                     _configuration),
                 new AddressListElasticIndex(
-                    serviceProvider.GetRequiredService<ElasticsearchClient>(),
+                    app.ApplicationServices.GetRequiredService<ElasticsearchClient>(),
                     _configuration)
             };
             foreach (var elasticIndex in elasticIndices)

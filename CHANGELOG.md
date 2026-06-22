@@ -1,3 +1,10 @@
+## [6.0.2](https://github.com/informatievlaanderen/address-registry/compare/v6.0.1...v6.0.2) (2026-06-22)
+
+
+### Bug Fixes
+
+* **projector:** resume projections ([1ea2a0a](https://github.com/informatievlaanderen/address-registry/commit/1ea2a0a9600a07b2345285587fcd2af3cd51b7cd))
+
 ## [6.0.1](https://github.com/informatievlaanderen/address-registry/compare/v6.0.0...v6.0.1) (2026-06-16)
 
 

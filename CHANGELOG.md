@@ -1,3 +1,10 @@
+## [6.0.3](https://github.com/informatievlaanderen/address-registry/compare/v6.0.2...v6.0.3) (2026-06-22)
+
+
+### Bug Fixes
+
+* **elastic:** increase edge_ngram ([2d108c9](https://github.com/informatievlaanderen/address-registry/commit/2d108c98c1288b0d523c29d3337e25ca11981fe5))
+
 ## [6.0.2](https://github.com/informatievlaanderen/address-registry/compare/v6.0.1...v6.0.2) (2026-06-22)
 
 

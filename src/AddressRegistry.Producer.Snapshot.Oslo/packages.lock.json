@@ -22,11 +22,11 @@
       },
       "AWSSDK.Extensions.NETCore.Setup": {
         "type": "Direct",
-        "requested": "[4.0.4.5, )",
-        "resolved": "4.0.4.5",
-        "contentHash": "FUFou3qnjioigoMLGtqlHXoxxZuZNUilVJo8d0t6DgmRkH0mS8z5MfBiuok5i2HMCwKOmOGwcP3SnLFgErA3fw==",
+        "requested": "[4.0.100.1, )",
+        "resolved": "4.0.100.1",
+        "contentHash": "BbyTnJcTSHmnjNVQjqg3R3GwB0WYlQ2DieB7WW+5w9K7kh4BDM7iTAjtIHkwGwLDopC4/GtkuKnosOzUiHBqkQ==",
         "dependencies": {
-          "AWSSDK.Core": "4.0.8.1"
+          "AWSSDK.Core": "4.0.100.1"
         }
       },
       "Be.Vlaanderen.Basisregisters.Api": {
@@ -248,8 +248,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.8.1",
-        "contentHash": "Zu5g0zQ3WNZrL+0RqRSa2guAcLJqbFwK7mxfm6stx/b3cfOdqt/k9Y6c/8rxyHSeVf+8iUJGV4J7WhbLs9zOpA=="
+        "resolved": "4.0.100.1",
+        "contentHash": "kOSGVgWvxz3V8CYX9BDQ46DLsHumW0YjOMJHpns5iNCt1kzEISpTluL/+HMmXMoqIS+KSeoEvjtJWclaoGVlKw=="
       },
       "AWSSDK.DynamoDBv2": {
         "type": "Transitive",

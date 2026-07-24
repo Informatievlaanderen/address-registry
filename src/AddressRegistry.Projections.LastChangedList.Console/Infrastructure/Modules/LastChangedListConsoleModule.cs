@@ -88,6 +88,9 @@ namespace AddressRegistry.Projections.LastChangedList.Console.Infrastructure.Mod
                     _loggerFactory)
                 .RegisterProjections<LastChangedListProjections, LastChangedListContext>(
                     context => new LastChangedListProjections(context.Resolve<LastChangedListAddressCacheValidator>()),
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<LastChangedListProjectionsV3, LastChangedListContext>(
+                    context => new LastChangedListProjectionsV3(context.Resolve<LastChangedListAddressCacheValidator>()),
                     ConnectedProjectionSettings.Default);
         }
     }

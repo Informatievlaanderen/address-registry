@@ -18,11 +18,11 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
     public sealed class AddressMatchHandlerV2 : IRequestHandler<AddressMatchRequest, AddressMatchOsloCollection>
     {
         private readonly ILatestQueries _latestQueries;
-        private readonly IOptions<ResponseOptions> _responseOptions;
+        private readonly IOptions<ResponseOptionsV2> _responseOptions;
 
         public AddressMatchHandlerV2(
             ILatestQueries latestQueries,
-            IOptions<ResponseOptions> responseOptions)
+            IOptions<ResponseOptionsV2> responseOptions)
         {
             _latestQueries = latestQueries;
             _responseOptions = responseOptions;

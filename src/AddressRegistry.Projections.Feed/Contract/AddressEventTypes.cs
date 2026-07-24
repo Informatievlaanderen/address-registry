@@ -13,14 +13,14 @@ namespace AddressRegistry.Projections.Feed.Contract
 
     public static class AddressAttributeNames
     {
-        public const string StreetNameId = "straatnaam.id";
-        public const string StatusName = "adresStatus";
+        public const string StreetNameId = "heeftStraatnaam";
+        public const string StatusName = "status";
         public const string HouseNumber = "huisnummer";
         public const string BoxNumber = "busnummer";
-        public const string PostalCode = "postcode";
-        public const string Position = "adresPositie";
-        public const string PositionGeometryMethod = "positieGeometrieMethode";
-        public const string PositionSpecification = "positieSpecificatie";
+        public const string PostalCode = "heeftPostinfo";
+        public const string Position = "positie.geometrie";
+        public const string PositionGeometryMethod = "positie.methode";
+        public const string PositionSpecification = "positie.specificatie";
         public const string OfficiallyAssigned = "officieelToegekend";
     }
 
@@ -40,23 +40,5 @@ namespace AddressRegistry.Projections.Feed.Contract
 
         [JsonProperty("naarId", Order = 1)]
         public required string To { get; set; }
-    }
-
-    public sealed class AddressPositionCloudEventValue
-    {
-        [JsonProperty("type")]
-        public string Type { get; set; } = "Point";
-
-        [JsonProperty("projectie")]
-        public string Projection { get; set; }
-
-        [JsonProperty("gml")]
-        public string Gml { get; set; } = string.Empty;
-
-        public AddressPositionCloudEventValue(string gml, string projection)
-        {
-            Gml = gml;
-            Projection = projection;
-        }
     }
 }

@@ -1,6 +1,6 @@
 namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
 {
-    using AddressRegistry.Api.Oslo.AddressMatch.Responses;
+    using AddressRegistry.Api.Oslo.AddressMatch.V2.Responses;
     using FluentAssertions;
 
     internal class AdresMatchItemStraatnaamAssertions : Assertions<AdresMatchOsloItemStraatnaam, AdresMatchItemStraatnaamAssertions>

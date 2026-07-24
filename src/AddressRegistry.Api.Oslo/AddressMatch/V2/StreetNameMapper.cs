@@ -10,10 +10,10 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 
     internal class StreetNameMapper : IMapper<StreetNameLatestItem, AddressMatchScoreableItemV2>
     {
-        private readonly ResponseOptions _responseOptions;
+        private readonly ResponseOptionsV2 _responseOptions;
         private readonly ILatestQueries _latestQueries;
 
-        public StreetNameMapper(ResponseOptions responseOptions, ILatestQueries latestQueries)
+        public StreetNameMapper(ResponseOptionsV2 responseOptions, ILatestQueries latestQueries)
         {
             _responseOptions = responseOptions;
             _latestQueries = latestQueries;
@@ -22,8 +22,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
         public AddressMatchScoreableItemV2 Map(StreetNameLatestItem source)
         {
             var municipality = _latestQueries.GetAllLatestMunicipalities()[source.NisCode];
-            var name = Address.AddressMapper.GetDefaultStreetNameName(source, municipality.PrimaryLanguage);
-            var homonym = Address.AddressMapper.GetDefaultHomonymAddition(source, municipality.PrimaryLanguage);
+            var name = Address.V2.AddressMapper.GetDefaultStreetNameName(source, municipality.PrimaryLanguage);
+            var homonym = Address.V2.AddressMapper.GetDefaultHomonymAddition(source, municipality.PrimaryLanguage);
 
             return new AddressMatchScoreableItemV2
             {

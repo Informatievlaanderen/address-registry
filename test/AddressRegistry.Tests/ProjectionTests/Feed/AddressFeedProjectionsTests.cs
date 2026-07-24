@@ -18,9 +18,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.Adres;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.Gml;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
@@ -33,6 +33,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     using Moq;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using Newtonsoft.Json.Serialization;
     using Projections.Feed;
     using Projections.Feed.AddressFeed;
     using Projections.Feed.Contract;
@@ -43,6 +44,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
     public sealed class AddressFeedProjectionsTests
     {
         private const string NisCode = "11001";
+        private static readonly CamelCaseNamingStrategy NamingStrategy = new();
+
         private readonly Fixture _fixture;
         private readonly FeedContext _feedContext;
         private readonly FakeStreetNameConsumerContext _streetNameConsumerContext;
@@ -109,7 +112,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.BoxNumber.Should().Be(addressWasMigrated.BoxNumber);
                     document.Document.PostalCode.Should().Be(addressWasMigrated.PostalCode ?? string.Empty);
                     document.Document.OfficiallyAssigned.Should().Be(addressWasMigrated.OfficiallyAssigned);
-                    document.Document.Status.Should().Be(AdresStatus.Voorgesteld);
+                    document.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.Voorgesteld));
                     document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AangeduidDoorBeheerder);
                     document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Gebouw);
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
@@ -166,7 +169,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.BoxNumber.Should().Be(addressWasMigrated.BoxNumber);
                     document.Document.PostalCode.Should().Be(addressWasMigrated.PostalCode ?? string.Empty);
                     document.Document.OfficiallyAssigned.Should().Be(addressWasMigrated.OfficiallyAssigned);
-                    document.Document.Status.Should().Be(AdresStatus.Voorgesteld);
+                    document.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.Voorgesteld));
                     document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AangeduidDoorBeheerder);
                     document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Gebouw);
                     document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
@@ -193,7 +196,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasMigrated.HouseNumber)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == (addressWasMigrated.PostalCode ?? string.Empty))
+                                               && a.NewValue!.ToString() == (OsloNamespaces.Postinfo.ToPuri(addressWasMigrated.PostalCode) ?? string.Empty))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == addressWasMigrated.OfficiallyAssigned.ToString())
@@ -203,13 +206,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasMigrated.BoxNumber))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PositieGeometrieMethode.AangeduidDoorBeheerder.ToString())
+                                               && a.NewValue!.ToString() == ToGeometrieMethodePuri(PositieGeometrieMethode.AangeduidDoorBeheerder))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PositieSpecificatie.Gebouw.ToString())
+                                               && a.NewValue!.ToString() == ToGeometrieSpecificatiePuri(PositieSpecificatie.Gebouw))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
-                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
+                                               && a.NewValue != null && AssertPositionList((List<PointGeometrie>)a.NewValue, document.Document.PositionAsGml))),
                             AddressWasMigratedToStreetName.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -244,7 +247,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
                     document.Document.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
                     document.Document.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
-                    document.Document.Status.Should().Be(AdresStatus.Voorgesteld);
+                    document.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.Voorgesteld));
                     document.Document.OfficiallyAssigned.Should().BeTrue();
                     document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AfgeleidVanObject);
                     document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Gebouweenheid);
@@ -267,13 +270,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == OsloNamespaces.StraatNaam.ToPuri(addressWasProposedV2.StreetNamePersistentLocalId.ToString()))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.Voorgesteld))
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.Voorgesteld).Id)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.HouseNumber
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == addressWasProposedV2.HouseNumber)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasProposedV2.PostalCode)
+                                               && a.NewValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressWasProposedV2.PostalCode))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == true.ToString())
@@ -283,13 +286,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasProposedV2.BoxNumber))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PositieGeometrieMethode.AfgeleidVanObject.ToString())
+                                               && a.NewValue!.ToString() == ToGeometrieMethodePuri(PositieGeometrieMethode.AfgeleidVanObject))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PositieSpecificatie.Gebouweenheid.ToString())
+                                               && a.NewValue!.ToString() == ToGeometrieSpecificatiePuri(PositieSpecificatie.Gebouweenheid))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
-                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
+                                               && a.NewValue != null && AssertPositionList((List<PointGeometrie>)a.NewValue, document.Document.PositionAsGml))),
                             AddressWasProposedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -328,7 +331,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     document.Document.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
                     document.Document.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
                     document.Document.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
-                    document.Document.Status.Should().Be(AdresStatus.Voorgesteld);
+                    document.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.Voorgesteld));
                     document.Document.OfficiallyAssigned.Should().BeTrue();
                     document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AfgeleidVanObject);
                     document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Gebouweenheid);
@@ -351,13 +354,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == OsloNamespaces.StraatNaam.ToPuri(addressWasProposedV2.StreetNamePersistentLocalId.ToString()))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.Voorgesteld))
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.Voorgesteld).Id)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.HouseNumber
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == addressWasProposedV2.HouseNumber)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasProposedV2.PostalCode)
+                                               && a.NewValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressWasProposedV2.PostalCode))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == true.ToString())
@@ -367,13 +370,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasProposedV2.BoxNumber))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PositieGeometrieMethode.AfgeleidVanObject.ToString())
+                                               && a.NewValue!.ToString() == ToGeometrieMethodePuri(PositieGeometrieMethode.AfgeleidVanObject))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PositieSpecificatie.Gebouweenheid.ToString())
+                                               && a.NewValue!.ToString() == ToGeometrieSpecificatiePuri(PositieSpecificatie.Gebouweenheid))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
-                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
+                                               && a.NewValue != null && AssertPositionList((List<PointGeometrie>)a.NewValue, document.Document.PositionAsGml))),
                             AddressWasProposedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -398,7 +401,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.AddressDocuments.FindAsync(addressWasApproved.AddressPersistentLocalId);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(AdresStatus.InGebruik);
+                    document!.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.InGebruik));
                     document.LastChangedOn.Should().Be(addressWasApproved.Provenance.Timestamp);
                     document.Document.VersionId.Should().Be(addressWasApproved.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
@@ -414,8 +417,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == nameof(AdresStatus.Voorgesteld)
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.InGebruik))),
+                                               && a.OldValue!.ToString() == new AdresStatus(AdresStatusValue.Voorgesteld).Id
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.InGebruik).Id)),
                             AddressWasApproved.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -442,7 +445,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.AddressDocuments.FindAsync(addressWasCorrected.AddressPersistentLocalId);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(AdresStatus.Voorgesteld);
+                    document!.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.Voorgesteld));
                     document.LastChangedOn.Should().Be(addressWasCorrected.Provenance.Timestamp);
                     document.Document.VersionId.Should().Be(addressWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
@@ -455,8 +458,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == nameof(AdresStatus.InGebruik)
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.Voorgesteld))),
+                                               && a.OldValue!.ToString() == new AdresStatus(AdresStatusValue.InGebruik).Id
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.Voorgesteld).Id)),
                             AddressWasCorrectedFromApprovedToProposed.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -480,7 +483,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.AddressDocuments.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(AdresStatus.Afgekeurd);
+                    document!.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.Afgekeurd));
                     document.LastChangedOn.Should().Be(addressWasRejected.Provenance.Timestamp);
                     document.Document.VersionId.Should().Be(addressWasRejected.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
@@ -496,8 +499,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == nameof(AdresStatus.Voorgesteld)
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.Afgekeurd))),
+                                               && a.OldValue!.ToString() == new AdresStatus(AdresStatusValue.Voorgesteld).Id
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.Afgekeurd).Id)),
                             AddressWasRejected.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -523,7 +526,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.AddressDocuments.FindAsync(addressWasRetiredV2.AddressPersistentLocalId);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(AdresStatus.Gehistoreerd);
+                    document!.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.Gehistoreerd));
                     document.LastChangedOn.Should().Be(addressWasRetiredV2.Provenance.Timestamp);
                     document.Document.VersionId.Should().Be(addressWasRetiredV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
@@ -536,8 +539,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == nameof(AdresStatus.InGebruik)
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.Gehistoreerd))),
+                                               && a.OldValue!.ToString() == new AdresStatus(AdresStatusValue.InGebruik).Id
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.Gehistoreerd).Id)),
                             AddressWasRetiredV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -621,8 +624,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
-                                               && a.OldValue!.ToString() == addressWasProposedV2.PostalCode
-                                               && a.NewValue!.ToString() == addressPostalCodeWasChangedV2.PostalCode)),
+                                               && a.OldValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressWasProposedV2.PostalCode)
+                                               && a.NewValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressPostalCodeWasChangedV2.PostalCode))),
                             AddressPostalCodeWasChangedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -642,8 +645,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
-                                               && a.OldValue!.ToString() == addressBoxWasProposedV2.PostalCode
-                                               && a.NewValue!.ToString() == addressPostalCodeWasChangedV2.PostalCode)),
+                                               && a.OldValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressBoxWasProposedV2.PostalCode)
+                                               && a.NewValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressPostalCodeWasChangedV2.PostalCode))),
                             AddressPostalCodeWasChangedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -787,8 +790,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.OldValue!.ToString() == true.ToString()
                                                && a.NewValue!.ToString() == false.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == nameof(AdresStatus.Voorgesteld)
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.InGebruik))),
+                                               && a.OldValue!.ToString() == new AdresStatus(AdresStatusValue.Voorgesteld).Id
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.InGebruik).Id)),
                             AddressWasDeregulated.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -855,7 +858,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     var document = await context.AddressDocuments.FindAsync(addressRegularizationWasCorrected.AddressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.Document.OfficiallyAssigned.Should().BeFalse();
-                    document.Document.Status.Should().Be(AdresStatus.InGebruik);
+                    document.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.InGebruik));
                     document.LastChangedOn.Should().Be(addressRegularizationWasCorrected.Provenance.Timestamp);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -870,8 +873,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.OldValue!.ToString() == true.ToString()
                                                && a.NewValue!.ToString() == false.ToString())
                                 && attrs.Any(a => a.Name == AddressAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == nameof(AdresStatus.Voorgesteld)
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.InGebruik))),
+                                               && a.OldValue!.ToString() == new AdresStatus(AdresStatusValue.Voorgesteld).Id
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.InGebruik).Id)),
                             AddressRegularizationWasCorrected.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -898,7 +901,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     var document = await context.AddressDocuments.FindAsync(addressRegularizationWasCorrected.AddressPersistentLocalId);
                     document.Should().NotBeNull();
                     document!.Document.OfficiallyAssigned.Should().BeFalse();
-                    document.Document.Status.Should().Be(AdresStatus.InGebruik);
+                    document.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.InGebruik));
                     document.LastChangedOn.Should().Be(addressRegularizationWasCorrected.Provenance.Timestamp);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -1002,13 +1005,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == OsloNamespaces.StraatNaam.ToPuri(addressRemovalWasCorrected.StreetNamePersistentLocalId.ToString()))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.Gehistoreerd))
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.Gehistoreerd).Id)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.HouseNumber
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == addressRemovalWasCorrected.HouseNumber)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == (addressRemovalWasCorrected.PostalCode ?? string.Empty))
+                                               && a.NewValue!.ToString() == (OsloNamespaces.Postinfo.ToPuri(addressRemovalWasCorrected.PostalCode) ?? string.Empty))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == addressRemovalWasCorrected.OfficiallyAssigned.ToString())
@@ -1018,13 +1021,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressRemovalWasCorrected.BoxNumber))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PositieGeometrieMethode.AangeduidDoorBeheerder.ToString())
+                                               && a.NewValue!.ToString() == ToGeometrieMethodePuri(PositieGeometrieMethode.AangeduidDoorBeheerder))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PositieSpecificatie.Gebouweenheid.ToString())
+                                               && a.NewValue!.ToString() == ToGeometrieSpecificatiePuri(PositieSpecificatie.Gebouweenheid))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
-                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
+                                               && a.NewValue != null && AssertPositionList((List<PointGeometrie>)a.NewValue, document.Document.PositionAsGml))),
                             AddressRemovalWasCorrected.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -1084,13 +1087,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                     && a.OldValue != null && a.NewValue != null
-                                    && a.NewValue.ToString() == positieGeometrieMethode.ToString())
+                                    && a.NewValue.ToString() == ToGeometrieMethodePuri(positieGeometrieMethode))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
                                    && a.OldValue != null && a.NewValue != null
-                                   && a.NewValue.ToString() == positieSpecificatie.ToString())
+                                   && a.NewValue.ToString() == ToGeometrieSpecificatiePuri(positieSpecificatie))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
-                                               && a.OldValue != null && ((List<AddressPositionCloudEventValue>)a.OldValue).Count == 2
-                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
+                                               && a.OldValue != null && ((List<PointGeometrie>)a.OldValue).Count == 2
+                                               && a.NewValue != null && AssertPositionList((List<PointGeometrie>)a.NewValue, document.Document.PositionAsGml))),
                             AddressPositionWasChanged.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -1132,8 +1135,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.Position
-                                               && a.OldValue != null && ((List<AddressPositionCloudEventValue>)a.OldValue).Count == 2
-                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
+                                               && a.OldValue != null && ((List<PointGeometrie>)a.OldValue).Count == 2
+                                               && a.NewValue != null && AssertPositionList((List<PointGeometrie>)a.NewValue, document.Document.PositionAsGml))),
                             AddressPositionWasCorrectedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -1188,7 +1191,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.AddressDocuments.FindAsync(addressWasCorrected.AddressPersistentLocalId);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(AdresStatus.InGebruik);
+                    document!.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.InGebruik));
                     document.LastChangedOn.Should().Be(addressWasCorrected.Provenance.Timestamp);
                     document.Document.VersionId.Should().Be(addressWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
@@ -1232,8 +1235,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
-                                               && a.OldValue!.ToString() == addressWasProposedV2.PostalCode
-                                               && a.NewValue!.ToString() == addressPostalCodeWasCorrectedV2.PostalCode)),
+                                               && a.OldValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressWasProposedV2.PostalCode)
+                                               && a.NewValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressPostalCodeWasCorrectedV2.PostalCode))),
                             AddressPostalCodeWasCorrectedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -1253,8 +1256,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
-                                               && a.OldValue!.ToString() == addressBoxWasProposedV2.PostalCode
-                                               && a.NewValue!.ToString() == addressPostalCodeWasCorrectedV2.PostalCode)),
+                                               && a.OldValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressBoxWasProposedV2.PostalCode)
+                                               && a.NewValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressPostalCodeWasCorrectedV2.PostalCode))),
                             AddressPostalCodeWasCorrectedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -1292,13 +1295,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == OsloNamespaces.StraatNaam.ToPuri(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId.ToString()))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == AdresStatus.Voorgesteld.ToString())
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.Voorgesteld).Id)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.HouseNumber
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.HouseNumber)
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PostalCode
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.PostalCode)
+                                               && a.NewValue!.ToString() == OsloNamespaces.Postinfo.ToPuri(addressWasProposedForMunicipalityMerger.PostalCode))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.OfficiallyAssigned
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.OfficiallyAssigned.ToString())
@@ -1308,13 +1311,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                                                && a.NewValue!.ToString() == addressWasProposedForMunicipalityMerger.BoxNumber))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PositieGeometrieMethode.AfgeleidVanObject.ToString())
+                                               && a.NewValue!.ToString() == ToGeometrieMethodePuri(PositieGeometrieMethode.AfgeleidVanObject))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PositieSpecificatie.Gemeente.ToString())
+                                               && a.NewValue!.ToString() == ToGeometrieSpecificatiePuri(PositieSpecificatie.Gemeente))
                                 && attrs.Any(a => a.Name == AddressAttributeNames.Position
                                                && a.OldValue == null
-                                               && a.NewValue != null && AssertPositionList((List<AddressPositionCloudEventValue>)a.NewValue, document.Document.PositionAsGml))),
+                                               && a.NewValue != null && AssertPositionList((List<PointGeometrie>)a.NewValue, document.Document.PositionAsGml))),
                             AddressWasProposedForMunicipalityMerger.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -1355,6 +1358,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     It.IsAny<long>(),
                     It.IsAny<DateTimeOffset>(),
                     It.IsAny<string>(),
+                    It.IsAny<string?>(),
                     It.IsAny<AddressCloudTransformEvent>(),
                     It.IsAny<Uri>(),
                     It.IsAny<string>(),
@@ -1382,7 +1386,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.AddressDocuments.FindAsync(addressPersistentLocalId);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(AdresStatus.Afgekeurd);
+                    document!.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.Afgekeurd));
                     document.LastChangedOn.Should().Be(addressWasRejectedBecauseOfMunicipalityMerger.Provenance.Timestamp);
                     document.Document.VersionId.Should().Be(addressWasRejectedBecauseOfMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
@@ -1395,8 +1399,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == nameof(AdresStatus.Voorgesteld)
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.Afgekeurd))),
+                                               && a.OldValue!.ToString() == new AdresStatus(AdresStatusValue.Voorgesteld).Id
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.Afgekeurd).Id)),
                             AddressWasRejectedBecauseOfMunicipalityMerger.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -1405,6 +1409,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<long>(),
                             addressWasRejectedBecauseOfMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset(),
                             AddressEventTypes.TransformV1,
+                            addressPersistentLocalId.ToString(),
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(NisCode) && t.NisCodes.Contains(newNisCode)
                                 && t.TransformValues.First().From.Contains(addressPersistentLocalId.ToString())
@@ -1455,6 +1460,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     It.IsAny<long>(),
                     It.IsAny<DateTimeOffset>(),
                     It.IsAny<string>(),
+                    It.IsAny<string?>(),
                     It.IsAny<AddressCloudTransformEvent>(),
                     It.IsAny<Uri>(),
                     It.IsAny<string>(),
@@ -1483,7 +1489,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.AddressDocuments.FindAsync(addressPersistentLocalId);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(AdresStatus.Gehistoreerd);
+                    document!.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.Gehistoreerd));
                     document.LastChangedOn.Should().Be(addressWasRetiredBecauseOfMunicipalityMerger.Provenance.Timestamp);
                     document.Document.VersionId.Should().Be(addressWasRetiredBecauseOfMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset());
 
@@ -1496,8 +1502,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(l => l.Contains(NisCode)),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == AddressAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == nameof(AdresStatus.InGebruik)
-                                               && a.NewValue!.ToString() == nameof(AdresStatus.Gehistoreerd))),
+                                               && a.OldValue!.ToString() == new AdresStatus(AdresStatusValue.InGebruik).Id
+                                               && a.NewValue!.ToString() == new AdresStatus(AdresStatusValue.Gehistoreerd).Id)),
                             AddressWasRetiredBecauseOfMunicipalityMerger.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -1506,6 +1512,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<long>(),
                             addressWasRetiredBecauseOfMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset(),
                             AddressEventTypes.TransformV1,
+                            addressPersistentLocalId.ToString(),
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(NisCode) && t.NisCodes.Contains(newNisCode)
                                     && t.TransformValues.First().From.Contains(addressPersistentLocalId.ToString())
@@ -1594,6 +1601,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     It.IsAny<long>(),
                     It.IsAny<DateTimeOffset>(),
                     It.IsAny<string>(),
+                    It.IsAny<string?>(),
                     It.IsAny<AddressCloudTransformEvent>(),
                     It.IsAny<Uri>(),
                     It.IsAny<string>(),
@@ -1623,7 +1631,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.AddressDocuments.FindAsync(destinationHouseNumberId);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(AdresStatus.InGebruik);
+                    document!.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.InGebruik));
                     document.Document.HouseNumber.Should().Be("1");
                     document.Document.BoxNumber.Should().BeNullOrEmpty();
                     document.Document.PostalCode.Should().Be("9000");
@@ -1641,6 +1649,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<long>(),
                             streetNameWasReaddressed.Provenance.Timestamp.ToBelgianDateTimeOffset(),
                             AddressEventTypes.TransformV1,
+                            It.IsAny<string?>(),
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(NisCode)
                                 && t.TransformValues.Any(v =>
@@ -1757,7 +1766,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.AddressDocuments.FindAsync(importedReaddressTargetAddressPersistentLocalId);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(AdresStatus.InGebruik);
+                    document!.Document.Status.Should().BeEquivalentTo(new AdresStatus(AdresStatusValue.InGebruik));
                     document.Document.HouseNumber.Should().Be("102");
                     document.Document.PostalCode.Should().Be("2490");
                     document.Document.OfficiallyAssigned.Should().BeTrue();
@@ -1770,6 +1779,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<long>(),
                             It.IsAny<DateTimeOffset>(),
                             AddressEventTypes.TransformV1,
+                            It.IsAny<string?>(),
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(importedReaddressNisCode)
                                 && t.TransformValues.Count == importedReaddressExpectedCloudEventCount
@@ -1835,18 +1845,16 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 .LastAsync();
         }
 
-        private static bool AssertPositionList(List<AddressPositionCloudEventValue> positionList, string gml)
+        private static bool AssertPositionList(List<PointGeometrie> positionList, string gml)
         {
-            var lambert72 = positionList.SingleOrDefault(p => p.Projection == SystemReferenceId.SrsNameLambert72);
+            var lambert72 = positionList.SingleOrDefault(p => p.Gml.Contains(SystemReferenceId.SrsNameLambert72));
             lambert72.Should().NotBeNull();
 
-            var lambert08 = positionList.SingleOrDefault(p => p.Projection == SystemReferenceId.SrsNameLambert2008);
+            var lambert08 = positionList.SingleOrDefault(p => p.Gml.Contains(SystemReferenceId.SrsNameLambert2008));
             lambert08.Should().NotBeNull();
 
             positionList.Count.Should().Be(2);
             positionList.Should().Contain(p => p.Gml == gml);
-
-            gml.Should().ContainAny(SystemReferenceId.SrsNameLambert72, SystemReferenceId.SrsNameLambert2008);
 
             return true;
         }
@@ -1894,6 +1902,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                     It.IsAny<long>(),
                     It.IsAny<DateTimeOffset>(),
                     It.IsAny<string>(),
+                    It.IsAny<string?>(),
                     It.IsAny<AddressCloudTransformEvent>(),
                     It.IsAny<Uri>(),
                     It.IsAny<string>(),
@@ -1987,6 +1996,12 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
             throw new FileNotFoundException("Could not locate housenumberwasreaddressed-case.csv from the test output directory.");
         }
+
+        private static string ToGeometrieMethodePuri(PositieGeometrieMethode positieGeometrieMethode)
+            => OsloNamespaces.AdresGeometrieMethode.ToPuri(NamingStrategy.GetPropertyName(positieGeometrieMethode.ToString(), false));
+
+        private static string ToGeometrieSpecificatiePuri(PositieSpecificatie positieSpecificatie)
+            => OsloNamespaces.AdresGeometrieSpecificatie.ToPuri(NamingStrategy.GetPropertyName(positieSpecificatie.ToString(), false));
 
         private FeedContext CreateContext()
         {

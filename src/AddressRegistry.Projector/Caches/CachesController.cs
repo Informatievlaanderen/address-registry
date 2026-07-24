@@ -20,7 +20,8 @@ namespace AddressRegistry.Projector.Caches
     {
         private static readonly Dictionary<string, string> ProjectionNameMapper = new()
         {
-            {"AddressRegistry.Projections.LastChangedList.LastChangedListProjections", LastChangedListProjections.ProjectionName}
+            {"AddressRegistry.Projections.LastChangedList.LastChangedListProjections", LastChangedListProjections.ProjectionName},
+            {"AddressRegistry.Projections.LastChangedList.LastChangedListProjectionsV3", LastChangedListProjectionsV3.ProjectionName}
         };
 
         [HttpGet]

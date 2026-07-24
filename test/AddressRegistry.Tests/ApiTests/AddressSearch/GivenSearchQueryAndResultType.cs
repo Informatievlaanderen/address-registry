@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Oslo.Address.Search;
+    using Api.Oslo.Address.V2.Search;
     using Api.Oslo.Infrastructure.Elastic;
     using Api.Oslo.Infrastructure.Elastic.Search;
     using Api.Oslo.Infrastructure.Options;
@@ -44,10 +45,10 @@
                     x.SearchStreetNames(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StreetNameStatus?>(), It.IsAny<int>()))
                 .ReturnsAsync(new StreetNameSearchResult(new List<StreetNameSearchDocument>(), 0));
 
-            var options = _fixture.Create<ResponseOptions>();
+            var options = _fixture.Create<ResponseOptionsV2>();
             options.StraatnaamDetailUrl = "https://www.straatnaam.be";
             options.DetailUrl = "https://www.adres.be";
-            var responseOptions = new OptionsWrapper<ResponseOptions>(options);
+            var responseOptions = new OptionsWrapper<ResponseOptionsV2>(options);
 
             _mockPostalCache = new Mock<IPostalCache>();
             _sut = new AddressSearchHandler(

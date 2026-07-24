@@ -10,9 +10,9 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.Adres;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.Gml;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -22,6 +22,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.Geometries;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
     using NodaTime;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
@@ -34,9 +35,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
     [ConnectedProjectionDescription("Projectie die de adres data voor de adres cloudevent feed voorziet.")]
     public class AddressFeedProjections : ConnectedProjection<FeedContext>
     {
+        private static readonly CamelCaseNamingStrategy NamingStrategy = new();
+
         private readonly IChangeFeedService _changeFeedService;
         private readonly IDbContextFactory<StreetNameConsumerContext> _streetNameConsumerContextFactory;
-        private JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings().ConfigureDefaultForEvents();
+        private readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings().ConfigureDefaultForEvents();
 
         public AddressFeedProjections(
             IChangeFeedService changeFeedService,
@@ -73,12 +76,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, OsloNamespaces.StraatNaam.ToPuri(message.Message.StreetNamePersistentLocalId.ToString())),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status.Id),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, OsloNamespaces.Postinfo.ToPuri(document.Document.PostalCode)),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, document.Document.PositionGeometryMethod),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, ToGeometrieMethodePuri(document.Document.PositionGeometryMethod)),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, ToGeometrieSpecificatiePuri(document.Document.PositionSpecification)),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, null, CreatePositionValues(geometry))
                 ];
 
@@ -108,12 +111,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, OsloNamespaces.StraatNaam.ToPuri(message.Message.StreetNamePersistentLocalId.ToString())),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, AdresStatus.Voorgesteld),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, MapStatus(AddressStatus.Proposed).Id),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, OsloNamespaces.Postinfo.ToPuri(document.Document.PostalCode)),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, document.Document.PositionGeometryMethod),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, ToGeometrieMethodePuri(document.Document.PositionGeometryMethod)),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, ToGeometrieSpecificatiePuri(document.Document.PositionSpecification)),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, null, CreatePositionValues(geometry))
                 ];
 
@@ -133,7 +136,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     message.Message.PostalCode,
                     message.Message.Provenance.Timestamp);
 
-                document.Document.Status = AdresStatus.Voorgesteld;
+                document.Document.Status = MapStatus(AddressStatus.Proposed);
                 document.Document.OfficiallyAssigned = message.Message.OfficiallyAssigned;
 
                 var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
@@ -146,12 +149,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, OsloNamespaces.StraatNaam.ToPuri(message.Message.StreetNamePersistentLocalId.ToString())),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status.Id),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, OsloNamespaces.Postinfo.ToPuri(document.Document.PostalCode)),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, document.Document.PositionGeometryMethod),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, ToGeometrieMethodePuri(document.Document.PositionGeometryMethod)),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, ToGeometrieSpecificatiePuri(document.Document.PositionSpecification)),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, null, CreatePositionValues(geometry))
                 ];
 
@@ -181,12 +184,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, OsloNamespaces.StraatNaam.ToPuri(message.Message.StreetNamePersistentLocalId.ToString())),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, AdresStatus.Voorgesteld),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, MapStatus(AddressStatus.Proposed).Id),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, OsloNamespaces.Postinfo.ToPuri(document.Document.PostalCode)),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, document.Document.PositionGeometryMethod),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, ToGeometrieMethodePuri(document.Document.PositionGeometryMethod)),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, ToGeometrieSpecificatiePuri(document.Document.PositionSpecification)),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, null, CreatePositionValues(geometry))
                 ];
 
@@ -200,11 +203,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.InGebruik;
+                document.Document.Status = MapStatus(AddressStatus.Current);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.InGebruik)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Current).Id)
                 ]);
             });
 
@@ -212,11 +215,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Voorgesteld;
+                document.Document.Status = MapStatus(AddressStatus.Proposed);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Voorgesteld)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Proposed).Id)
                 ]);
             });
 
@@ -224,11 +227,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Voorgesteld;
+                document.Document.Status = MapStatus(AddressStatus.Proposed);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Voorgesteld)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Proposed).Id)
                 ]);
             });
 
@@ -236,11 +239,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Voorgesteld;
+                document.Document.Status = MapStatus(AddressStatus.Proposed);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Voorgesteld)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Proposed).Id)
                 ]);
             });
 
@@ -248,11 +251,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.InGebruik;
+                document.Document.Status = MapStatus(AddressStatus.Current);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.InGebruik)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Current).Id)
                 ]);
             });
 
@@ -260,11 +263,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Afgekeurd;
+                document.Document.Status = MapStatus(AddressStatus.Rejected);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Afgekeurd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Rejected).Id)
                 ]);
             });
 
@@ -272,11 +275,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Afgekeurd;
+                document.Document.Status = MapStatus(AddressStatus.Rejected);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Afgekeurd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Rejected).Id)
                 ]);
             });
 
@@ -284,11 +287,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Afgekeurd;
+                document.Document.Status = MapStatus(AddressStatus.Rejected);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Afgekeurd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Rejected).Id)
                 ]);
             });
 
@@ -296,11 +299,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Afgekeurd;
+                document.Document.Status = MapStatus(AddressStatus.Rejected);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Afgekeurd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Rejected).Id)
                 ]);
             });
 
@@ -308,11 +311,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Afgekeurd;
+                document.Document.Status = MapStatus(AddressStatus.Rejected);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Afgekeurd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Rejected).Id)
                 ]);
             });
 
@@ -340,16 +343,17 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     };
 
                     await AddTransformCloudEvent(message,
+                        document.PersistentLocalId,
                         [document.PersistentLocalId, message.Message.NewAddressPersistentLocalId.Value],
                         context, transformEvent);
                 }
 
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Afgekeurd;
+                document.Document.Status = MapStatus(AddressStatus.Rejected);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Afgekeurd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Rejected).Id)
                 ]);
             });
 
@@ -357,11 +361,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Afgekeurd;
+                document.Document.Status = MapStatus(AddressStatus.Rejected);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Afgekeurd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Rejected).Id)
                 ]);
             });
 
@@ -369,11 +373,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Gehistoreerd;
+                document.Document.Status = MapStatus(AddressStatus.Retired);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Gehistoreerd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Retired).Id)
                 ]);
             });
 
@@ -381,11 +385,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Gehistoreerd;
+                document.Document.Status = MapStatus(AddressStatus.Retired);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Gehistoreerd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Retired).Id)
                 ]);
             });
 
@@ -393,11 +397,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Gehistoreerd;
+                document.Document.Status = MapStatus(AddressStatus.Retired);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Gehistoreerd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Retired).Id)
                 ]);
             });
 
@@ -405,11 +409,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Gehistoreerd;
+                document.Document.Status = MapStatus(AddressStatus.Retired);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Gehistoreerd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Retired).Id)
                 ]);
             });
 
@@ -437,16 +441,17 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     };
 
                     await AddTransformCloudEvent(message,
+                        document.PersistentLocalId,
                         [document.PersistentLocalId, message.Message.NewAddressPersistentLocalId.Value],
                         context, transformEvent);
                 }
 
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Gehistoreerd;
+                document.Document.Status = MapStatus(AddressStatus.Retired);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Gehistoreerd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Retired).Id)
                 ]);
             });
 
@@ -454,11 +459,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.Gehistoreerd;
+                document.Document.Status = MapStatus(AddressStatus.Retired);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.Gehistoreerd)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Retired).Id)
                 ]);
             });
 
@@ -470,7 +475,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldPostalCode, message.Message.PostalCode)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, OsloNamespaces.Postinfo.ToPuri(oldPostalCode), OsloNamespaces.Postinfo.ToPuri(message.Message.PostalCode))
                 ]);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
@@ -481,7 +486,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     boxDocument.LastChangedOn = message.Message.Provenance.Timestamp;
 
                     await AddCloudEvent(message, boxDocument, context, [
-                        new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldBoxPostalCode, message.Message.PostalCode)
+                        new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, OsloNamespaces.Postinfo.ToPuri(oldBoxPostalCode), OsloNamespaces.Postinfo.ToPuri(message.Message.PostalCode))
                     ]);
                 }
             });
@@ -494,7 +499,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldPostalCode, message.Message.PostalCode)
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, OsloNamespaces.Postinfo.ToPuri(oldPostalCode), OsloNamespaces.Postinfo.ToPuri(message.Message.PostalCode))
                 ]);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
@@ -505,7 +510,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     boxDocument.LastChangedOn = message.Message.Provenance.Timestamp;
 
                     await AddCloudEvent(message, boxDocument, context, [
-                        new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldBoxPostalCode, message.Message.PostalCode)
+                        new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, OsloNamespaces.Postinfo.ToPuri(oldBoxPostalCode), OsloNamespaces.Postinfo.ToPuri(message.Message.PostalCode))
                     ]);
                 }
             });
@@ -578,10 +583,10 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var attributes = new List<BaseRegistriesCloudEventAttribute>();
 
                 if (oldMethod != document.Document.PositionGeometryMethod)
-                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, oldMethod, document.Document.PositionGeometryMethod));
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, ToGeometrieMethodePuri(oldMethod), ToGeometrieMethodePuri(document.Document.PositionGeometryMethod)));
 
                 if (oldSpecification != document.Document.PositionSpecification)
-                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, oldSpecification, document.Document.PositionSpecification));
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, ToGeometrieSpecificatiePuri(oldSpecification), ToGeometrieSpecificatiePuri(document.Document.PositionSpecification)));
 
                 var oldPositionValues = oldEwkb is not null ? CreatePositionValues(GmlHelpers.ParseGeometry(oldEwkb)) : null;
                 attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, oldPositionValues, CreatePositionValues(newGeometry)));
@@ -606,10 +611,10 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var attributes = new List<BaseRegistriesCloudEventAttribute>();
 
                 if (oldMethod != document.Document.PositionGeometryMethod)
-                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, oldMethod, document.Document.PositionGeometryMethod));
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, ToGeometrieMethodePuri(oldMethod), ToGeometrieMethodePuri(document.Document.PositionGeometryMethod)));
 
                 if (oldSpecification != document.Document.PositionSpecification)
-                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, oldSpecification, document.Document.PositionSpecification));
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, ToGeometrieSpecificatiePuri(oldSpecification), ToGeometrieSpecificatiePuri(document.Document.PositionSpecification)));
 
                 var oldPositionValues = oldEwkb is not null ? CreatePositionValues(GmlHelpers.ParseGeometry(oldEwkb)) : null;
                 attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, oldPositionValues, CreatePositionValues(newGeometry)));
@@ -624,15 +629,15 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 document.Document.OfficiallyAssigned = false;
 
                 var oldStatus = document.Document.Status;
-                document.Document.Status = AdresStatus.InGebruik;
+                document.Document.Status = MapStatus(AddressStatus.Current);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 List<BaseRegistriesCloudEventAttribute> baseRegistriesCloudEventAttributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, oldValue, false),
                 ];
 
-                if(oldStatus != AdresStatus.InGebruik)
-                    baseRegistriesCloudEventAttributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.InGebruik));
+                if(oldStatus != MapStatus(AddressStatus.Current))
+                    baseRegistriesCloudEventAttributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Current).Id));
 
                 await AddCloudEvent(message, document, context, baseRegistriesCloudEventAttributes);
             });
@@ -667,15 +672,15 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var oldValue = document.Document.OfficiallyAssigned;
                 var oldStatus = document.Document.Status;
                 document.Document.OfficiallyAssigned = false;
-                document.Document.Status = AdresStatus.InGebruik;
+                document.Document.Status = MapStatus(AddressStatus.Current);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 List<BaseRegistriesCloudEventAttribute> baseRegistriesCloudEventAttributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, oldValue, false)
                 ];
 
-                if(oldStatus != AdresStatus.InGebruik)
-                    baseRegistriesCloudEventAttributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, AdresStatus.InGebruik));
+                if(oldStatus.Label != MapStatus(AddressStatus.Current).Label)
+                    baseRegistriesCloudEventAttributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, MapStatus(AddressStatus.Current).Id));
 
                 await AddCloudEvent(message, document, context, baseRegistriesCloudEventAttributes);
             });
@@ -783,12 +788,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
                 List<BaseRegistriesCloudEventAttribute> attributes = [
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StreetNameId, null, OsloNamespaces.StraatNaam.ToPuri(message.Message.StreetNamePersistentLocalId.ToString())),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, null, document.Document.Status.Id),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.HouseNumber, null, document.Document.HouseNumber),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, document.Document.PostalCode),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, null, OsloNamespaces.Postinfo.ToPuri(document.Document.PostalCode)),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, null, document.Document.OfficiallyAssigned),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, document.Document.PositionGeometryMethod),
-                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, document.Document.PositionSpecification),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, null, ToGeometrieMethodePuri(document.Document.PositionGeometryMethod)),
+                    new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, null, ToGeometrieSpecificatiePuri(document.Document.PositionSpecification)),
                     new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, null, CreatePositionValues(geometry))
                 ];
 
@@ -910,7 +915,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 NisCodes = [nisCode]
             };
 
-            await AddTransformCloudEvent(message, addressPersistentLocalIds.Distinct().ToList(), context, transformEvent);
+            await AddTransformCloudEvent(message, null, addressPersistentLocalIds.Distinct().ToList(), context, transformEvent);
 
             // update documents
             foreach (var readdressedHouseNumber in message.Message.ReaddressedHouseNumbers)
@@ -999,6 +1004,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
         private async Task AddTransformCloudEvent<T>(
             Envelope<T> message,
+            int? addressPersistentLocalIdSubject,
             List<int> addressPersistentLocalIds,
             FeedContext context,
             AddressCloudTransformEvent transformEvent)
@@ -1027,6 +1033,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 addressFeedItem.Id,
                 message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset(),
                 AddressEventTypes.TransformV1,
+                addressPersistentLocalIdSubject?.ToString(),
                 transformEvent,
                 _changeFeedService.DataSchemaUriTransform,
                 message.EventName,
@@ -1080,15 +1087,15 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             if(oldBoxNumber != addressDocument.Document.BoxNumber)
                 attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.BoxNumber, oldBoxNumber, addressDocument.Document.BoxNumber));
             if(oldPostalCode != addressDocument.Document.PostalCode)
-                attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, oldPostalCode, readdressed.SourcePostalCode));
+                attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, OsloNamespaces.Postinfo.ToPuri(oldPostalCode), OsloNamespaces.Postinfo.ToPuri(readdressed.SourcePostalCode)));
             if(oldStatus != addressDocument.Document.Status)
-                attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus, addressDocument.Document.Status));
+                attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, addressDocument.Document.Status.Id));
             if(oldOfficiallyAssigned != addressDocument.Document.OfficiallyAssigned)
                 attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, oldOfficiallyAssigned, addressDocument.Document.OfficiallyAssigned));
             if(oldGeometryMethod != addressDocument.Document.PositionGeometryMethod)
-                attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, oldGeometryMethod, addressDocument.Document.PositionGeometryMethod));
+                attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionGeometryMethod, ToGeometrieMethodePuri(oldGeometryMethod), ToGeometrieMethodePuri(addressDocument.Document.PositionGeometryMethod)));
             if(oldGeometrySpecification != addressDocument.Document.PositionSpecification)
-                attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, oldGeometrySpecification, addressDocument.Document.PositionSpecification));
+                attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, ToGeometrieSpecificatiePuri(oldGeometrySpecification), ToGeometrieSpecificatiePuri(addressDocument.Document.PositionSpecification)));
             if(oldEwkb != addressDocument.Document.ExtendedWkbGeometry)
             {
                 var oldPositionValues = oldEwkb is not null ? CreatePositionValues(GmlHelpers.ParseGeometry(oldEwkb)) : null;
@@ -1103,10 +1110,10 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
         {
             return status switch
             {
-                AddressStatus.Proposed => AdresStatus.Voorgesteld,
-                AddressStatus.Current => AdresStatus.InGebruik,
-                AddressStatus.Retired => AdresStatus.Gehistoreerd,
-                AddressStatus.Rejected => AdresStatus.Afgekeurd,
+                AddressStatus.Proposed => new AdresStatus(AdresStatusValue.Voorgesteld),
+                AddressStatus.Current => new AdresStatus(AdresStatusValue.InGebruik),
+                AddressStatus.Retired => new AdresStatus(AdresStatusValue.Gehistoreerd),
+                AddressStatus.Rejected => new AdresStatus(AdresStatusValue.Afgekeurd),
                 _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
             };
         }
@@ -1140,25 +1147,25 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
             };
         }
 
-        private static List<AddressPositionCloudEventValue> CreatePositionValues(Geometry positionGeometry)
+        private static List<PointGeometrie> CreatePositionValues(Geometry positionGeometry)
         {
-            var list = new List<AddressPositionCloudEventValue>();
+            var list = new List<PointGeometrie>();
             var gml = positionGeometry.ConvertToGml(false);
             switch (positionGeometry.SRID)
             {
                 case SystemReferenceId.SridLambert72:
                 {
-                    list.Add(new AddressPositionCloudEventValue(gml, SystemReferenceId.SrsNameLambert72));
+                    list.Add(new PointGeometrie(gml));
 
                     var lambert08Geometry = positionGeometry.TransformFromLambert72To08(roundingPrecision: 2);
-                    list.Add(new AddressPositionCloudEventValue(lambert08Geometry.ConvertToGml(false), SystemReferenceId.SrsNameLambert2008));
+                    list.Add(new PointGeometrie(lambert08Geometry.ConvertToGml(false)));
                     break;
                 }
                 case SystemReferenceId.SridLambert2008:
                 {
                     var lambert72Geometry = positionGeometry.TransformFromLambert08To72();
-                    list.Add(new AddressPositionCloudEventValue(lambert72Geometry.ConvertToGml(false), SystemReferenceId.SrsNameLambert72));
-                    list.Add(new AddressPositionCloudEventValue(gml, SystemReferenceId.SrsNameLambert2008));
+                    list.Add(new PointGeometrie(lambert72Geometry.ConvertToGml(false)));
+                    list.Add(new PointGeometrie(gml));
                     break;
                 }
                 default:
@@ -1167,6 +1174,12 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
             return list;
         }
+
+        private static string ToGeometrieMethodePuri(PositieGeometrieMethode geometrieMethode)
+            => OsloNamespaces.AdresGeometrieMethode.ToPuri(NamingStrategy.GetPropertyName(geometrieMethode.ToString(), false));
+
+        private static string ToGeometrieSpecificatiePuri(PositieSpecificatie geometrieSpecificatie)
+            => OsloNamespaces.AdresGeometrieSpecificatie.ToPuri(NamingStrategy.GetPropertyName(geometrieSpecificatie.ToString(), false));
 
         private static Task DoNothing<T>(FeedContext context, Envelope<T> envelope, CancellationToken ct) where T : IMessage => Task.CompletedTask;
     }

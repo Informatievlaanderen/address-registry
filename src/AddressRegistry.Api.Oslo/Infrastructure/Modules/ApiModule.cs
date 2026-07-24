@@ -2,8 +2,8 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
 {
     using System;
     using Address.Search;
-    using AddressMatch.V2;
-    using AddressMatch.V2.Matching;
+    using AddressMatch;
+    using AddressMatch.Matching;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;

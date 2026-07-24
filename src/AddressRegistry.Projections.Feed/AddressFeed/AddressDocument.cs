@@ -2,8 +2,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.Adres;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -60,7 +60,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 HouseNumber = houseNumber,
                 BoxNumber = boxNumber,
                 PostalCode = postalCode,
-                Status = AdresStatus.Voorgesteld,
+                Status = new AdresStatus(AdresStatusValue.Voorgesteld),
                 OfficiallyAssigned = true,
             };
 

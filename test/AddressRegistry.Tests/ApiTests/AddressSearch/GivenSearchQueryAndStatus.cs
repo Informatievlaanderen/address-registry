@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Oslo.Address.Search;
+    using Api.Oslo.Address.V2.Search;
     using Api.Oslo.Infrastructure.Elastic;
     using Api.Oslo.Infrastructure.Elastic.Search;
     using Api.Oslo.Infrastructure.Options;
@@ -34,7 +35,7 @@
             _mockAddressStreetNameSearchApi.Setup(x => x.SearchStreetNames(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StreetNameStatus?>(), It.IsAny<int>()))
                 .ReturnsAsync(new StreetNameSearchResult(new List<StreetNameSearchDocument>(), 0));
 
-            var mockResponseOptions = new Mock<IOptions<ResponseOptions>>();
+            var mockResponseOptions = new Mock<IOptions<ResponseOptionsV2>>();
 
             _sut = new AddressSearchHandler(_mockAddressSearchApi.Object, _mockAddressStreetNameSearchApi.Object, mockResponseOptions.Object,
                 Mock.Of<IMunicipalityCache>(),

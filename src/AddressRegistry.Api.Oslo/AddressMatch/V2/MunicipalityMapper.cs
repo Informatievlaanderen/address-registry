@@ -9,9 +9,9 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 
     internal sealed class MunicipalityMapper : IMapper<MunicipalityLatestItem, AddressMatchScoreableItemV2>
     {
-        private readonly ResponseOptions _responseOptions;
+        private readonly ResponseOptionsV2 _responseOptions;
 
-        public MunicipalityMapper(ResponseOptions responseOptions)
+        public MunicipalityMapper(ResponseOptionsV2 responseOptions)
         {
             _responseOptions = responseOptions;
         }

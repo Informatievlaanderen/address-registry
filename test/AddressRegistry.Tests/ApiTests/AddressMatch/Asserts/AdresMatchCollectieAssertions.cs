@@ -1,7 +1,7 @@
 namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
 {
     using System.Collections.Generic;
-    using AddressRegistry.Api.Oslo.AddressMatch.Responses;
+    using AddressRegistry.Api.Oslo.AddressMatch.V2.Responses;
     using FluentAssertions;
 
     internal class AdresMatchCollectieAssertions : Assertions<AddressMatchOsloCollection, AdresMatchCollectieAssertions>

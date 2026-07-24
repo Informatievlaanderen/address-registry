@@ -1,6 +1,7 @@
 ﻿namespace AddressRegistry.Tests.ApiTests.AddressSearch
 {
     using Api.Oslo.Address.Search;
+    using Api.Oslo.Address.V2.Search;
     using FluentAssertions;
     using Moq;
     using Xunit;

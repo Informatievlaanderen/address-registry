@@ -17,5 +17,17 @@ namespace AddressRegistry.Api.Oslo.Convertors
                 _ => throw new ArgumentOutOfRangeException(nameof(municipalityLanguage), municipalityLanguage, null)
             };
         }
+
+        public static Be.Vlaanderen.Basisregisters.GrAr.Oslo.Taal ToOsloTaal(this MunicipalityLanguage municipalityLanguage)
+        {
+            return municipalityLanguage switch
+            {
+                MunicipalityLanguage.Dutch => Be.Vlaanderen.Basisregisters.GrAr.Oslo.Taal.Nl,
+                MunicipalityLanguage.French => Be.Vlaanderen.Basisregisters.GrAr.Oslo.Taal.Fr,
+                MunicipalityLanguage.English => Be.Vlaanderen.Basisregisters.GrAr.Oslo.Taal.En,
+                MunicipalityLanguage.German => Be.Vlaanderen.Basisregisters.GrAr.Oslo.Taal.De,
+                _ => throw new ArgumentOutOfRangeException(nameof(municipalityLanguage), municipalityLanguage, null)
+            };
+        }
     }
 }

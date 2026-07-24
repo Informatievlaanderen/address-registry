@@ -5,9 +5,10 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Api.Oslo.AddressMatch.Requests;
+    using Api.Oslo.AddressMatch;
+    using Api.Oslo.AddressMatch.V2.Requests;
     using Api.Oslo.AddressMatch.V2;
-    using Api.Oslo.AddressMatch.V2.Matching;
+    using Api.Oslo.AddressMatch.Matching;
     using Api.Oslo.Infrastructure.Options;
     using Asserts;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
@@ -34,7 +35,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
         {
             _latestQueries = new Mock<ILatestQueries>();
             _handler = new AddressMatchHandlerV2(_latestQueries.Object,
-                new OptionsWrapper<ResponseOptions>(new ResponseOptions
+                new OptionsWrapper<ResponseOptionsV2>(new ResponseOptionsV2
                 {
                     DetailUrl = "detail/{0}",
                     GemeenteDetailUrl = "gemeentedetail/{0}",

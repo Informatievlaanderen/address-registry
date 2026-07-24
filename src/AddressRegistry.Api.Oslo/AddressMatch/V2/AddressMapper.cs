@@ -12,10 +12,10 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 
     internal class AddressMapper : IMapper<AddressDetailItemV2WithParent, AddressMatchScoreableItemV2>
     {
-        private readonly ResponseOptions _responseOptions;
+        private readonly ResponseOptionsV2 _responseOptions;
         private readonly ILatestQueries _latestQueries;
 
-        public AddressMapper(ResponseOptions responseOptions, ILatestQueries latestQueries)
+        public AddressMapper(ResponseOptionsV2 responseOptions, ILatestQueries latestQueries)
         {
             _responseOptions = responseOptions;
             _latestQueries = latestQueries;
@@ -25,8 +25,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
         {
             var streetName = _latestQueries.GetAllLatestStreetNamesByPersistentLocalId()[source.StreetNamePersistentLocalId];
             var municipality = _latestQueries.GetAllLatestMunicipalities()[streetName.NisCode];
-            var defaultStreetName = Address.AddressMapper.GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage);
-            var homonym = Address.AddressMapper.GetDefaultHomonymAddition(streetName, municipality.PrimaryLanguage);
+            var defaultStreetName = Address.V2.AddressMapper.GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage);
+            var homonym = Address.V2.AddressMapper.GetDefaultHomonymAddition(streetName, municipality.PrimaryLanguage);
 
             return new AddressMatchScoreableItemV2
             {
@@ -53,8 +53,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
                 },
                 Huisnummer = source.HouseNumber,
                 Busnummer = source.BoxNumber,
-                VolledigAdres = Address.AddressMapper.GetVolledigAdres(source.HouseNumber, source.BoxNumber, source.PostalCode, streetName, municipality),
-                AdresPositie = Address.AddressMapper.GetAddressPoint(source.Position,  source.PositionMethod, source.PositionSpecification),
+                VolledigAdres = Address.V2.AddressMapper.GetVolledigAdres(source.HouseNumber, source.BoxNumber, source.PostalCode, streetName, municipality),
+                AdresPositie = Address.V2.AddressMapper.GetAddressPoint(source.Position,  source.PositionMethod, source.PositionSpecification),
                 AdresStatus = source.Status.ConvertFromAddressStatus(),
                 OfficieelToegekend = source.OfficiallyAssigned,
             };

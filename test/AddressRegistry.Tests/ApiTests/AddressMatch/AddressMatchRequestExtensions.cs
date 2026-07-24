@@ -1,6 +1,6 @@
 namespace AddressRegistry.Tests.ApiTests.AddressMatch
 {
-    using AddressRegistry.Api.Oslo.AddressMatch.Requests;
+    using AddressRegistry.Api.Oslo.AddressMatch.V2.Requests;
 
     public static class AddressMatchRequestExtensions
     {

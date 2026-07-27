@@ -10,7 +10,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3
     /// <summary>
     /// De geometrie van het object in gml-formaat.
     /// </summary>
-    public class AddressPosition
+    public class AddressPositionV3
     {
         [JsonProperty("@type", Order = 0, Required = Required.DisallowNull)]
         public string Type => "GeografischePositie";
@@ -25,28 +25,28 @@ namespace AddressRegistry.Api.Oslo.Address.V3
         /// De gebruikte methode om de positie te bepalen.
         /// </summary>
         [JsonProperty(PropertyName = "methode", Order = 1, Required = Required.DisallowNull)]
-        public AdresPositieGeometrieMethode? Methode { get; set; }
+        public AdresPositieGeometrieMethodeV3? Methode { get; set; }
 
         /// <summary>
         /// De specificatie van het object, voorgesteld door de positie.
         /// </summary>
         [JsonProperty(PropertyName = "specificatie", Order = 2, Required = Required.DisallowNull)]
-        public AdresPositieSpecificatie PositieSpecificatie { get; set; }
+        public AdresPositieSpecificatieV3 PositieSpecificatie { get; set; }
 
-        public AddressPosition(IEnumerable<PointGeometrie> geometries,
+        public AddressPositionV3(IEnumerable<PointGeometrie> geometries,
             PositieGeometrieMethode positieGeometrieMethode,
             PositieSpecificatie positieSpecificatie)
         {
             Geometry = new List<PointGeometrie>(geometries);
-            Methode = new AdresPositieGeometrieMethode(positieGeometrieMethode);
-            PositieSpecificatie = new AdresPositieSpecificatie(positieSpecificatie);
+            Methode = new AdresPositieGeometrieMethodeV3(positieGeometrieMethode);
+            PositieSpecificatie = new AdresPositieSpecificatieV3(positieSpecificatie);
         }
     }
 
     /// <summary>
     /// De gebruikte methode om de positie te bepalen.
     /// </summary>
-    public class AdresPositieGeometrieMethode
+    public class AdresPositieGeometrieMethodeV3
     {
         private static readonly CamelCaseNamingStrategy NamingStrategy = new();
 
@@ -68,7 +68,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3
         [JsonProperty("skos:prefLabel", Required = Required.DisallowNull, Order = 3)]
         public PositieGeometrieMethode Label { get; set; }
 
-        public AdresPositieGeometrieMethode(PositieGeometrieMethode positieGeometrieMethode)
+        public AdresPositieGeometrieMethodeV3(PositieGeometrieMethode positieGeometrieMethode)
         {
             Label = positieGeometrieMethode;
             Id = OsloNamespaces.AdresGeometrieMethode.ToPuri(NamingStrategy.GetPropertyName(positieGeometrieMethode.ToString(), false));
@@ -78,7 +78,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3
     /// <summary>
     /// De specificatie van het object, voorgesteld door de positie.
     /// </summary>
-    public class AdresPositieSpecificatie
+    public class AdresPositieSpecificatieV3
     {
         private static readonly CamelCaseNamingStrategy NamingStrategy = new();
 
@@ -100,7 +100,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3
         [JsonProperty("skos:prefLabel", Required = Required.DisallowNull, Order = 3)]
         public PositieSpecificatie Label { get; set; }
 
-        public AdresPositieSpecificatie(PositieSpecificatie positieSpecificatie)
+        public AdresPositieSpecificatieV3(PositieSpecificatie positieSpecificatie)
         {
             Label = positieSpecificatie;
             Id = OsloNamespaces.AdresGeometrieSpecificatie.ToPuri(NamingStrategy.GetPropertyName(positieSpecificatie.ToString(), false));

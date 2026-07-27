@@ -101,7 +101,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3
             return volledigAdres;
         }
 
-        public static AddressPosition GetAddressPoint(
+        public static AddressPositionV3 GetAddressPoint(
             byte[] point,
             GeometryMethod? method,
             GeometrySpecification? specification)
@@ -121,7 +121,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3
 
             var positieSpecificatie = ConvertFromGeometrySpecification(specification);
             var positieGeometrieMethode = ConvertFromGeometryMethod(method);
-            return new AddressPosition(gmls.Select(x => new PointGeometrie(x)), positieGeometrieMethode, positieSpecificatie);
+            return new AddressPositionV3(gmls.Select(x => new PointGeometrie(x)), positieGeometrieMethode, positieSpecificatie);
         }
 
         public static PositieGeometrieMethode ConvertFromGeometryMethod(GeometryMethod? method)

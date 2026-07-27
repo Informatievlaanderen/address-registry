@@ -52,7 +52,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
             AdresHeeftStraatnaam straatnaam,
             AdresHeeftPostinfo postInfo,
             string postCode,
-            AddressPosition adresPositie,
+            AddressPositionV3 adresPositie,
             AdresStatusValue status,
             bool officieelToegekend,
             DateTimeOffset version,
@@ -164,7 +164,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
         /// De geometrie van het object in gml-formaat.
         /// </summary>
         [JsonProperty(PropertyName = "positie", Order = 11, Required = Required.DisallowNull)]
-        public AddressPosition AdresPositie { get; set; }
+        public AddressPositionV3 AdresPositie { get; set; }
 
         /// <summary>
         /// De fase in het leven van het adres.
@@ -187,7 +187,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
             AdresHeeftStraatnaam straatnaam,
             AdresHeeftPostinfo postInfo,
             string postcode,
-            AddressPosition adresPositie,
+            AddressPositionV3 adresPositie,
             AdresStatusValue status,
             bool officieelToegekend,
             DateTimeOffset version)
@@ -260,7 +260,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
             var gml2008 =
                 "<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/3812\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>640249.09 698793.29</gml:pos></gml:Point>";
 
-            var addressPosition = new AddressPosition([new PointGeometrie(gml1972), new PointGeometrie(gml2008)],
+            var addressPosition = new AddressPositionV3([new PointGeometrie(gml1972), new PointGeometrie(gml2008)],
                 PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Gebouw);
             var adresDetailHuisnummer = new AdresIsDeelVan(59, string.Format(_responseOptions.DetailUrl, 59));
             var gemeente = new AdresHeeftGemeentenaam("9000", string.Format(_responseOptions.GemeenteDetailUrl, "9000"),

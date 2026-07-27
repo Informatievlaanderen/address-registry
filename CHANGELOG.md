@@ -1,3 +1,10 @@
+## [6.1.2](https://github.com/informatievlaanderen/address-registry/compare/v6.1.1...v6.1.2) (2026-07-27)
+
+
+### Bug Fixes
+
+* **oslo:** docs swagger conflicts ([b31abe4](https://github.com/informatievlaanderen/address-registry/commit/b31abe40cfba242e05db5602b359331d12a552ee))
+
 ## [6.1.1](https://github.com/informatievlaanderen/address-registry/compare/v6.1.0...v6.1.1) (2026-07-27)
 
 

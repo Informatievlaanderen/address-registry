@@ -1,3 +1,10 @@
+## [6.1.1](https://github.com/informatievlaanderen/address-registry/compare/v6.1.0...v6.1.1) (2026-07-27)
+
+
+### Bug Fixes
+
+* **oslo:** update docs ([2940d40](https://github.com/informatievlaanderen/address-registry/commit/2940d4079802c5756c09ae604f8e7b7372da49a5))
+
 # [6.1.0](https://github.com/informatievlaanderen/address-registry/compare/v6.0.3...v6.1.0) (2026-07-27)
 
 

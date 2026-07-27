@@ -1,3 +1,10 @@
+# [6.1.0](https://github.com/informatievlaanderen/address-registry/compare/v6.0.3...v6.1.0) (2026-07-27)
+
+
+### Features
+
+* add v3 endpoints ([abc26a1](https://github.com/informatievlaanderen/address-registry/commit/abc26a1ed4cad1d2886954be4f2b574c2ec9568d))
+
 ## [6.0.3](https://github.com/informatievlaanderen/address-registry/compare/v6.0.2...v6.0.3) (2026-06-22)
 
 

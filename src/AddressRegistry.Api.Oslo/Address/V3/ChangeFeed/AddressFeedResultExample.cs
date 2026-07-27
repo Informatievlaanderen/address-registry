@@ -28,8 +28,8 @@
                                  "dataschema": "{{_feedConfig.AddressFeed.DataSchemaUrl}}",
                                  "basisregisterseventtype": "AddressWasMigratedToStreetName",
                                  "basisregisterscausationid": "4fe743fb-0736-5246-8df2-da07f9276c88",
+                                 "subject": "https://data.vlaanderen.be/id/adres/3064179",
                                  "data": {
-                                     "@id": "https://data.vlaanderen.be/id/adres/3064179",
                                      "objectId": "3064179",
                                      "naamruimte": "https://data.vlaanderen.be/id/adres",
                                      "versieId": "2023-11-01T11:44:38+01:00",
@@ -38,14 +38,14 @@
                                      ],
                                      "attributen": [
                                          {
-                                             "naam": "straatnaam.id",
+                                             "naam": "heeftStraatnaam",
                                              "oudeWaarde": null,
-                                             "nieuweWaarde": 44935
+                                             "nieuweWaarde": "https://data.vlaanderen.be/id/straatnaam/44935"
                                          },
                                          {
-                                             "naam": "adresStatus",
+                                             "naam": "status",
                                              "oudeWaarde": null,
-                                             "nieuweWaarde": "inGebruik"
+                                             "nieuweWaarde": "https://data.vlaanderen.be/id/concept/adresstatus/inGebruik"
                                          },
                                          {
                                              "naam": "huisnummer",
@@ -53,9 +53,9 @@
                                              "nieuweWaarde": "174B"
                                          },
                                          {
-                                             "naam": "postcode",
+                                             "naam": "heeftPostinfo",
                                              "oudeWaarde": null,
-                                             "nieuweWaarde": "8310"
+                                             "nieuweWaarde": "https://data.vlaanderen.be/id/postinfo/8310"
                                          },
                                          {
                                              "naam": "officieelToegekend",
@@ -63,27 +63,25 @@
                                              "nieuweWaarde": true
                                          },
                                          {
-                                             "naam": "positieGeometrieMethode",
+                                             "naam": "positie.methode",
                                              "oudeWaarde": null,
-                                             "nieuweWaarde": "afgeleidVanObject"
+                                             "nieuweWaarde": "https://data.vlaanderen.be/id/concept/geometriemethode/afgeleidVanObject"
                                          },
                                          {
-                                             "naam": "positieSpecificatie",
+                                             "naam": "positie.specificatie",
                                              "oudeWaarde": null,
-                                             "nieuweWaarde": "gebouweenheid"
+                                             "nieuweWaarde": "https://data.vlaanderen.be/id/concept/geometriespecificatie/gebouweenheid"
                                          },
                                          {
-                                             "naam": "adresPositie",
+                                             "naam": "positie.geometrie",
                                              "oudeWaarde": null,
                                              "nieuweWaarde": [
                                                  {
-                                                     "type": "Point",
-                                                     "projectie": "http://www.opengis.net/def/crs/EPSG/0/31370",
+                                                     "type": "Punt",
                                                      "gml": "<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>73862.07 211634.58</gml:pos></gml:Point>"
                                                  },
                                                  {
-                                                     "type": "Point",
-                                                     "projectie": "http://www.opengis.net/def/crs/EPSG/0/3812",
+                                                     "type": "Punt",
                                                      "gml": "<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/3812\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>573857.26 711625.49</gml:pos></gml:Point>"
                                                  }
                                              ]

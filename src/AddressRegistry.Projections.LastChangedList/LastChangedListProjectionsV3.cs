@@ -23,99 +23,175 @@ namespace AddressRegistry.Projections.LastChangedList
         public LastChangedListProjectionsV3(ICacheValidator cacheValidator)
             : base(SupportedAcceptTypes, cacheValidator)
         {
-            #region Legacy Events
-            When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
+            #region StreetNames
+
+            When<Envelope<StreetNameNamesWereChanged>>(async (context, message, ct) =>
             {
-                var attachedRecords = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-
-                foreach (var record in attachedRecords)
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
                 {
-                    if (record.CacheKey != null)
-                    {
-                        record.CacheKey = string.Format(record.CacheKey, message.Message.PersistentLocalId);
-                    }
-
-                    if (record.Uri != null)
-                    {
-                        record.Uri = string.Format(record.Uri, message.Message.PersistentLocalId);
-                    }
+                    await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(addressPersistentLocalId.ToString()), message.Position, context, ct);
                 }
             });
 
-            When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
+            When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(addressPersistentLocalId.ToString()), message.Position, context, ct);
+                }
             });
 
-            When<Envelope<AddressBecameComplete>>(async (context, message, ct) =>
+            When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(addressPersistentLocalId.ToString()), message.Position, context, ct);
+                }
             });
 
-            When<Envelope<AddressBecameCurrent>>(async (context, message, ct) =>
+            When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(addressPersistentLocalId.ToString()), message.Position, context, ct);
+                }
             });
 
-            When<Envelope<AddressBecameIncomplete>>(async (context, message, ct) =>
+            When<Envelope<MigratedStreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasApproved>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromApprovedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRetiredToCurrent>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRejectedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasRejected>>(DoNothing);
+            When<Envelope<StreetNameWasRejectedBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRetired>>(DoNothing);
+            When<Envelope<StreetNameWasRetiredBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRemoved>>(DoNothing);
+            When<Envelope<StreetNameWasReaddressed>>(DoNothing);
+            When<Envelope<StreetNameWasRenamed>>(DoNothing);
+            #endregion StreetNames
+
+            When<Envelope<AddressWasMigrated>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                var attachedRecords = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+
+                context.LastChangedList.RemoveRange(attachedRecords);
             });
 
-            When<Envelope<AddressBecameNotOfficiallyAssigned>>(async (context, message, ct) =>
+            When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                var records = await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+                RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
             });
 
-            When<Envelope<AddressBoxNumberWasChanged>>(async (context, message, ct) =>
+            When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                var records = await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+                RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
             });
 
-            When<Envelope<AddressBoxNumberWasCorrected>>(async (context, message, ct) =>
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                var records = await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+                RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
             });
 
-            When<Envelope<AddressBoxNumberWasRemoved>>(async (context, message, ct) =>
+            When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
-            When<Envelope<AddressHouseNumberWasChanged>>(async (context, message, ct) =>
+            When<Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
-            When<Envelope<AddressHouseNumberWasCorrected>>(async (context, message, ct) =>
+            When<Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
-            When<Envelope<AddressOfficialAssignmentWasRemoved>>(async (context, message, ct) =>
+            When<Envelope<AddressWasRejected>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
-            When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) =>
+            When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
-            When<Envelope<AddressPositionWasRemoved>>(async (context, message, ct) =>
+            When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
-            When<Envelope<AddressPostalCodeWasChanged>>(async (context, message, ct) =>
+            When<Envelope<AddressWasRejectedBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
-            When<Envelope<AddressPostalCodeWasCorrected>>(async (context, message, ct) =>
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
+
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+            });
+
+            When<Envelope<AddressWasDeregulated>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+            });
+
+            When<Envelope<AddressWasRegularized>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+            });
+
+            When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRetired>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+            });
+
+            When<Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+            });
+
+            When<Envelope<AddressPostalCodeWasChangedV2>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(boxNumberPersistentLocalId.ToString()), message.Position, context, ct);
+                }
+            });
+
 
             When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
             {
@@ -150,329 +226,81 @@ namespace AddressRegistry.Projections.LastChangedList
                 }
             });
 
-            When<Envelope<AddressPostalCodeWasRemoved>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressStatusWasCorrectedToRemoved>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressStatusWasRemoved>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressStreetNameWasChanged>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressStreetNameWasCorrected>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasCorrectedToCurrent>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasCorrectedToNotOfficiallyAssigned>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasCorrectedToOfficiallyAssigned>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasCorrectedToProposed>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasCorrectedToRetired>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasOfficiallyAssigned>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasPositioned>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasProposed>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRetired>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(DoNothing);
-            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(DoNothing);
-            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(DoNothing);
-            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(DoNothing);
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(DoNothing);
-            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(DoNothing);
-            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(DoNothing);
-            #endregion Legacy Events
-
-            #region StreetNames
-
-            When<Envelope<StreetNameNamesWereChanged>>(async (context, message, ct) =>
-            {
-                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
-                {
-                    await GetLastChangedRecordsAndUpdatePosition(addressPersistentLocalId.ToString(), message.Position, context, ct);
-                }
-            });
-
-            When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
-            {
-                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
-                {
-                    await GetLastChangedRecordsAndUpdatePosition(addressPersistentLocalId.ToString(), message.Position, context, ct);
-                }
-            });
-
-            When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(async (context, message, ct) =>
-            {
-                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
-                {
-                    await GetLastChangedRecordsAndUpdatePosition(addressPersistentLocalId.ToString(), message.Position, context, ct);
-                }
-            });
-
-            When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(async (context, message, ct) =>
-            {
-                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
-                {
-                    await GetLastChangedRecordsAndUpdatePosition(addressPersistentLocalId.ToString(), message.Position, context, ct);
-                }
-            });
-
-            When<Envelope<MigratedStreetNameWasImported>>(DoNothing);
-            When<Envelope<StreetNameWasImported>>(DoNothing);
-            When<Envelope<StreetNameWasApproved>>(DoNothing);
-            When<Envelope<StreetNameWasCorrectedFromApprovedToProposed>>(DoNothing);
-            When<Envelope<StreetNameWasCorrectedFromRetiredToCurrent>>(DoNothing);
-            When<Envelope<StreetNameWasCorrectedFromRejectedToProposed>>(DoNothing);
-            When<Envelope<StreetNameWasRejected>>(DoNothing);
-            When<Envelope<StreetNameWasRejectedBecauseOfMunicipalityMerger>>(DoNothing);
-            When<Envelope<StreetNameWasRetired>>(DoNothing);
-            When<Envelope<StreetNameWasRetiredBecauseOfMunicipalityMerger>>(DoNothing);
-            When<Envelope<StreetNameWasRemoved>>(DoNothing);
-            When<Envelope<StreetNameWasReaddressed>>(DoNothing);
-            When<Envelope<StreetNameWasRenamed>>(DoNothing);
-            #endregion StreetNames
-
-            When<Envelope<AddressWasMigrated>>(async (context, message, ct) =>
-            {
-                var attachedRecords = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
-
-                context.LastChangedList.RemoveRange(attachedRecords);
-            });
-
-            When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
-            {
-                var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-                RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
-            });
-
-            When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
-            {
-                var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-                RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
-            });
-
-            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
-            {
-                var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-                RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
-            });
-
-            When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRejected>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRejectedBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasDeregulated>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRegularized>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasRetiredBecauseStreetNameWasRetired>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-            });
-
-            When<Envelope<AddressPostalCodeWasChangedV2>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-
-                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
-                {
-                    await GetLastChangedRecordsAndUpdatePosition(boxNumberPersistentLocalId.ToString(), message.Position, context, ct);
-                }
-            });
-
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
             When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
 
                 foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
                 {
-                    await GetLastChangedRecordsAndUpdatePosition(readdressedBoxNumber.DestinationAddressPersistentLocalId.ToString(), message.Position, context, ct);
+                    await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(readdressedBoxNumber.DestinationAddressPersistentLocalId.ToString()), message.Position, context, ct);
                 }
             });
 
             When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
             {
-                var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                var records = await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
                 RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
             });
 
             When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
             When<Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
             When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
             When<Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
             When<Envelope<AddressRegularizationWasCorrected>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
             When<Envelope<AddressDeregulationWasCorrected>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
 
             When<Envelope<AddressRemovalWasCorrected>>(async (context, message, ct) =>
             {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.AddressPersistentLocalId.ToString()), message.Position, context, ct);
             });
+        }
+
+        private static string GetIdentifier(string persistentLocalId)
+        {
+            return $"v3.{persistentLocalId}";
         }
 
         private static void RebuildKeyAndUri(IEnumerable<LastChangedRecord>? attachedRecords, int persistentLocalId)
@@ -501,9 +329,7 @@ namespace AddressRegistry.Projections.LastChangedList
             var shortenedAcceptType = acceptType.ToString().ToLowerInvariant();
             return acceptType switch
             {
-                AcceptType.Json => $"legacy/address:{{0}}.{shortenedAcceptType}",
-                AcceptType.Xml => $"legacy/address:{{0}}.{shortenedAcceptType}",
-                AcceptType.JsonLd => $"oslo/address:{{0}}.{shortenedAcceptType}",
+                AcceptType.JsonLd => $"oslo-v3/address:{{0}}.{shortenedAcceptType}",
                 _ => throw new NotImplementedException($"Cannot build CacheKey for type {typeof(AcceptType)}")
             };
         }
@@ -512,9 +338,7 @@ namespace AddressRegistry.Projections.LastChangedList
         {
             return acceptType switch
             {
-                AcceptType.Json => "/v1/adressen/{0}",
-                AcceptType.Xml => "/v1/adressen/{0}",
-                AcceptType.JsonLd => "/v2/adressen/{0}",
+                AcceptType.JsonLd => "/v3/adressen/{0}",
                 _ => throw new NotImplementedException($"Cannot build Uri for type {typeof(AcceptType)}")
             };
         }

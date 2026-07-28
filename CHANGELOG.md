@@ -1,3 +1,10 @@
+## [6.1.3](https://github.com/informatievlaanderen/address-registry/compare/v6.1.2...v6.1.3) (2026-07-28)
+
+
+### Bug Fixes
+
+* **lastchanged:** cleanup + disable v3 ([dbe0586](https://github.com/informatievlaanderen/address-registry/commit/dbe05863d37627a97780f2b14645b73aa9fdc61f))
+
 ## [6.1.2](https://github.com/informatievlaanderen/address-registry/compare/v6.1.1...v6.1.2) (2026-07-27)
 
 

@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 {
+    using Abstractions;
     using Abstractions.SqsRequests;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
@@ -10,6 +11,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
+    using Configuration;
     using Consumer.Read.Postal.Infrastructure.Modules;
     using Consumer.Read.StreetName.Infrastructure.Modules;
     using Microsoft.AspNetCore.Http;
@@ -68,6 +70,16 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             builder
                 .RegisterType<ProposeAddressSqsRequestFactory>()
                 .AsSelf();
+
+            builder
+                .RegisterInstance(new UseLambert2008EventStoreToggle(
+                    _configuration.GetValue<bool>($"{FeatureToggleOptions.ConfigurationKey}:{nameof(FeatureToggleOptions.UseLambert2008EventStore)}")))
+                .AsSelf();
+
+            builder
+                .RegisterType<GmlPositionNormalizer>()
+                .AsSelf()
+                .SingleInstance();
 
             _services.ConfigureIdempotency(
                 _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()

@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
+    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Validators;
@@ -114,6 +115,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
 
             return async () => await _controller.ChangePosition(new ChangeAddressPositionRequestValidator(),
                 Mock.Of<IIfMatchHeaderValidator>(),
+                new GmlPositionNormalizer(new UseLambert2008EventStoreToggle(false)),
                 addressPersistentLocalId,
                 request,
                 null,

@@ -117,12 +117,36 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         }
 
         [Theory]
+        [InlineData(GeometryHelpers.GmlPointGeometry)]
+        [InlineData(GeometryHelpers.GmlPointGeometryLambert2008)]
+        [InlineData(GeometryHelpers.NormalizedGmlPointGeometry)]
+        [InlineData(GeometryHelpers.NormalizedGmlPointGeometryLambert2008)]
+        public async Task GivenSupportedPositionReferenceSystem_ThenNoValidationErrorForPosition(string position)
+        {
+            WithStreamExists();
+
+            var result = await _sut.TestValidateAsync(new ProposeAddressRequest
+            {
+                PostInfoId = "12",
+                StraatNaamId = "34",
+                Huisnummer = "56",
+                PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
+                PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
+                Positie = position
+            });
+
+            result.ShouldNotHaveValidationErrorFor(nameof(ProposeAddressRequest.Positie));
+        }
+
+        [Theory]
         [InlineData("<gml:Point srsName=\"https://INVALIDURL\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
                     "<gml:pos>140285.15277253836 186725.74131567031</gml:pos></gml:Point>")]
         [InlineData("<gml:Point missingSrSNameAttribute=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
                     "<gml:pos>140285.15277253836 186725.74131567031</gml:pos></gml:Point>")]
         [InlineData("<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
                     "<gml:missingPositionAttribute>140285.15277253836 186725.74131567031</gml:pos></gml:Point>")]
+        [InlineData("<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+                    "<gml:pos>4.35 50.85</gml:pos></gml:Point>")]
         public async Task GivenInvalidPosition_ThenReturnsExpectedFailure(string position)
         {
             WithStreamExists();

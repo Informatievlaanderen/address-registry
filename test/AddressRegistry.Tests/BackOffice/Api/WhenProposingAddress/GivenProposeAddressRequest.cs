@@ -4,8 +4,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
+    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
+    using AddressRegistry.Api.BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
@@ -41,10 +43,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Returns(persistentLocalId);
 
             var request = Fixture.Create<ProposeAddressRequest>();
+            request.Positie = GeometryHelpers.GmlPointGeometry;
 
             var result = (AcceptedResult)await _controller.Propose(
                 MockValidRequestValidator<ProposeAddressRequest>(),
                 new ProposeAddressSqsRequestFactory(persistentLocalIdGenerator.Object),
+                new GmlPositionNormalizer(new UseLambert2008EventStoreToggle(false)),
                 request);
 
             result.Should().NotBeNull();
@@ -59,6 +63,40 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                         && sqsRequest.ProvenanceData.Application == Application.AddressRegistry
                         && sqsRequest.ProvenanceData.Modification == Modification.Insert
                     ),
+                    CancellationToken.None));
+        }
+
+        [Theory]
+        [InlineData(false, GeometryHelpers.GmlPointGeometry, GeometryHelpers.GmlPointGeometry)]
+        [InlineData(false, GeometryHelpers.GmlPointGeometryLambert2008, GeometryHelpers.NormalizedGmlPointGeometry)]
+        [InlineData(true, GeometryHelpers.GmlPointGeometry, GeometryHelpers.NormalizedGmlPointGeometryLambert2008)]
+        [InlineData(true, GeometryHelpers.GmlPointGeometryLambert2008, GeometryHelpers.GmlPointGeometryLambert2008)]
+        public async Task ThenPositionIsSentInTheEventStoreReferenceSystem(
+            bool useLambert2008EventStore,
+            string requestedPosition,
+            string expectedPosition)
+        {
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<ProposeAddressSqsRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new LocationResult(CreateTicketUri(Fixture.Create<Guid>()))));
+
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
+                .Setup(x => x.GenerateNextPersistentLocalId())
+                .Returns(Fixture.Create<PersistentLocalId>());
+
+            var request = Fixture.Create<ProposeAddressRequest>();
+            request.Positie = requestedPosition;
+
+            await _controller.Propose(
+                MockValidRequestValidator<ProposeAddressRequest>(),
+                new ProposeAddressSqsRequestFactory(persistentLocalIdGenerator.Object),
+                new GmlPositionNormalizer(new UseLambert2008EventStoreToggle(useLambert2008EventStore)),
+                request);
+
+            MockMediator.Verify(x =>
+                x.Send(
+                    It.Is<ProposeAddressSqsRequest>(sqsRequest => sqsRequest.Request.Positie == expectedPosition),
                     CancellationToken.None));
         }
     }

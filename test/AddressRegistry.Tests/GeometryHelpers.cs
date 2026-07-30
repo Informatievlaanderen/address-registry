@@ -23,6 +23,29 @@ namespace AddressRegistry.Tests
             "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
             "<gml:pos>103671.37 192046.71</gml:pos></gml:Point>";
 
+        /// <summary>
+        /// <see cref="GmlPointGeometry"/> expressed in Lambert 2008 (EPSG 3812).
+        /// </summary>
+        public const string GmlPointGeometryLambert2008 =
+            "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/3812\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+            "<gml:pos>603668.87 692041.51</gml:pos></gml:Point>";
+
+        /// <summary>
+        /// <see cref="GmlPointGeometry"/> as re-serialized by the position normalizer: an http srsName,
+        /// per <c>SystemReferenceId.SrsNameLambert72</c>.
+        /// </summary>
+        public const string NormalizedGmlPointGeometry =
+            "<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+            "<gml:pos>103671.37 192046.71</gml:pos></gml:Point>";
+
+        /// <summary>
+        /// <see cref="GmlPointGeometryLambert2008"/> as re-serialized by the position normalizer: an http srsName,
+        /// per <c>SystemReferenceId.SrsNameLambert2008</c>.
+        /// </summary>
+        public const string NormalizedGmlPointGeometryLambert2008 =
+            "<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/3812\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+            "<gml:pos>603668.87 692041.51</gml:pos></gml:Point>";
+
         public const string SecondGmlPointGeometry =
             "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
             "<gml:pos>103672.37 192046.71</gml:pos></gml:Point>";

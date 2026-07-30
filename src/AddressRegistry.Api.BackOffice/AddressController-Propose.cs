@@ -10,6 +10,7 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentValidation;
+    using Infrastructure;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -23,6 +24,7 @@ namespace AddressRegistry.Api.BackOffice
         /// </summary>
         /// <param name="validator"></param>
         /// <param name="proposeAddressSqsRequestFactory"></param>
+        /// <param name="gmlPositionNormalizer"></param>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="202">Als het adres reeds voorgesteld is.</response>
@@ -38,10 +40,13 @@ namespace AddressRegistry.Api.BackOffice
         public async Task<IActionResult> Propose(
             [FromServices] IValidator<ProposeAddressRequest> validator,
             [FromServices] ProposeAddressSqsRequestFactory proposeAddressSqsRequestFactory,
+            [FromServices] GmlPositionNormalizer gmlPositionNormalizer,
             [FromBody] ProposeAddressRequest request,
             CancellationToken cancellationToken = default)
         {
             await validator.ValidateAndThrowAsync(request, cancellationToken);
+
+            request.Positie = gmlPositionNormalizer.ToEventStoreSrs(request.Positie);
 
             try
             {

@@ -22,7 +22,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
         public PositieSpecificatie PositieSpecificatie { get; set; }
 
         /// <summary>
-        /// Puntgeometrie van het adres in GML-3 formaat met Lambert 72 referentie systeem.
+        /// Puntgeometrie van het adres in GML-3 formaat met Lambert 72 (EPSG 31370) of Lambert 2008 (EPSG 3812) referentie systeem.
         /// </summary>
         [DataMember(Name = "Positie", Order = 3)]
         [JsonProperty(Required = Required.Always)]

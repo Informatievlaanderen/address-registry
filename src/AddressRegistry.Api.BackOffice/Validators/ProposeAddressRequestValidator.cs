@@ -1,14 +1,11 @@
 namespace AddressRegistry.Api.BackOffice.Validators
 {
-    using System.Text.RegularExpressions;
-    using Abstractions;
     using Abstractions.Requests;
     using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using Consumer.Read.Postal;
     using FluentValidation;
-    using StreetName;
 
     public class ProposeAddressRequestValidator : AbstractValidator<ProposeAddressRequest>
     {
@@ -70,7 +67,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .DependentRules(() =>
                 {
                     RuleFor(x => x.Positie)
-                        .Must(gml => GmlPointValidator.IsValid(gml, GmlHelpers.CreateGmlReader()))
+                        .Must(GmlPointValidator.IsValidPoint)
                         .WithErrorCode(ValidationErrors.Common.Position.InvalidFormat.Code)
                         .WithMessage(ValidationErrors.Common.Position.InvalidFormat.Message);
                 })

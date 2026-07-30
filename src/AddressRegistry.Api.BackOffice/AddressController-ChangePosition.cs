@@ -26,6 +26,7 @@ namespace AddressRegistry.Api.BackOffice
         /// Wijzig een adrespositie.
         /// </summary>
         /// <param name="ifMatchHeaderValidator"></param>
+        /// <param name="gmlPositionNormalizer"></param>
         /// <param name="persistentLocalId"></param>
         /// <param name="request"></param>
         /// <param name="validator"></param>
@@ -46,12 +47,15 @@ namespace AddressRegistry.Api.BackOffice
         public async Task<IActionResult> ChangePosition(
             [FromServices] IValidator<ChangeAddressPositionRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
+            [FromServices] GmlPositionNormalizer gmlPositionNormalizer,
             [FromRoute] int persistentLocalId,
             [FromBody] ChangeAddressPositionRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
             await validator.ValidateAndThrowAsync(request, cancellationToken);
+
+            request.Positie = gmlPositionNormalizer.ToEventStoreSrs(request.Positie);
 
             try
             {

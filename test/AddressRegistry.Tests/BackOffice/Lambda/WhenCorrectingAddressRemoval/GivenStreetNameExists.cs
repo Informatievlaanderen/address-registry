@@ -284,8 +284,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRemoval
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "TODO",
-                        "AdresHuisnummerTODO"),
+                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'voorgesteld' of 'inGebruik' heeft.",
+                        "AdresHuisnummerGehistoreerdOfAfgekeurd"),
                     CancellationToken.None));
         }
 

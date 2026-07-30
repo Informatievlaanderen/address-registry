@@ -6,8 +6,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
+    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
+    using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Validators;
     using Consumer.Read.Postal.Projections;
     using FluentAssertions;
@@ -287,6 +289,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                     FakeHouseNumberValidator.InstanceInterneBijwerker,
                     FakeBoxNumberValidator.InstanceInterneBijwerker),
                 new ProposeAddressSqsRequestFactory(Mock.Of<IPersistentLocalIdGenerator>()),
+                new GmlPositionNormalizer(new UseLambert2008EventStoreToggle(false)),
                 request,
                 CancellationToken.None);
         }

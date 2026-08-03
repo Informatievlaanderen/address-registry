@@ -1,3 +1,10 @@
+# [6.2.0](https://github.com/informatievlaanderen/address-registry/compare/v6.1.3...v6.2.0) (2026-08-03)
+
+
+### Features
+
+* **backoffice:** add lambert2008 support ([5f3910b](https://github.com/informatievlaanderen/address-registry/commit/5f3910beb4f43a3adf0a9ef8efa51918f29a065f))
+
 ## [6.1.3](https://github.com/informatievlaanderen/address-registry/compare/v6.1.2...v6.1.3) (2026-07-28)
 
 

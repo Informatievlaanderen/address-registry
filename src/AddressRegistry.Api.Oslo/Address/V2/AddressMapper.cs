@@ -7,6 +7,7 @@ namespace AddressRegistry.Api.Oslo.Address.V2
     using System.Xml;
     using AddressRegistry.Infrastructure.Elastic;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.SpatialTools.GeometryCoordinates;
+    using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
@@ -23,6 +24,12 @@ namespace AddressRegistry.Api.Oslo.Address.V2
 
     public static class AddressMapper
     {
+        /// <summary>
+        /// Positions are persisted at centimetre precision, which is also what the Lambert transform is
+        /// accurate to. See ADR 0004.
+        /// </summary>
+        private const int PositionCoordinateDecimals = 2;
+
         public static VolledigAdres? GetVolledigAdres(AddressListDocument addressListDocument)
         {
             if (string.IsNullOrEmpty(addressListDocument.Municipality.NisCode))
@@ -74,7 +81,7 @@ namespace AddressRegistry.Api.Oslo.Address.V2
 
         public static Point GetAddressPoint(byte[] point)
         {
-            var geometry = WKBReaderFactory.CreateForLegacy().Read(point);
+            var geometry = ReadPositionAsLambert72(point);
 
             return new Point
             {
@@ -90,6 +97,8 @@ namespace AddressRegistry.Api.Oslo.Address.V2
             using (var xmlwriter = XmlWriter.Create(builder, settings))
             {
                 xmlwriter.WriteStartElement("gml", "Point", "http://www.opengis.net/gml/3.2");
+                // Fixed on purpose: everything reaching here went through ReadPositionAsLambert72.
+                // The https scheme is part of the version 2 contract, unlike ConvertToGml's http one.
                 xmlwriter.WriteAttributeString("srsName", "https://www.opengis.net/def/crs/EPSG/0/31370");
                 Write(geometry.Coordinate, xmlwriter);
                 xmlwriter.WriteEndElement();
@@ -110,11 +119,32 @@ namespace AddressRegistry.Api.Oslo.Address.V2
             GeometryMethod? method,
             GeometrySpecification? specification)
         {
-            var geometry = WKBReaderFactory.CreateForLegacy().Read(point);
+            var geometry = ReadPositionAsLambert72(point);
             var gml = GetGml(geometry);
             var positieSpecificatie = ConvertFromGeometrySpecification(specification);
             var positieGeometrieMethode = ConvertFromGeometryMethod(method);
             return new AddressPosition(new GmlJsonPoint(gml), positieGeometrieMethode, positieSpecificatie);
+        }
+
+        /// <summary>
+        /// Reads a persisted position in whatever reference system it was stored in and returns it in
+        /// Lambert 72, which is the only reference system version 2 answers in. See ADR 0004.
+        /// </summary>
+        private static Geometry ReadPositionAsLambert72(byte[] point)
+        {
+            var geometry = WKBReaderFactory.CreateForEwkb(point).Read(point);
+
+            if (geometry.IsLambert72())
+            {
+                return geometry;
+            }
+
+            // A transformed position carries floating point noise far below the centimetre the transform
+            // is accurate to; rounding it away keeps an 08 -> 72 position identical to how the same
+            // position reads while the event store still holds Lambert 72.
+            return geometry
+                .EnsureLambert72()
+                .RoundCoordinates(PositionCoordinateDecimals);
         }
 
         public static PositieGeometrieMethode ConvertFromGeometryMethod(GeometryMethod? method)

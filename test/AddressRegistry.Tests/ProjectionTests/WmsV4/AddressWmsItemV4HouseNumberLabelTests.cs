@@ -9,7 +9,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV4
     using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
-    using NetTopologySuite.IO;
     using Projections.Wms;
     using Projections.Wms.AddressWmsItemV4;
     using Xunit;
@@ -17,8 +16,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV4
     public class AddressWmsItemV4HouseNumberLabelTests2 : AddressWmsItemV4ProjectionTest
     {
         private readonly Fixture _fixture;
-        /// <summary>Deliberately a Lambert 72 reader: the expectations are independent of what the projection does.</summary>
-        private readonly WKBReader _wkbReader = WKBReaderFactory.CreateForLegacy();
 
         public AddressWmsItemV4HouseNumberLabelTests2()
         {

@@ -21,7 +21,7 @@ Positions are persisted as EWKB, which carries its own SRID. So a reader never h
 reference system — it only has to stop hardcoding one.
 
 This ADR covers the read side: `Projections.Legacy`, `Projections.AddressMatch`, `Api.Oslo`,
-`Projections.Elastic` and `Projections.Integration`.
+`Projections.Elastic`, `Projections.Integration` and `Projections.Wfs`.
 
 ## Decision
 
@@ -190,6 +190,60 @@ force evaluation order and is therefore the correct construct, but it also hides
 the duration of the mixed window, and time the view refresh against a mixed table before the freeze
 rather than during it.
 
+### Projections.Wfs
+
+The WFS projection writes `[wfs.address].[AddressWfsV2]` — a SQL Server table with a `sys.geometry`
+`Position` column and a spatial index — and two `SCHEMABINDING` views over it, `[wfs].[AdresView]` and
+`[geolocation].[AddressOsloGeolocationView]`, which an external team serves through geowebserver for
+WMS/WFS/OGC-API. Letting that table go mixed is not on the table: SQL Server's spatial methods return
+`NULL` rather than erroring on an SRID mismatch, the spatial index has a `BOUNDING_BOX` in Lambert 72
+coordinates that Lambert 2008 rows fall entirely outside of, and the geolocation view builds its GML
+with a hardcoded `srsName` of EPSG 31370.
+
+So instead of one table that changes meaning, there are two that do not:
+
+- **V2 is pinned to Lambert 72.** `ParsePosition` reads SRID-aware and then `EnsureLambert72()`, rounding
+  only on the transformed path, exactly as Api.Oslo version 2 does. Once the event store holds Lambert
+  2008 this starts transforming, and the table, its index and both views carry on unchanged. Consumers
+  of V2 see nothing at all.
+- **V3 is a new projection pinned to Lambert 2008**, writing `[wfs.address].[AddressWfsV3]` with its own
+  `[wfs].[AdresViewV3]` and `[geolocation].[AddressOsloGeolocationViewV3]`. `ParsePosition` is
+  `EnsureLambert08(2)`, which transforms and rounds today and becomes a pass-through once the event store
+  is converted. The geolocation view is identical to the V2 one except for the source table and an
+  `srsName` of EPSG 3812.
+
+The two run side by side until the geoserver consumers have moved to the V3 views, after which V2, its
+table and its views are deleted in one go.
+
+`AddressWfsV3Projections`, `AddressWfsV3Item`, `AddressWfsV3Extensions` and the V3
+`HouseNumberLabelUpdater` were produced mechanically from their V2 counterparts (a rename of
+`AddressWfsV2` to `AddressWfsV3`), so the ~900 lines of event handling are identical by construction
+rather than by review; `ParsePosition` and the projection name are the only hand edits. That keeps the
+eventual deletion of V2 a clean delete, at the cost of a duplicate that has to be kept in step while
+both exist.
+
+The test suites were copied the same way and for the same reason: `AddressWfsV3ProjectionTests` and
+`AddressWfsItemV3HouseNumberLabelTests` are the V2 files renamed, so V3 is covered to the same depth
+instead of being a large untested copy. The label tests are a byte-for-byte rename. The projection tests
+needed one change: their position expectations read the event with a Lambert 72 reader, so in V3 they go
+through an `ExpectedPosition` helper that also applies `EnsureLambert08(2)`. That does mirror what the
+projection does, which is why the reference system is asserted against *fixed* coordinates in
+`GivenPositionInEitherReferenceSystem` — one of those per version — rather than relied on here.
+
+Worth knowing when reading those tests: `EnsureLambert08` only transforms geometries that actually fall
+inside Flanders, and relabels everything else. The fixture generates positions from random `uint`s, so
+most of the copied assertions compare unchanged coordinates; only the handful using real Lambert 72
+points (`GeometryHelpers.*GmlPointGeometry`) actually move.
+
+The V3 spatial index needs its own `BOUNDING_BOX`. The V2 one,
+`(22279.17, 153050.23, 258873.3, 244022.31)`, was converted by transforming all four corners — a
+conformal projection does not map a rectangle to a rectangle — and padding the resulting envelope out to
+the next 100 m, giving `(522200, 653000, 758900, 744100)`.
+
+Both projections dropped the `WKBReader` from their constructor. It was injected as
+`WKBReaderFactory.CreateForLegacy()` from `ApiModule`, which is exactly the assumption being removed;
+the reader now comes from the EWKB per position.
+
 ## Consequences
 
 - While the event store holds Lambert 72, every API response is byte-for-byte what it was, and the only
@@ -210,7 +264,9 @@ rather than during it.
 - The PostGIS `geometry` column holds a mix of SRIDs while the conversion runs. Consumers must branch on
   `ST_SRID`, under the caveats above, and should expect the loss of index-assisted spatial filtering for
   that window.
-- Still to do for the conversion: `Projections.Wfs` / `Projections.Wms` (constructed with
+- WFS gains a second table and two more views for the duration of the migration; the geoserver team
+  moves over at its own pace and V2 is deleted once nobody reads it.
+- Still to do for the conversion: `Projections.Wms` (constructed with
   `WKBReaderFactory.CreateForLegacy()`), `Api.Extract` (shapefiles are written as `Belge_Lambert_1972`),
   and the lambda's `GmlHelpers.ToExtendedWkbGeometry()` per ADR 0003. `Projections.Feed` already handles
   both directions.

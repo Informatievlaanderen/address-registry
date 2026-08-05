@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Wfs.AddressWfsV2
+namespace AddressRegistry.Projections.Wfs.AddressWfsV3
 {
     using System;
     using System.Threading;
@@ -15,9 +15,9 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
     using StreetName;
     using StreetName.Events;
 
-    [ConnectedProjectionName("WFS adressen (v2)")]
-    [ConnectedProjectionDescription("Projectie die de adressen data voor het WFS adressenregister voorziet.")]
-    public class AddressWfsV2Projections : ConnectedProjection<WfsContext>
+    [ConnectedProjectionName("WFS adressen (v3, Lambert 2008)")]
+    [ConnectedProjectionDescription("Projectie die de adressen data in Lambert 2008 voor het WFS adressenregister voorziet.")]
+    public class AddressWfsV3Projections : ConnectedProjection<WfsContext>
     {
         private static readonly string AdresStatusInGebruik = AdresStatus.InGebruik.ToString();
         private static readonly string AdresStatusGehistoreerd = AdresStatus.Gehistoreerd.ToString();
@@ -30,7 +30,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
         /// </summary>
         private const int PositionCoordinateDecimals = 2;
 
-        public AddressWfsV2Projections(IHouseNumberLabelUpdater houseNumberLabelUpdater)
+        public AddressWfsV3Projections(IHouseNumberLabelUpdater houseNumberLabelUpdater)
         {
             #region StreetName
 
@@ -105,7 +105,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
-                var addressWfsItem = new AddressWfsV2Item(
+                var addressWfsItem = new AddressWfsV3Item(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
@@ -123,7 +123,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                 await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWfsItem, ct, includeAddressInUpdate: true);
 
                 await context
-                    .AddressWfsV2Items
+                    .AddressWfsV3Items
                     .AddAsync(addressWfsItem, ct);
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
@@ -143,7 +143,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
 
             When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
             {
-                var addressWfsItem = new AddressWfsV2Item(
+                var addressWfsItem = new AddressWfsV3Item(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
@@ -161,7 +161,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                 await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWfsItem, ct, includeAddressInUpdate: true);
 
                 await context
-                    .AddressWfsV2Items
+                    .AddressWfsV3Items
                     .AddAsync(addressWfsItem, ct);
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
@@ -181,7 +181,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
 
             When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
-                var addressWfsItem = new AddressWfsV2Item(
+                var addressWfsItem = new AddressWfsV3Item(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
@@ -199,7 +199,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                 await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWfsItem, ct, includeAddressInUpdate: true);
 
                 await context
-                    .AddressWfsV2Items
+                    .AddressWfsV3Items
                     .AddAsync(addressWfsItem, ct);
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
@@ -677,7 +677,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
 
             When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
             {
-                var addressWfsItem = new AddressWfsV2Item(
+                var addressWfsItem = new AddressWfsV3Item(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
@@ -695,7 +695,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                 await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWfsItem, ct, includeAddressInUpdate: true);
 
                 await context
-                    .AddressWfsV2Items
+                    .AddressWfsV3Items
                     .AddAsync(addressWfsItem, ct);
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
@@ -871,32 +871,25 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
         }
 
         /// <summary>
-        /// Version 2 stores Lambert 72 (EPSG 31370) and nothing else, whichever reference system the
+        /// Version 3 stores Lambert 2008 (EPSG 3812) and nothing else, whichever reference system the
         /// event store persists, so the table, its spatial index and the views over it stay single-SRID.
-        /// See ADR 0004.
+        /// Once the event store holds Lambert 2008 this becomes a pass-through. See ADR 0004.
         /// </summary>
         private static Point ParsePosition(string extendedWkbGeometry)
         {
             var extendedWkb = extendedWkbGeometry.ToByteArray();
             var position = (Point)WKBReaderFactory.CreateForEwkb(extendedWkb).Read(extendedWkb);
 
-            if (position.IsLambert72())
-            {
-                return position;
-            }
-
-            // Rounding only on the transformed path, so a position that was already Lambert 72 is stored
+            // Rounds only when it actually transforms, so a position already in Lambert 2008 is stored
             // exactly as persisted. The transform is accurate to the centimetre positions are kept at.
-            return position
-                .EnsureLambert72()
-                .RoundCoordinates(PositionCoordinateDecimals);
+            return position.EnsureLambert08(PositionCoordinateDecimals);
         }
 
 
-        private static void UpdateVersionTimestamp(AddressWfsV2Item addressWfsItem, Instant versionTimestamp)
+        private static void UpdateVersionTimestamp(AddressWfsV3Item addressWfsItem, Instant versionTimestamp)
             => addressWfsItem.VersionTimestamp = versionTimestamp;
 
-        private static void UpdateVersionTimestampIfNewer(AddressWfsV2Item addressWfsItem, Instant versionTimestamp)
+        private static void UpdateVersionTimestampIfNewer(AddressWfsV3Item addressWfsItem, Instant versionTimestamp)
         {
             if(versionTimestamp > addressWfsItem.VersionTimestamp)
             {

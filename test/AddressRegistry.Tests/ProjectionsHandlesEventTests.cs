@@ -284,7 +284,7 @@
 
             yield return [new List<ConnectedProjection<ExtractContext>>
             {
-                new AddressExtractProjectionsV2(Mock.Of<IReadonlyStreamStore>(), new EventDeserializer((_, _) => new object()), new OptionsWrapper<ExtractConfig>(new ExtractConfig()), Encoding.UTF8, new WKBReader())
+                new AddressExtractProjectionsV2(Mock.Of<IReadonlyStreamStore>(), new EventDeserializer((_, _) => new object()), new OptionsWrapper<ExtractConfig>(new ExtractConfig()), Encoding.UTF8)
             }];
 
             yield return [new List<ConnectedProjection<ProducerContext>>

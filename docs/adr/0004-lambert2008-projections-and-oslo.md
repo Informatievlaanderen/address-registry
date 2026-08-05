@@ -51,7 +51,10 @@ the event store writes, SRID included, and hands the decision to whoever reads t
 `AddressDetailItemV2WithParent` is the legacy row minus a few columns. Its only consumer,
 `Api.Oslo/AddressMatch/V2/AddressMapper`, reads the position through
 `Address.V2.AddressMapper.GetAddressPoint`, so it inherits the version 2 behaviour below and keeps
-answering in Lambert 72.
+answering in Lambert 72. That is the only geometry in the whole address match API — the matching and
+scoring are text-only, and `AdresPositie` is carried straight through to the response — so nothing else
+there needs looking at. `AddressMatchV2Tests` pins the delegation end to end, since reading the position
+any other way is the one thing that would break it.
 
 That both are agnostic is a property worth keeping rather than a coincidence, so each is pinned down by
 an `AddressDetailItemV2WithParentLambert2008Tests`, which replays Lambert 2008 events and asserts the
@@ -115,7 +118,7 @@ A position whose EWKB carries no SRID is labelled Lambert 72, matching `CreateFo
 
 This changes the value of an existing field. It is safe because nothing in this repo reads
 `GeometryAsWkt`, it is mapped as `text` rather than parsed, and the conversion re-indexes everything
-anyway.
+anyway. The current data in the WKT without the SRID will have to be looked at as Lambert 72.
 
 #### The WGS84 geo point is projected from whichever system the position is in
 

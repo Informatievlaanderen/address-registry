@@ -21,7 +21,7 @@ Positions are persisted as EWKB, which carries its own SRID. So a reader never h
 reference system — it only has to stop hardcoding one.
 
 This ADR covers the read side: `Projections.Legacy`, `Projections.AddressMatch`, `Api.Oslo`,
-`Projections.Elastic`, `Projections.Integration` and `Projections.Wfs`.
+`Projections.Elastic`, `Projections.Integration`, `Projections.Wfs` and `Projections.Wms`.
 
 ## Decision
 
@@ -244,6 +244,31 @@ Both projections dropped the `WKBReader` from their constructor. It was injected
 `WKBReaderFactory.CreateForLegacy()` from `ApiModule`, which is exactly the assumption being removed;
 the reader now comes from the EWKB per position.
 
+### Projections.Wms
+
+The same shape as WFS and handled the same way, one version number further along: the current projection
+is already `AddressWmsItemV3` writing `[wms.address].[AddressWmsV3]`, so its Lambert 2008 counterpart is
+**V4**.
+
+- **V3 is pinned to Lambert 72** — same `ParsePosition` as WFS version 2.
+- **V4 is a new projection pinned to Lambert 2008**, writing `[wms.address].[AddressWmsV4]`.
+
+WMS has five views rather than two: `[wms].[AdresView]` over the table, plus `AdresVoorgesteld`,
+`AdresInGebruik`, `AdresGehistoreerd` and `AdresAfgekeurd`, which select from `AdresView` and filter on
+status. All five get a `V4` counterpart. Because the status views are `SCHEMABINDING` over `AdresViewV4`,
+the migration creates `AdresViewV4` first and drops it last; the four status view definitions are emitted
+from a `(view, status)` table rather than copied out five times. The `[wms].[GetFullAddress]` scalar
+function is reference-system agnostic and is reused as is.
+
+The spatial index gets the same recomputed `BOUNDING_BOX` as WFS V3, `(522200, 653000, 758900, 744100)`,
+since both started from the same Lambert 72 box.
+
+Source and tests were copied mechanically, exactly as for WFS. One extra rename beyond the type names:
+the context extension methods are called `FindAddressDetailV3` / `FindAndUpdateAddressDetailV3`, so those
+became `…V4` — otherwise the V4 file would have been calling V3-named helpers on itself.
+
+With this, no `WKBReaderFactory.CreateForLegacy()` is left in `ApiModule`.
+
 ## Consequences
 
 - While the event store holds Lambert 72, every API response is byte-for-byte what it was, and the only
@@ -264,9 +289,9 @@ the reader now comes from the EWKB per position.
 - The PostGIS `geometry` column holds a mix of SRIDs while the conversion runs. Consumers must branch on
   `ST_SRID`, under the caveats above, and should expect the loss of index-assisted spatial filtering for
   that window.
-- WFS gains a second table and two more views for the duration of the migration; the geoserver team
-  moves over at its own pace and V2 is deleted once nobody reads it.
-- Still to do for the conversion: `Projections.Wms` (constructed with
-  `WKBReaderFactory.CreateForLegacy()`), `Api.Extract` (shapefiles are written as `Belge_Lambert_1972`),
-  and the lambda's `GmlHelpers.ToExtendedWkbGeometry()` per ADR 0003. `Projections.Feed` already handles
-  both directions.
+- WFS gains a second table and two more views for the duration of the migration, WMS a second table and
+  five more views; the geoserver team moves over at its own pace and the old versions are deleted once
+  nobody reads them.
+- Still to do for the conversion: `Api.Extract` (shapefiles are written as `Belge_Lambert_1972`) and the
+  lambda's `GmlHelpers.ToExtendedWkbGeometry()` per ADR 0003. `Projections.Feed` already handles both
+  directions.

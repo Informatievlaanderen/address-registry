@@ -47,6 +47,7 @@
     using Projections.Wfs.AddressWfsV3;
     using Projections.Wms;
     using Projections.Wms.AddressWmsItemV3;
+    using Projections.Wms.AddressWmsItemV4;
     using SqlStreamStore;
     using StreetName.Events;
     using Xunit;
@@ -265,7 +266,8 @@
 
             yield return [new List<ConnectedProjection<WmsContext>>
             {
-                new AddressWmsItemV3Projections(new WKBReader(), new HouseNumberLabelUpdater())
+                new AddressWmsItemV3Projections(new HouseNumberLabelUpdater()),
+                new AddressWmsItemV4Projections(new Projections.Wms.AddressWmsItemV4.HouseNumberLabelUpdater())
             }];
 
             yield return [new List<ConnectedProjection<LastChangedListContext>>

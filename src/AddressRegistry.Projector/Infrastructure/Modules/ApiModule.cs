@@ -25,6 +25,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Wfs.AddressWfsV3;
     using AddressRegistry.Projections.Wms;
     using AddressRegistry.Projections.Wms.AddressWmsItemV3;
+    using AddressRegistry.Projections.Wms.AddressWmsItemV4;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -254,6 +255,10 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .As<IHouseNumberLabelUpdater>()
                 .AsSelf();
 
+            builder.RegisterType<AddressRegistry.Projections.Wms.AddressWmsItemV4.HouseNumberLabelUpdater>()
+                .As<AddressRegistry.Projections.Wms.AddressWmsItemV4.IHouseNumberLabelUpdater>()
+                .AsSelf();
+
             var wmsProjectionSettings = ConnectedProjectionSettings
                 .Configure(settings =>
                     settings.ConfigureLinearBackoff<SqlException>(_configuration, "Wms"));
@@ -263,7 +268,10 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressWmsItemV3Projections, WmsContext>(c =>
-                    new AddressWmsItemV3Projections(WKBReaderFactory.CreateForLegacy(), c.Resolve<IHouseNumberLabelUpdater>()),
+                    new AddressWmsItemV3Projections(c.Resolve<IHouseNumberLabelUpdater>()),
+                    wmsProjectionSettings)
+                .RegisterProjections<AddressWmsItemV4Projections, WmsContext>(c =>
+                    new AddressWmsItemV4Projections(c.Resolve<AddressRegistry.Projections.Wms.AddressWmsItemV4.IHouseNumberLabelUpdater>()),
                     wmsProjectionSettings);
         }
 

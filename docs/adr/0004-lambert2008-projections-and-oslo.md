@@ -21,7 +21,8 @@ Positions are persisted as EWKB, which carries its own SRID. So a reader never h
 reference system — it only has to stop hardcoding one.
 
 This ADR covers the read side: `Projections.Legacy`, `Projections.AddressMatch`, `Api.Oslo`,
-`Projections.Elastic`, `Projections.Integration`, `Projections.Wfs` and `Projections.Wms`.
+`Projections.Elastic`, `Projections.Integration`, `Projections.Wfs`, `Projections.Wms` and
+`Projections.Extract`.
 
 ## Decision
 
@@ -269,6 +270,23 @@ became `…V4` — otherwise the V4 file would have been calling V3-named helper
 
 With this, no `WKBReaderFactory.CreateForLegacy()` is left in `ApiModule`.
 
+### Projections.Extract and Api.Extract
+
+The extract is pinned to Lambert 72 with the same `ParsePosition` as WFS version 2, and gets no second
+version. It is expected to be retired before the event store is converted; this change is only so that it
+keeps producing correct shapefiles rather than silently 500-km-offset ones if it outlives the conversion.
+
+`Api.Extract` needs nothing, which is worth spelling out because it looks like it should. It writes the
+`.prj` as `ProjectedCoordinateSystem.Belge_Lambert_1972` and it builds the shapefile from
+`ShapeRecordContent` and the `MinimumX`/`MaximumY` bounding box — all of which the projection has already
+computed. It never touches a coordinate, so pinning the projection is what keeps the `.prj` honest.
+
+That is also why this one cannot be solved downstream: a shape record carries no SRID, so nothing after
+the projection could tell which reference system the bytes are in.
+
+The extract had no projection tests; it now has a `GivenPositionInEitherReferenceSystem` like the others,
+asserting the stored bounding box is Lambert 72 for events in either reference system.
+
 ## Consequences
 
 - While the event store holds Lambert 72, every API response is byte-for-byte what it was, and the only
@@ -292,6 +310,5 @@ With this, no `WKBReaderFactory.CreateForLegacy()` is left in `ApiModule`.
 - WFS gains a second table and two more views for the duration of the migration, WMS a second table and
   five more views; the geoserver team moves over at its own pace and the old versions are deleted once
   nobody reads them.
-- Still to do for the conversion: `Api.Extract` (shapefiles are written as `Belge_Lambert_1972`) and the
-  lambda's `GmlHelpers.ToExtendedWkbGeometry()` per ADR 0003. `Projections.Feed` already handles both
-  directions.
+- Still to do for the conversion: the lambda's `GmlHelpers.ToExtendedWkbGeometry()` per ADR 0003, and the
+  event store conversion itself. `Projections.Feed` already handled both directions before this ADR.

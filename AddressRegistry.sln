@@ -43,6 +43,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adr", "adr", "{01BBABB2-5AC
 		docs\adr\0001-record-architecture-decisions.md = docs\adr\0001-record-architecture-decisions.md
 		docs\adr\0002-separate-address-match.md = docs\adr\0002-separate-address-match.md
 		docs\adr\0003-lambert2008-gml-input-backoffice.md = docs\adr\0003-lambert2008-gml-input-backoffice.md
+		docs\adr\0004-lambert2008-projections-and-oslo.md = docs\adr\0004-lambert2008-projections-and-oslo.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Projector", "src\AddressRegistry.Projector\AddressRegistry.Projector.csproj", "{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}"

@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.ProjectionTests.WfsV2
+namespace AddressRegistry.Tests.ProjectionTests.WfsV3
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -11,14 +11,14 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
     using global::AutoFixture;
     using NetTopologySuite.IO;
     using Projections.Wfs;
-    using Projections.Wfs.AddressWfsV2;
+    using Projections.Wfs.AddressWfsV3;
     using Xunit;
 
-    public class AddressWfsItemV2HouseNumberLabelTests : AddressWfsItemV2ProjectionTest
+    public class AddressWfsItemV3HouseNumberLabelTests : AddressWfsItemV3ProjectionTest
     {
         private readonly Fixture _fixture;
 
-        public AddressWfsItemV2HouseNumberLabelTests()
+        public AddressWfsItemV3HouseNumberLabelTests()
         {
             _fixture = new Fixture();
             _fixture.Customize(new WithFixedAddressPersistentLocalId());
@@ -65,11 +65,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(fiveBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var fiveProjection = await ct.AddressWfsV2Items.FindAsync(five.AddressPersistentLocalId);
+                    var fiveProjection = await ct.AddressWfsV3Items.FindAsync(five.AddressPersistentLocalId);
                     fiveProjection.Should().NotBeNull();
-                    var fiveBoxOneProjection = await ct.AddressWfsV2Items.FindAsync(fiveBoxOne.AddressPersistentLocalId);
+                    var fiveBoxOneProjection = await ct.AddressWfsV3Items.FindAsync(fiveBoxOne.AddressPersistentLocalId);
                     fiveBoxOneProjection.Should().NotBeNull();
-                    var fiveBoxTwoProjection = await ct.AddressWfsV2Items.FindAsync(fiveBoxTwo.AddressPersistentLocalId);
+                    var fiveBoxTwoProjection = await ct.AddressWfsV3Items.FindAsync(fiveBoxTwo.AddressPersistentLocalId);
                     fiveBoxTwoProjection.Should().NotBeNull();
 
                     fiveProjection!.HouseNumberLabel.Should().Be("5");
@@ -110,11 +110,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(twelve, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var tenProjection = await ct.AddressWfsV2Items.FindAsync(ten.AddressPersistentLocalId);
+                    var tenProjection = await ct.AddressWfsV3Items.FindAsync(ten.AddressPersistentLocalId);
                     tenProjection.Should().NotBeNull();
-                    var twelveProjection = await ct.AddressWfsV2Items.FindAsync(twelve.AddressPersistentLocalId);
+                    var twelveProjection = await ct.AddressWfsV3Items.FindAsync(twelve.AddressPersistentLocalId);
                     twelveProjection.Should().NotBeNull();
-                    var sixteenProjection = await ct.AddressWfsV2Items.FindAsync(sixteen.AddressPersistentLocalId);
+                    var sixteenProjection = await ct.AddressWfsV3Items.FindAsync(sixteen.AddressPersistentLocalId);
                     sixteenProjection.Should().NotBeNull();
 
                     tenProjection!.HouseNumberLabel.Should().Be("10-16");
@@ -157,11 +157,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(twentyEightBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var twenty8 = await ct.AddressWfsV2Items.FindAsync(twentyEight.AddressPersistentLocalId);
+                    var twenty8 = await ct.AddressWfsV3Items.FindAsync(twentyEight.AddressPersistentLocalId);
                     twenty8.Should().NotBeNull();
-                    var twenty8Box1 = await ct.AddressWfsV2Items.FindAsync(twentyEightBoxOne.AddressPersistentLocalId);
+                    var twenty8Box1 = await ct.AddressWfsV3Items.FindAsync(twentyEightBoxOne.AddressPersistentLocalId);
                     twenty8Box1.Should().NotBeNull();
-                    var thirty0 = await ct.AddressWfsV2Items.FindAsync(thirty.AddressPersistentLocalId);
+                    var thirty0 = await ct.AddressWfsV3Items.FindAsync(thirty.AddressPersistentLocalId);
                     thirty0.Should().NotBeNull();
 
                     twenty8!.HouseNumberLabel.Should().Be("28-30");
@@ -196,9 +196,9 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(fiftyEight, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var fifty6 = await ct.AddressWfsV2Items.FindAsync(fiftySix.AddressPersistentLocalId);
+                    var fifty6 = await ct.AddressWfsV3Items.FindAsync(fiftySix.AddressPersistentLocalId);
                     fifty6.Should().NotBeNull();
-                    var fifty8 = await ct.AddressWfsV2Items.FindAsync(fiftyEight.AddressPersistentLocalId);
+                    var fifty8 = await ct.AddressWfsV3Items.FindAsync(fiftyEight.AddressPersistentLocalId);
                     fifty8.Should().NotBeNull();
 
                     fifty6!.HouseNumberLabel.Should().Be("56");
@@ -238,11 +238,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(four, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var twoProjection = await ct.AddressWfsV2Items.FindAsync(two.AddressPersistentLocalId);
+                    var twoProjection = await ct.AddressWfsV3Items.FindAsync(two.AddressPersistentLocalId);
                     twoProjection.Should().NotBeNull();
-                    var fourProjection = await ct.AddressWfsV2Items.FindAsync(four.AddressPersistentLocalId);
+                    var fourProjection = await ct.AddressWfsV3Items.FindAsync(four.AddressPersistentLocalId);
                     fourProjection.Should().NotBeNull();
-                    var otherStreetProjection = await ct.AddressWfsV2Items.FindAsync(otherStreet.AddressPersistentLocalId);
+                    var otherStreetProjection = await ct.AddressWfsV3Items.FindAsync(otherStreet.AddressPersistentLocalId);
                     otherStreetProjection.Should().NotBeNull();
 
                     twoProjection!.HouseNumberLabel.Should().Be("2-4 ; 128");
@@ -286,11 +286,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(thirteenBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var thirteenProjection = await ct.AddressWfsV2Items.FindAsync(thirteen.AddressPersistentLocalId);
+                    var thirteenProjection = await ct.AddressWfsV3Items.FindAsync(thirteen.AddressPersistentLocalId);
                     thirteenProjection.Should().NotBeNull();
-                    var thirteenBoxOneProjection = await ct.AddressWfsV2Items.FindAsync(thirteenBoxOne.AddressPersistentLocalId);
+                    var thirteenBoxOneProjection = await ct.AddressWfsV3Items.FindAsync(thirteenBoxOne.AddressPersistentLocalId);
                     thirteenBoxOneProjection.Should().NotBeNull();
-                    var sixteenProjection = await ct.AddressWfsV2Items.FindAsync(otherStreet.AddressPersistentLocalId);
+                    var sixteenProjection = await ct.AddressWfsV3Items.FindAsync(otherStreet.AddressPersistentLocalId);
                     sixteenProjection.Should().NotBeNull();
 
                     thirteenProjection!.HouseNumberLabel.Should().Be("7 ; 13");
@@ -328,9 +328,9 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(eightyOneBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var eightyOneProjection = await ct.AddressWfsV2Items.FindAsync(eightyOne.AddressPersistentLocalId);
+                    var eightyOneProjection = await ct.AddressWfsV3Items.FindAsync(eightyOne.AddressPersistentLocalId);
                     eightyOneProjection.Should().NotBeNull();
-                    var eightyOneBoxOneProjection = await ct.AddressWfsV2Items.FindAsync(eightyOneBoxOne.AddressPersistentLocalId);
+                    var eightyOneBoxOneProjection = await ct.AddressWfsV3Items.FindAsync(eightyOneBoxOne.AddressPersistentLocalId);
                     eightyOneBoxOneProjection.Should().NotBeNull();
 
                     eightyOneProjection!.HouseNumberLabel.Should().Be("81");
@@ -372,11 +372,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(eightyOneBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var seventyNineProjection = await ct.AddressWfsV2Items.FindAsync(seventyNine.AddressPersistentLocalId);
+                    var seventyNineProjection = await ct.AddressWfsV3Items.FindAsync(seventyNine.AddressPersistentLocalId);
                     seventyNineProjection.Should().NotBeNull();
-                    var eightyOneProjection = await ct.AddressWfsV2Items.FindAsync(eightyOne.AddressPersistentLocalId);
+                    var eightyOneProjection = await ct.AddressWfsV3Items.FindAsync(eightyOne.AddressPersistentLocalId);
                     eightyOneProjection.Should().NotBeNull();
-                    var eightyOneBoxOneProjection = await ct.AddressWfsV2Items.FindAsync(eightyOneBoxOne.AddressPersistentLocalId);
+                    var eightyOneBoxOneProjection = await ct.AddressWfsV3Items.FindAsync(eightyOneBoxOne.AddressPersistentLocalId);
                     eightyOneBoxOneProjection.Should().NotBeNull();
 
                     seventyNineProjection!.HouseNumberLabel.Should().Be("79-81");
@@ -421,11 +421,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(thirtyThreeBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var thirtyThreeProjection = await ct.AddressWfsV2Items.FindAsync(thirtyThree.AddressPersistentLocalId);
+                    var thirtyThreeProjection = await ct.AddressWfsV3Items.FindAsync(thirtyThree.AddressPersistentLocalId);
                     thirtyThreeProjection.Should().NotBeNull();
-                    var thirtyThreeBoxOneProjection = await ct.AddressWfsV2Items.FindAsync(thirtyThreeBoxOne.AddressPersistentLocalId);
+                    var thirtyThreeBoxOneProjection = await ct.AddressWfsV3Items.FindAsync(thirtyThreeBoxOne.AddressPersistentLocalId);
                     thirtyThreeBoxOneProjection.Should().NotBeNull();
-                    var thirtyFiveProjection = await ct.AddressWfsV2Items.FindAsync(thirtyFive.AddressPersistentLocalId);
+                    var thirtyFiveProjection = await ct.AddressWfsV3Items.FindAsync(thirtyFive.AddressPersistentLocalId);
                     thirtyFiveProjection.Should().NotBeNull();
 
                     thirtyThreeProjection!.HouseNumberLabel.Should().Be("33");
@@ -438,8 +438,8 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                 });
         }
 
-        protected override AddressWfsV2Projections CreateProjection()
-            =>  new AddressWfsV2Projections(new HouseNumberLabelUpdater());
+        protected override AddressWfsV3Projections CreateProjection()
+            =>  new AddressWfsV3Projections(new HouseNumberLabelUpdater());
 
         private AddressWasMigratedToStreetName CreateAddressWasMigratedToStreetName(
             AddressPersistentLocalId addressPersistentLocalId,

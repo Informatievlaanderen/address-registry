@@ -5,7 +5,6 @@
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Convertors;
     using Infrastructure;
     using Microsoft.Extensions.Options;
@@ -86,7 +85,7 @@
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
-                var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                var geometry = PositionReader.ReadPosition(message.Message.ExtendedWkbGeometry);
 
                 var addressLatestItem = new AddressLatestItem()
                 {
@@ -117,7 +116,7 @@
 
             When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
             {
-                var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                var geometry = PositionReader.ReadPosition(message.Message.ExtendedWkbGeometry);
 
                 var addressLatestItem = new AddressLatestItem()
                 {
@@ -148,7 +147,7 @@
 
             When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
-                var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                var geometry = PositionReader.ReadPosition(message.Message.ExtendedWkbGeometry);
 
                 var addressLatestItem = new AddressLatestItem()
                 {
@@ -524,7 +523,7 @@
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
-                var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                var geometry = PositionReader.ReadPosition(message.Message.ExtendedWkbGeometry);
 
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
@@ -544,7 +543,7 @@
 
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
-                var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                var geometry = PositionReader.ReadPosition(message.Message.ExtendedWkbGeometry);
 
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
@@ -564,8 +563,7 @@
 
             When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
             {
-                var geometry = WKBReaderFactory.CreateForLegacy()
-                    .Read(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray());
+                var geometry = PositionReader.ReadPosition(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry);
 
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
@@ -589,8 +587,7 @@
 
                 foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
                 {
-                    var boxNumberGeometry = WKBReaderFactory.CreateForLegacy()
-                        .Read(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray());
+                    var boxNumberGeometry = PositionReader.ReadPosition(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry);
 
                     await context.FindAndUpdateAddressLatestItem(
                         readdressedBoxNumber.DestinationAddressPersistentLocalId,
@@ -617,7 +614,7 @@
 
             When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
             {
-                var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                var geometry = PositionReader.ReadPosition(message.Message.ExtendedWkbGeometry);
 
                 var addressLatestItem = new AddressLatestItem
                 {
@@ -762,7 +759,7 @@
                     message.Position,
                     item =>
                     {
-                        var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                        var geometry = PositionReader.ReadPosition(message.Message.ExtendedWkbGeometry);
 
                         item.Status = message.Message.Status;
                         item.OsloStatus = message.Message.Status.Map();

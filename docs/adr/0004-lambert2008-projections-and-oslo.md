@@ -20,8 +20,8 @@ is temporary — but it does exist while the conversion is in flight, and consum
 Positions are persisted as EWKB, which carries its own SRID. So a reader never has to *assume* a
 reference system — it only has to stop hardcoding one.
 
-This ADR covers the read side: `Projections.Legacy`, `Projections.AddressMatch`, `Api.Oslo` and
-`Projections.Elastic`.
+This ADR covers the read side: `Projections.Legacy`, `Projections.AddressMatch`, `Api.Oslo`,
+`Projections.Elastic` and `Projections.Integration`.
 
 ## Decision
 
@@ -151,6 +151,45 @@ position, so the reference system comes from the EWKB rather than from a reader 
 That costs about 1 µs per position against 0.3 µs for a cached reader — irrelevant next to the Elastic
 round trip that follows it.
 
+### Projections.Integration
+
+This one writes to PostGIS rather than SQL Server, into a `geometry` column with a GIST index, and is
+consumed entirely outside this repository — nothing in this codebase reads it.
+
+The 29 `WKBReaderFactory.CreateForLegacy().Read(…)` call sites across `AddressLatestItemProjection`,
+`AddressLatestItemProjectionsV2` and `AddressVersionProjection` were replaced by a single
+`PositionReader.ReadPosition(…)`, which reads through `CreateForEwkb`. Npgsql's NetTopologySuite plugin
+writes the geometry's SRID into the column, so the row ends up carrying the reference system the event
+store wrote and `ST_SRID` can be branched on.
+
+**The column is deliberately allowed to hold both.** That is a bigger commitment than it was for Elastic,
+because PostGIS raises `ERROR: Operation on mixed SRID geometries` from `ST_Within`, `ST_Intersects`,
+`ST_DWithin` and friends whenever the two operands disagree — and the column is plain `geometry` with no
+SRID constraint, so Postgres accepts the mix silently and the breakage surfaces later, in the consumer's
+queries. Normalizing to a single reference system on write was considered and rejected for three reasons
+specific to how this database is operated:
+
+- the consuming repository's views compare against a reference geometry that is held in both Lambert 72
+  and Lambert 2008, so they can pick the matching one per row;
+- the conversion runs under a freeze of external viewing and editing, so no consumer is reading through
+  the mixed window unprepared;
+- the rebuild is fast, so the window is short.
+
+Two things about that window are worth writing down.
+
+**The GIST index stays valid.** `gist_geometry_ops_2d` indexes each row's 2D bounding box in raw
+coordinate space and ignores SRID entirely, so Lambert 72 and Lambert 2008 entries coexist without
+corrupting it. No reindex is needed and inserts do not fail. The SRID error comes from the predicate
+functions, never from the index.
+
+**Branching costs the index, though.** PostgreSQL does not guarantee left-to-right evaluation of `AND`
+and `OR` operands — the planner reorders by cost — so a guard like
+`ST_SRID(g) = 31370 AND ST_Within(g, ref72)` can still hit the error. `CASE` is the documented way to
+force evaluation order and is therefore the correct construct, but it also hides the `&&` that
+`ST_Within` normally expands to, which is what the GIST index accelerates. Expect a sequential scan for
+the duration of the mixed window, and time the view refresh against a mixed table before the freeze
+rather than during it.
+
 ## Consequences
 
 - While the event store holds Lambert 72, every API response is byte-for-byte what it was, and the only
@@ -168,7 +207,10 @@ round trip that follows it.
   can sit 90 m apart in a geo query until both have been converted. The end state is that all of them are
   correct, so this is a one-off correction rather than a regression — but it is visible while it runs,
   and it is a reason to run the conversion as one pass rather than trickle it.
-- Still to do for the conversion: `Projections.Integration`, `Projections.Wfs` / `Projections.Wms`
-  (constructed with `WKBReaderFactory.CreateForLegacy()`), `Api.Extract` (shapefiles are written as
-  `Belge_Lambert_1972`), and the lambda's `GmlHelpers.ToExtendedWkbGeometry()` per ADR 0003.
-  `Projections.Feed` already handles both directions.
+- The PostGIS `geometry` column holds a mix of SRIDs while the conversion runs. Consumers must branch on
+  `ST_SRID`, under the caveats above, and should expect the loss of index-assisted spatial filtering for
+  that window.
+- Still to do for the conversion: `Projections.Wfs` / `Projections.Wms` (constructed with
+  `WKBReaderFactory.CreateForLegacy()`), `Api.Extract` (shapefiles are written as `Belge_Lambert_1972`),
+  and the lambda's `GmlHelpers.ToExtendedWkbGeometry()` per ADR 0003. `Projections.Feed` already handles
+  both directions.

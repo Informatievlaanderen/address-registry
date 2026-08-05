@@ -158,8 +158,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         context.Resolve<IReadonlyStreamStore>(),
                         context.Resolve<EventDeserializer>(),
                         context.Resolve<IOptions<ExtractConfig>>(),
-                        DbaseCodePage.Western_European_ANSI.ToEncoding(),
-                        new WKBReader()),
+                        DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default);
         }
 

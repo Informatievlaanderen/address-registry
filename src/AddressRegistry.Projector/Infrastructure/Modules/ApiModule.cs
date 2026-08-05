@@ -22,6 +22,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Wfs;
     using AddressRegistry.Projections.Wfs.AddressWfsV2;
+    using AddressRegistry.Projections.Wfs.AddressWfsV3;
     using AddressRegistry.Projections.Wms;
     using AddressRegistry.Projections.Wms.AddressWmsItemV3;
     using Autofac;
@@ -224,12 +225,19 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .As<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()
                 .AsSelf();
 
+            builder.RegisterType<AddressRegistry.Projections.Wfs.AddressWfsV3.HouseNumberLabelUpdater>()
+                .As<AddressRegistry.Projections.Wfs.AddressWfsV3.IHouseNumberLabelUpdater>()
+                .AsSelf();
+
             builder
                 .RegisterProjectionMigrator<WfsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressWfsV2Projections, WfsContext>(c =>
-                    new AddressWfsV2Projections(WKBReaderFactory.CreateForLegacy(), c.Resolve<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()),
+                    new AddressWfsV2Projections(c.Resolve<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()),
+                wfsProjectionSettings)
+                .RegisterProjections<AddressWfsV3Projections, WfsContext>(c =>
+                    new AddressWfsV3Projections(c.Resolve<AddressRegistry.Projections.Wfs.AddressWfsV3.IHouseNumberLabelUpdater>()),
                 wfsProjectionSettings);
         }
 

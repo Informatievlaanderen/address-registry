@@ -18,7 +18,6 @@ namespace AddressRegistry.Projections.Elastic.AddressList
     using Consumer.Read.StreetName.Projections;
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.Geometries;
-    using NetTopologySuite.IO;
     using NodaTime;
 
     [ConnectedProjectionName("API endpoint lijst adressen (elastic)")]
@@ -33,7 +32,6 @@ namespace AddressRegistry.Projections.Elastic.AddressList
         private readonly IDbContextFactory<MunicipalityConsumerContext> _municipalityConsumerContextFactory;
         private readonly IDbContextFactory<PostalConsumerContext> _postalConsumerContextFactory;
         private readonly IDbContextFactory<StreetNameConsumerContext> _streetNameConsumerContextFactory;
-        private readonly WKBReader _wkbReader;
 
         public AddressListProjections(
             IAddressListElasticClient searchElasticClient,
@@ -45,8 +43,6 @@ namespace AddressRegistry.Projections.Elastic.AddressList
             _municipalityConsumerContextFactory = municipalityConsumerContextFactory;
             _postalConsumerContextFactory = postalConsumerContextFactory;
             _streetNameConsumerContextFactory = streetNameConsumerContextFactory;
-
-            _wkbReader = WKBReaderFactory.Create();
 
             #region StreetName
 
@@ -662,13 +658,19 @@ namespace AddressRegistry.Projections.Elastic.AddressList
             }
         }
 
-        private AddressPosition AddressPosition(
+        /// <summary>
+        /// The reader is created per position because the reference system comes from the EWKB itself:
+        /// the event store holds Lambert 72 today and Lambert 2008 after its conversion. See ADR 0004.
+        /// </summary>
+        private static AddressPosition AddressPosition(
             byte[] extendedWkbAsBytes,
             GeometryMethod geometryMethod,
             GeometrySpecification geometrySpecification)
         {
+            var reader = WKBReaderFactory.CreateForEwkb(extendedWkbAsBytes);
+
             return new AddressPosition(
-                (_wkbReader.Read(extendedWkbAsBytes) as Point)!,
+                (reader.Read(extendedWkbAsBytes) as Point)!,
                 geometryMethod,
                 geometrySpecification);
         }

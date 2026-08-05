@@ -20,7 +20,8 @@ is temporary — but it does exist while the conversion is in flight, and consum
 Positions are persisted as EWKB, which carries its own SRID. So a reader never has to *assume* a
 reference system — it only has to stop hardcoding one.
 
-This ADR covers the read side: `Projections.Legacy`, `Api.Oslo` and `Projections.Elastic`.
+This ADR covers the read side: `Projections.Legacy`, `Projections.AddressMatch`, `Api.Oslo` and
+`Projections.Elastic`.
 
 ## Decision
 
@@ -36,20 +37,30 @@ Note that `CreateForLegacy()` also happens to read Lambert 2008 EWKB correctly t
 a floating precision model and `WKBReader` takes the SRID from the bytes. That is an accident of the
 current precision models, not a contract, which is why call sites were moved off it.
 
-### Projections.Legacy
+### Projections.Legacy and Projections.AddressMatch
 
 Unchanged, deliberately. `AddressDetailProjectionsV2WithParent` and `AddressSyndicationProjections`
 assign `message.Message.ExtendedWkbGeometry.ToByteArray()` straight into `Position` / `PointPosition`
 and never parse the bytes, so the projection is already reference-system agnostic: it stores whatever
 the event store writes, SRID included, and hands the decision to whoever reads the column.
 
-That is a property worth keeping rather than a coincidence, so it is pinned down by
-`AddressDetailItemV2WithParentLambert2008Tests`, which replays Lambert 2008 events and asserts the
-stored bytes are byte-for-byte the event's and still read back as SRID 3812.
+`Projections.AddressMatch` needs nothing for the same reason. Its
+`AddressDetailV2WithParent/AddressDetailProjectionsV2WithParent` is the legacy one with a different
+`ConnectedProjectionName` — the two files are otherwise identical, and its
+`AddressDetailItemV2WithParent` is the legacy row minus a few columns. Its only consumer,
+`Api.Oslo/AddressMatch/V2/AddressMapper`, reads the position through
+`Address.V2.AddressMapper.GetAddressPoint`, so it inherits the version 2 behaviour below and keeps
+answering in Lambert 72.
 
-Consequence: after the conversion the `Position` column holds a *mix* of reference systems — 31370 for
-everything projected before it, 3812 after — unless the projection is rebuilt. Every reader must handle
-both regardless, so no rebuild is required for correctness.
+That both are agnostic is a property worth keeping rather than a coincidence, so each is pinned down by
+an `AddressDetailItemV2WithParentLambert2008Tests`, which replays Lambert 2008 events and asserts the
+stored bytes are byte-for-byte the event's and still read back as SRID 3812. The address match
+projection had no projection tests at all, so it also got an `AddressMatchProjectionTest` harness,
+mirroring the legacy one.
+
+Consequence: after the conversion the `Position` column of both holds a *mix* of reference systems —
+31370 for everything projected before it, 3812 after — unless the projection is rebuilt. Every reader
+must handle both regardless, so no rebuild is required for correctness.
 
 ### Api.Oslo version 2
 

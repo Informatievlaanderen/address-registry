@@ -21,6 +21,7 @@ namespace AddressRegistry.Api.Oslo.Address.V2
     using AddressStatus = AddressRegistry.Address.AddressStatus;
     using MunicipalityLanguage = Consumer.Read.Municipality.Projections.MunicipalityLanguage;
     using Point = Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools.Point;
+    using SystemReferenceId = Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology.SystemReferenceId;
 
     public static class AddressMapper
     {
@@ -80,8 +81,16 @@ namespace AddressRegistry.Api.Oslo.Address.V2
         }
 
         public static Point GetAddressPoint(byte[] point)
+            => GetAddressPoint(point, SystemReferenceId.SridLambert72);
+
+        /// <summary>
+        /// The syndication feed's object is the one version 2 response whose reference system the caller
+        /// chooses, through <c>objectCrs</c>. Every other version 2 consumer keeps calling the overload above
+        /// and stays pinned to Lambert 72. See ADR 0004.
+        /// </summary>
+        public static Point GetAddressPoint(byte[] point, int srid)
         {
-            var geometry = ReadPositionAsLambert72(point);
+            var geometry = ReadPosition(point, srid);
 
             return new Point
             {
@@ -128,23 +137,34 @@ namespace AddressRegistry.Api.Oslo.Address.V2
 
         /// <summary>
         /// Reads a persisted position in whatever reference system it was stored in and returns it in
-        /// Lambert 72, which is the only reference system version 2 answers in. See ADR 0004.
+        /// Lambert 72, which is the reference system every version 2 response answers in except the
+        /// syndication object. See ADR 0004.
         /// </summary>
         private static Geometry ReadPositionAsLambert72(byte[] point)
+            => ReadPosition(point, SystemReferenceId.SridLambert72);
+
+        /// <summary>
+        /// Reads a persisted position in whatever reference system it was stored in and returns it in
+        /// <paramref name="srid"/>. Only a position that has to move is transformed: one already in the
+        /// requested system is returned untouched and therefore unrounded, so today's output does not change.
+        /// </summary>
+        private static Geometry ReadPosition(byte[] point, int srid)
         {
             var geometry = WKBReaderFactory.CreateForEwkb(point).Read(point);
-
-            if (geometry.IsLambert72())
-            {
-                return geometry;
-            }
 
             // A transformed position carries floating point noise far below the centimetre the transform
             // is accurate to; rounding it away keeps an 08 -> 72 position identical to how the same
             // position reads while the event store still holds Lambert 72.
-            return geometry
-                .EnsureLambert72()
-                .RoundCoordinates(PositionCoordinateDecimals);
+            if (srid == SystemReferenceId.SridLambert2008)
+            {
+                return geometry.IsLambert08()
+                    ? geometry
+                    : geometry.EnsureLambert08(PositionCoordinateDecimals);
+            }
+
+            return geometry.IsLambert72()
+                ? geometry
+                : geometry.EnsureLambert72().RoundCoordinates(PositionCoordinateDecimals);
         }
 
         public static PositieGeometrieMethode ConvertFromGeometryMethod(GeometryMethod? method)

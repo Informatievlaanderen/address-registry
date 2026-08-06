@@ -1,3 +1,10 @@
+## [6.2.1](https://github.com/informatievlaanderen/address-registry/compare/v6.2.0...v6.2.1) (2026-08-06)
+
+
+### Bug Fixes
+
+* **oslo:** detail contract + example ([a2589d2](https://github.com/informatievlaanderen/address-registry/commit/a2589d216ee1da046aabe0bf61010d188bbc4b07))
+
 # [6.2.0](https://github.com/informatievlaanderen/address-registry/compare/v6.1.3...v6.2.0) (2026-08-03)
 
 

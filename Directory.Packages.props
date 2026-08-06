@@ -19,7 +19,7 @@
         <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
 
         <PackageVersion Include="Autofac" Version="9.1.0" />
-        <PackageVersion Include="Polly" Version="8.6.6" />
+        <PackageVersion Include="Polly" Version="8.7.0" />
         <PackageVersion Include="CsvHelper" Version="33.1.0" />
 
         <PackageVersion Include="Datadog.Trace.Bundle" Version="3.45.0" />

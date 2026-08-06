@@ -28,7 +28,8 @@
 
         protected async Task<string> BuildAtomFeed(
             DateTimeOffset lastFeedUpdate,
-            PagedQueryable<AddressSyndicationQueryResult> pagedAddresses)
+            PagedQueryable<AddressSyndicationQueryResult> pagedAddresses,
+            int objectSrid)
         {
             var sw = new StringWriterWithEncoding(Encoding.UTF8);
 
@@ -55,7 +56,7 @@
 
                 foreach (var address in addresses)
                 {
-                    await writer.WriteAddress(_responseOptions, formatter, syndicationConfiguration["Category"], address);
+                    await writer.WriteAddress(_responseOptions, formatter, syndicationConfiguration["Category"], address, objectSrid);
                 }
 
                 xmlWriter.Flush();

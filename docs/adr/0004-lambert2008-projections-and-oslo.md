@@ -68,9 +68,10 @@ must handle both regardless, so no rebuild is required for correctness.
 
 ### Api.Oslo version 2
 
-Version 2 answers in Lambert 72 and nothing else, so its `AddressMapper` reads the position with the
-SRID-aware reader and then calls `EnsureLambert72()`. A position that is already Lambert 72 is returned
-untouched; a Lambert 2008 one is transformed.
+Version 2 answers in Lambert 72 and nothing else — with the single exception of the syndication object,
+below — so its `AddressMapper` reads the position with the SRID-aware reader and then calls
+`EnsureLambert72()`. A position that is already Lambert 72 is returned untouched; a Lambert 2008 one is
+transformed.
 
 The transform output is rounded to 2 decimals, but *only* on the transformed path. Positions are
 persisted at centimetre precision and the transform is accurate to that, so rounding drops floating point
@@ -82,6 +83,38 @@ rounding those would change today's output for any position stored with more tha
 `GetGml`'s `srsName` stays hardcoded on 31370. It is no longer an assumption: everything reaching it went
 through `ReadPositionAsLambert72`. It also keeps the `https` scheme, which is part of the version 2
 contract and differs from the `http` scheme `ConvertToGml` emits (see ADR 0003).
+
+### Api.Oslo version 2 syndication: the caller picks, through `objectCrs`
+
+The syndication feed under `Address/V2/Sync` — version 2 is the only version that has one — is the one
+version 2 response whose reference system is not fixed. Its object carries the position as a
+`SpatialTools.Point`, whose `GmlPoint` has **no `srsName` member at all**: a bare `<pos>`, plus raw
+`GeoJSONPoint.Coordinates`. So the feed cannot say which reference system it is in, and letting the object
+silently follow the event store would move every consumer's coordinates ~500 km with nothing in the payload
+to signal it. This one cannot be solved downstream.
+
+A new filter, `objectCrs`, on both `AddressSyndicationFilter` and `AddressSyndicationPersistentLocalIdFilter`,
+makes the choice the caller's:
+
+- `3812` → the object's position is emitted in Lambert 2008: transformed if the store still holds
+  Lambert 72, passed through once it holds Lambert 2008.
+- **anything else — an unrecognised value, an empty one, or no filter at all → Lambert 72**: passed through
+  while the store holds Lambert 72, transformed back once it holds Lambert 2008.
+
+The default is what keeps the promise below that version 2 consumers never see Lambert 2008 unless they ask
+for it. An unrecognised value falls back rather than returning 400, so the feed never breaks on a typo; the
+cost is that `objectCrs=EPSG:3812` silently yields Lambert 72, since only the exact string `3812` (trimmed)
+selects Lambert 2008. `ObjectCrs.ToSrid` is the single place that mapping lives and
+`GivenObjectCrsFilter.ThenOnlyTheExactValue3812SelectsLambert2008` pins the accepted spellings.
+
+`AddressMapper` gained a `GetAddressPoint(byte[], int srid)` overload, and `ReadPositionAsLambert72` became
+a call to a general `ReadPosition(point, srid)`. The existing parameterless-SRID overloads are unchanged and
+still pin to Lambert 72, so the detail and list responses — and `AddressMatch`, which reads through
+`GetAddressPoint` — are untouched by this and keep their existing tests.
+
+**Only the object is reprojected.** The embedded `event` is the event store's own payload, emitted verbatim
+at every position, whatever `objectCrs` says. A feed replayed for auditing therefore still shows what was
+actually stored, including the conversion event itself.
 
 ### Api.Oslo version 3
 
@@ -295,7 +328,11 @@ asserting the stored bounding box is Lambert 72 for events in either reference s
 - While the event store holds Lambert 72, every API response is byte-for-byte what it was, and the only
   change to an indexed document is the `SRID=31370;` prefix on `GeometryAsWkt`. All the new behaviour is
   on the 3812 path, which no production data reaches yet.
-- Version 2 consumers never see Lambert 2008, before or after the conversion.
+- Version 2 consumers never see Lambert 2008, before or after the conversion, **unless they ask for it on
+  the syndication feed with `objectCrs=3812`**. Callers that do not pass the filter are unaffected in either
+  direction. `AddressSyndicationFilter` is populated from the `X-Filtering` header, so exposing `objectCrs`
+  as a query parameter needs the same gateway mapping that `embed` and `from` already rely on — that part
+  lives outside this repository.
 - Version 3 consumers get a second `geometrie` entry once the conversion happens. The swagger example
   (`AddressDetailOsloResponseExamples`) already shows both, so this is what was documented all along —
   but it does mean the array length changes for consumers that assumed one entry.

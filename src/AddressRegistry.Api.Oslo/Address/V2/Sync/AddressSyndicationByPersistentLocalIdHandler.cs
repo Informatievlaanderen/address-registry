@@ -42,7 +42,9 @@ namespace AddressRegistry.Api.Oslo.Address.V2.Sync
                 .LastChangedOn
                 .ToDateTimeUtc();
 
-            return new SyndicationAtomContent(await BuildAtomFeed(lastUpdatedDateTime,  pagedAddresses));
+            var objectSrid = ObjectCrs.ToSrid(request.Filtering.Filter?.ObjectCrs);
+
+            return new SyndicationAtomContent(await BuildAtomFeed(lastUpdatedDateTime, pagedAddresses, objectSrid));
         }
     }
 }

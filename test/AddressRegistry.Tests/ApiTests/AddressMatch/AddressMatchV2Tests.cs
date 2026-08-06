@@ -12,6 +12,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
     using Api.Oslo.Infrastructure.Options;
     using Asserts;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Consumer.Read.Municipality.Projections;
     using Consumer.Read.Postal.Projections;
     using Consumer.Read.StreetName.Projections;
@@ -526,12 +527,59 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
             return streetNameLatestItem;
         }
 
-        private void MockGetLatestAddressesBy(int streetNamePersistentLocalId, string postcode, string huisnummer, string? busnummer = null)
+        /// <summary>
+        /// Address match answers in Lambert 72 because it maps the position through
+        /// <c>Address.V2.AddressMapper.GetAddressPoint</c>, which is pinned to it. This pins the
+        /// delegation: reading the position any other way here would show up as a 3812 srsName.
+        /// See ADR 0004.
+        /// </summary>
+        [Theory]
+        [InlineData(SystemReferenceId.SridLambert72, "POINT (103671.37 192046.71)")]
+        [InlineData(SystemReferenceId.SridLambert2008, "POINT (603668.87 692041.51)")]
+        public async Task AdresMatchAnswersInLambert72WhicheverReferenceSystemThePositionIsStoredIn(
+            int storedSrid,
+            string storedPoint)
+        {
+            var existingNisCode = "11001";
+            var existingStraatnaamId = 1;
+            var existingGemeentenaam = "Springfield";
+            var postcode = "9000";
+
+            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
+            request.Postcode = postcode;
+            request.Huisnummer = "742";
+
+            MockGetAllLatestMunicipalities(existingNisCode, existingGemeentenaam);
+            MockStreetNames(request.Straatnaam, existingStraatnaamId, existingNisCode, existingGemeentenaam);
+            MockGetLatestAddressesBy(
+                existingStraatnaamId,
+                postcode,
+                request.Huisnummer,
+                position: GeometryHelpers.CreateEwkbFromWkt(storedPoint, storedSrid));
+
+            var response = await _handler.Handle(request, CancellationToken.None);
+
+            response.Should().NotBeNull();
+            response.Should().HaveMatches(1);
+
+            var gml = response.AdresMatches.First().AdresPositie.Geometry.Gml;
+
+            gml.Should().Contain("EPSG/0/31370");
+            gml.Should().NotContain("3812");
+            gml.Should().Contain("<gml:pos>103671.37 192046.71</gml:pos>");
+        }
+
+        private void MockGetLatestAddressesBy(
+            int streetNamePersistentLocalId,
+            string postcode,
+            string huisnummer,
+            string? busnummer = null,
+            byte[]? position = null)
         {
             var addresses = new[]
             {
                 new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, busnummer,
-                    AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
+                    AddressStatus.Current, true, position ?? new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
                     GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
             };
 

@@ -44,8 +44,10 @@
     using Projections.Legacy.AddressSyndication;
     using Projections.Wfs;
     using Projections.Wfs.AddressWfsV2;
+    using Projections.Wfs.AddressWfsV3;
     using Projections.Wms;
     using Projections.Wms.AddressWmsItemV3;
+    using Projections.Wms.AddressWmsItemV4;
     using SqlStreamStore;
     using StreetName.Events;
     using Xunit;
@@ -258,12 +260,14 @@
 
             yield return [new List<ConnectedProjection<WfsContext>>
             {
-                new AddressWfsV2Projections(new WKBReader(), new Projections.Wfs.AddressWfsV2.HouseNumberLabelUpdater())
+                new AddressWfsV2Projections(new Projections.Wfs.AddressWfsV2.HouseNumberLabelUpdater()),
+                new AddressWfsV3Projections(new Projections.Wfs.AddressWfsV3.HouseNumberLabelUpdater())
             }];
 
             yield return [new List<ConnectedProjection<WmsContext>>
             {
-                new AddressWmsItemV3Projections(new WKBReader(), new HouseNumberLabelUpdater())
+                new AddressWmsItemV3Projections(new HouseNumberLabelUpdater()),
+                new AddressWmsItemV4Projections(new Projections.Wms.AddressWmsItemV4.HouseNumberLabelUpdater())
             }];
 
             yield return [new List<ConnectedProjection<LastChangedListContext>>
@@ -280,7 +284,7 @@
 
             yield return [new List<ConnectedProjection<ExtractContext>>
             {
-                new AddressExtractProjectionsV2(Mock.Of<IReadonlyStreamStore>(), new EventDeserializer((_, _) => new object()), new OptionsWrapper<ExtractConfig>(new ExtractConfig()), Encoding.UTF8, new WKBReader())
+                new AddressExtractProjectionsV2(Mock.Of<IReadonlyStreamStore>(), new EventDeserializer((_, _) => new object()), new OptionsWrapper<ExtractConfig>(new ExtractConfig()), Encoding.UTF8)
             }];
 
             yield return [new List<ConnectedProjection<ProducerContext>>

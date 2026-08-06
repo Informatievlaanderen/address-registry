@@ -8,13 +8,13 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using Address.Events;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Microsoft.Extensions.Options;
-    using NetTopologySuite.IO;
     using NodaTime;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
@@ -44,14 +44,20 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         private readonly string GeomSpecLot = "Lot";
         private readonly string GeomSpecEntry = "Ingang";
         private readonly string GeomSpecBuildingUnit = "Gebouweenheid";
+
+        /// <summary>
+        /// Positions are persisted at centimetre precision, which is what the Lambert transform is
+        /// accurate to. See ADR 0004.
+        /// </summary>
+        private const int PositionCoordinateDecimals = 2;
+
         private readonly Encoding _encoding;
 
         public AddressExtractProjectionsV2(
             IReadonlyStreamStore streamStore,
             EventDeserializer eventDeserializer,
             IOptions<ExtractConfig> extractConfig,
-            Encoding encoding,
-            WKBReader wkbReader)
+            Encoding encoding)
         {
             _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
@@ -113,8 +119,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 if (message.Message.IsRemoved)
                     return;
 
-                var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
-                var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
+                var pointShapeContent = new PointShapeContent(ParsePosition(message.Message.ExtendedWkbGeometry));
 
                 var firstEventJsonData = await (await streamStore
                     .ReadStreamForwards(message.Message.AddressId.ToString("D"), StreamVersion.Start, 1, ct))
@@ -180,8 +185,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     addressDbaseRecord.busnr.Value = message.Message.BoxNumber;
                 }
 
-                var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
-                var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
+                var pointShapeContent = new PointShapeContent(ParsePosition(message.Message.ExtendedWkbGeometry));
 
                 await context.AddressExtractV2.AddAsync(new AddressExtractItemV2
                 {
@@ -219,8 +223,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     addressDbaseRecord.busnr.Value = message.Message.BoxNumber;
                 }
 
-                var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
-                var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
+                var pointShapeContent = new PointShapeContent(ParsePosition(message.Message.ExtendedWkbGeometry));
 
                 await context.AddressExtractV2.AddAsync(new AddressExtractItemV2
                 {
@@ -426,7 +429,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     record.posgeommet.Value = Map(message.Message.GeometryMethod);
                     record.posspec.Value = Map(message.Message.GeometrySpecification);
 
-                    UpdateShape(item, wkbReader, message.Message.ExtendedWkbGeometry);
+                    UpdateShape(item, message.Message.ExtendedWkbGeometry);
                 });
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
@@ -439,7 +442,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     record.posgeommet.Value = Map(message.Message.GeometryMethod);
                     record.posspec.Value = Map(message.Message.GeometrySpecification);
 
-                    UpdateShape(item, wkbReader, message.Message.ExtendedWkbGeometry);
+                    UpdateShape(item, message.Message.ExtendedWkbGeometry);
                 });
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
@@ -456,7 +459,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     record.posgeommet.Value = Map(message.Message.ReaddressedHouseNumber.SourceGeometryMethod);
                     record.posspec.Value = Map(message.Message.ReaddressedHouseNumber.SourceGeometrySpecification);
 
-                    UpdateShape(houseNumberItem, wkbReader, message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry);
+                    UpdateShape(houseNumberItem, message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry);
                 });
                 UpdateVersie(houseNumberItem, message.Message.Provenance.Timestamp);
 
@@ -473,7 +476,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                         record.posgeommet.Value = Map(readdressedBoxNumber.SourceGeometryMethod);
                         record.posspec.Value = Map(readdressedBoxNumber.SourceGeometrySpecification);
 
-                        UpdateShape(boxNumberItem, wkbReader, readdressedBoxNumber.SourceExtendedWkbGeometry);
+                        UpdateShape(boxNumberItem, readdressedBoxNumber.SourceExtendedWkbGeometry);
                     });
                     UpdateVersie(boxNumberItem, message.Message.Provenance.Timestamp);
                 }
@@ -501,8 +504,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     addressDbaseRecord.busnr.Value = message.Message.BoxNumber;
                 }
 
-                var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
-                var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
+                var pointShapeContent = new PointShapeContent(ParsePosition(message.Message.ExtendedWkbGeometry));
 
                 await context.AddressExtractV2.AddAsync(new AddressExtractItemV2
                 {
@@ -600,8 +602,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     addressDbaseRecord.busnr.Value = message.Message.BoxNumber;
                 }
 
-                var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
-                var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
+                var pointShapeContent = new PointShapeContent(ParsePosition(message.Message.ExtendedWkbGeometry));
 
                 await context.AddressExtractV2.AddAsync(new AddressExtractItemV2
                 {
@@ -618,10 +619,34 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             });
         }
 
-        private static void UpdateShape(AddressExtractItemV2 item, WKBReader wkbReader, string extendedWkbGeometry)
+        /// <summary>
+        /// The extract is always Lambert 72 (EPSG 31370): the shapefile it produces is accompanied by a
+        /// `Belge_Lambert_1972` projection file, and the shape record itself carries no SRID to correct
+        /// it with. So a position is transformed back if the event store hands it over in Lambert 2008.
+        /// The extract is expected to be retired before that happens — this is here so that it keeps
+        /// producing correct shapefiles rather than silently 500-km-offset ones if it outlives the
+        /// conversion. See ADR 0004.
+        /// </summary>
+        private static Point ParsePosition(string extendedWkbGeometry)
         {
-            var coordinate = wkbReader.Read(extendedWkbGeometry.ToByteArray()).Coordinate;
-            var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
+            var extendedWkb = extendedWkbGeometry.ToByteArray();
+            var position = WKBReaderFactory.CreateForEwkb(extendedWkb).Read(extendedWkb);
+
+            if (!position.IsLambert72())
+            {
+                // Rounding only on the transformed path, so a position that was already Lambert 72 ends
+                // up in the shapefile exactly as persisted.
+                position = position
+                    .EnsureLambert72()
+                    .RoundCoordinates(PositionCoordinateDecimals);
+            }
+
+            return new Point(position.Coordinate.X, position.Coordinate.Y);
+        }
+
+        private static void UpdateShape(AddressExtractItemV2 item, string extendedWkbGeometry)
+        {
+            var pointShapeContent = new PointShapeContent(ParsePosition(extendedWkbGeometry));
 
             item.MinimumX = pointShapeContent.Shape.X;
             item.MaximumX = pointShapeContent.Shape.X;

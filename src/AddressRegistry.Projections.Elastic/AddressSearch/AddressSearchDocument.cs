@@ -244,8 +244,8 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             GeometryMethod geometryMethod,
             GeometrySpecification geometrySpecification)
         {
-            GeometryAsWkt = point.AsText();
-            GeometryAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(point);
+            GeometryAsWkt = point.ToEwkt();
+            GeometryAsWgs84 = CoordinateTransformer.ToWgs84Text(point);
 
             GeometryMethod = geometryMethod;
             GeometrySpecification = geometrySpecification;

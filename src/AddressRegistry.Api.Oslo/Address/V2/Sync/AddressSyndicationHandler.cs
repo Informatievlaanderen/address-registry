@@ -53,7 +53,9 @@ namespace AddressRegistry.Api.Oslo.Address.V2.Sync
                         request.Filtering.Filter?.Embed)
                     .Fetch(request.Filtering, request.Sorting, request.Pagination);
 
-            return new SyndicationAtomContent(await BuildAtomFeed(lastFeedUpdate, pagedAddresses));
+            var objectSrid = ObjectCrs.ToSrid(request.Filtering.Filter?.ObjectCrs);
+
+            return new SyndicationAtomContent(await BuildAtomFeed(lastFeedUpdate, pagedAddresses, objectSrid));
         }
     }
 }

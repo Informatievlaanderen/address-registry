@@ -133,5 +133,11 @@ namespace AddressRegistry.Api.Oslo.Address.V2.Sync
         public int? PersistentLocalId { get; set; }
         public long? Position { get; set; }
         public SyncEmbedValue Embed { get; set; } = new SyncEmbedValue();
+
+        /// <summary>
+        /// The reference system for the embedded object's position: <c>3812</c> for Lambert 2008, anything
+        /// else (or absent) for Lambert 72. Does not affect the embedded event. See <see cref="ObjectCrs"/>.
+        /// </summary>
+        public string? ObjectCrs { get; set; }
     }
 }

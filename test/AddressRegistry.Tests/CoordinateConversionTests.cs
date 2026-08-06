@@ -13,7 +13,7 @@
             const double x = 73862.07;
             const double y = 211634.58;
 
-            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(new Point(x, y)
+            var pointAsWgs84 = CoordinateTransformer.ToWgs84Text(new Point(x, y)
             {
                 SRID = 31370
             });

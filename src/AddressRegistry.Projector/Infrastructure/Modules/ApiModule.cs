@@ -22,8 +22,10 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Wfs;
     using AddressRegistry.Projections.Wfs.AddressWfsV2;
+    using AddressRegistry.Projections.Wfs.AddressWfsV3;
     using AddressRegistry.Projections.Wms;
     using AddressRegistry.Projections.Wms.AddressWmsItemV3;
+    using AddressRegistry.Projections.Wms.AddressWmsItemV4;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -156,8 +158,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         context.Resolve<IReadonlyStreamStore>(),
                         context.Resolve<EventDeserializer>(),
                         context.Resolve<IOptions<ExtractConfig>>(),
-                        DbaseCodePage.Western_European_ANSI.ToEncoding(),
-                        new WKBReader()),
+                        DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default);
         }
 
@@ -224,12 +225,19 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .As<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()
                 .AsSelf();
 
+            builder.RegisterType<AddressRegistry.Projections.Wfs.AddressWfsV3.HouseNumberLabelUpdater>()
+                .As<AddressRegistry.Projections.Wfs.AddressWfsV3.IHouseNumberLabelUpdater>()
+                .AsSelf();
+
             builder
                 .RegisterProjectionMigrator<WfsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressWfsV2Projections, WfsContext>(c =>
-                    new AddressWfsV2Projections(WKBReaderFactory.CreateForLegacy(), c.Resolve<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()),
+                    new AddressWfsV2Projections(c.Resolve<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()),
+                wfsProjectionSettings)
+                .RegisterProjections<AddressWfsV3Projections, WfsContext>(c =>
+                    new AddressWfsV3Projections(c.Resolve<AddressRegistry.Projections.Wfs.AddressWfsV3.IHouseNumberLabelUpdater>()),
                 wfsProjectionSettings);
         }
 
@@ -246,6 +254,10 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .As<IHouseNumberLabelUpdater>()
                 .AsSelf();
 
+            builder.RegisterType<AddressRegistry.Projections.Wms.AddressWmsItemV4.HouseNumberLabelUpdater>()
+                .As<AddressRegistry.Projections.Wms.AddressWmsItemV4.IHouseNumberLabelUpdater>()
+                .AsSelf();
+
             var wmsProjectionSettings = ConnectedProjectionSettings
                 .Configure(settings =>
                     settings.ConfigureLinearBackoff<SqlException>(_configuration, "Wms"));
@@ -255,7 +267,10 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressWmsItemV3Projections, WmsContext>(c =>
-                    new AddressWmsItemV3Projections(WKBReaderFactory.CreateForLegacy(), c.Resolve<IHouseNumberLabelUpdater>()),
+                    new AddressWmsItemV3Projections(c.Resolve<IHouseNumberLabelUpdater>()),
+                    wmsProjectionSettings)
+                .RegisterProjections<AddressWmsItemV4Projections, WmsContext>(c =>
+                    new AddressWmsItemV4Projections(c.Resolve<AddressRegistry.Projections.Wms.AddressWmsItemV4.IHouseNumberLabelUpdater>()),
                     wmsProjectionSettings);
         }
 

@@ -17,7 +17,8 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
     public class AddressWmsItemV3HouseNumberLabelTests2 : AddressWmsItemV3ProjectionTest
     {
         private readonly Fixture _fixture;
-        private readonly WKBReader _wkbReader;
+        /// <summary>Deliberately a Lambert 72 reader: the expectations are independent of what the projection does.</summary>
+        private readonly WKBReader _wkbReader = WKBReaderFactory.CreateForLegacy();
 
         public AddressWmsItemV3HouseNumberLabelTests2()
         {
@@ -30,7 +31,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
             _fixture.Customize(new WithExtendedWkbGeometry());
             _fixture.Customize(new InfrastructureCustomization());
 
-            _wkbReader = WKBReaderFactory.Create();
         }
 
         /*
@@ -475,7 +475,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
         }
 
         protected override AddressWmsItemV3Projections CreateProjection()
-            =>  new AddressWmsItemV3Projections(_wkbReader, new HouseNumberLabelUpdater());
+            =>  new AddressWmsItemV3Projections(new HouseNumberLabelUpdater());
 
         private AddressWasMigratedToStreetName CreateAddressWasMigratedToStreetName(
             AddressPersistentLocalId addressPersistentLocalId,

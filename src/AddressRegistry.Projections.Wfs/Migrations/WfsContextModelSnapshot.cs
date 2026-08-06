@@ -18,7 +18,7 @@ namespace AddressRegistry.Projections.Wfs.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -116,6 +116,101 @@ namespace AddressRegistry.Projections.Wfs.Migrations
                     SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("PositionX", "PositionY", "Removed", "Status"), new[] { "StreetNamePersistentLocalId" });
 
                     b.ToTable("AddressWfsV2", "wfs.address");
+                });
+
+            modelBuilder.Entity("AddressRegistry.Projections.Wfs.AddressWfsV3.AddressWfsV3Item", b =>
+                {
+                    b.Property<int>("AddressPersistentLocalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BoxNumber")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("HouseNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("HouseNumberLabel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HouseNumberLabelLength")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("int")
+                        .HasComputedColumnSql("CAST(LEN(ISNULL(HouseNumberLabel, '')) AS INT)", true);
+
+                    b.Property<int>("LabelType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("OfficiallyAssigned")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ParentAddressPersistentLocalId")
+                        .HasColumnType("int");
+
+                    b.Property<Point>("Position")
+                        .IsRequired()
+                        .HasColumnType("sys.geometry");
+
+                    b.Property<string>("PositionMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PositionSpecification")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("PositionX")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PositionY")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("Removed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("StreetNamePersistentLocalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VersionAsString")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("VersionTimestampAsDateTimeOffset")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("VersionTimestamp");
+
+                    b.HasKey("AddressPersistentLocalId");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("AddressPersistentLocalId"));
+
+                    b.HasIndex("BoxNumber")
+                        .HasFilter("[BoxNumber] IS NOT NULL");
+
+                    b.HasIndex("HouseNumber");
+
+                    b.HasIndex("PostalCode");
+
+                    b.HasIndex("Removed");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("StreetNamePersistentLocalId");
+
+                    b.HasIndex("Removed", "StreetNamePersistentLocalId");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("Removed", "StreetNamePersistentLocalId"), new[] { "BoxNumber", "HouseNumber", "OfficiallyAssigned", "AddressPersistentLocalId", "Position", "PositionMethod", "PositionSpecification", "PostalCode", "Status", "VersionAsString" });
+
+                    b.HasIndex("PositionX", "PositionY", "Removed", "Status");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("PositionX", "PositionY", "Removed", "Status"), new[] { "StreetNamePersistentLocalId" });
+
+                    b.ToTable("AddressWfsV3", "wfs.address");
                 });
 
             modelBuilder.Entity("Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.ProjectionStates.ProjectionStateItem", b =>

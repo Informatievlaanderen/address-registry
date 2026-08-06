@@ -17,7 +17,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
     public class AddressWfsItemV2HouseNumberLabelTests : AddressWfsItemV2ProjectionTest
     {
         private readonly Fixture _fixture;
-        private readonly WKBReader _wkbReader;
 
         public AddressWfsItemV2HouseNumberLabelTests()
         {
@@ -30,7 +29,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
             _fixture.Customize(new WithExtendedWkbGeometry());
             _fixture.Customize(new InfrastructureCustomization());
 
-            _wkbReader = WKBReaderFactory.Create();
         }
 
         /*
@@ -441,7 +439,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
         }
 
         protected override AddressWfsV2Projections CreateProjection()
-            =>  new AddressWfsV2Projections(_wkbReader, new HouseNumberLabelUpdater());
+            =>  new AddressWfsV2Projections(new HouseNumberLabelUpdater());
 
         private AddressWasMigratedToStreetName CreateAddressWasMigratedToStreetName(
             AddressPersistentLocalId addressPersistentLocalId,

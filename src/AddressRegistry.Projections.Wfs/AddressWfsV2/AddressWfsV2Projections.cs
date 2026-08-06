@@ -9,8 +9,8 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
     using NetTopologySuite.Geometries;
-    using NetTopologySuite.IO;
     using NodaTime;
     using StreetName;
     using StreetName.Events;
@@ -24,12 +24,14 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
         private static readonly string AdresStatusVoorgesteld = AdresStatus.Voorgesteld.ToString();
         private static readonly string AdresStatusAfgekeurd = AdresStatus.Afgekeurd.ToString();
 
-        private readonly WKBReader _wkbReader;
+        /// <summary>
+        /// Positions are persisted at centimetre precision, which is what the Lambert transform is
+        /// accurate to. See ADR 0004.
+        /// </summary>
+        private const int PositionCoordinateDecimals = 2;
 
-        public AddressWfsV2Projections(WKBReader wkbReader, IHouseNumberLabelUpdater houseNumberLabelUpdater)
+        public AddressWfsV2Projections(IHouseNumberLabelUpdater houseNumberLabelUpdater)
         {
-            _wkbReader = wkbReader;
-
             #region StreetName
 
             When<Envelope<StreetNameNamesWereChanged>>(async (context, message, ct) =>
@@ -868,8 +870,27 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             }
         }
 
-        private Point ParsePosition(string extendedWkbGeometry)
-            => (Point) _wkbReader.Read(extendedWkbGeometry.ToByteArray());
+        /// <summary>
+        /// Version 2 stores Lambert 72 (EPSG 31370) and nothing else, whichever reference system the
+        /// event store persists, so the table, its spatial index and the views over it stay single-SRID.
+        /// See ADR 0004.
+        /// </summary>
+        private static Point ParsePosition(string extendedWkbGeometry)
+        {
+            var extendedWkb = extendedWkbGeometry.ToByteArray();
+            var position = (Point)WKBReaderFactory.CreateForEwkb(extendedWkb).Read(extendedWkb);
+
+            if (position.IsLambert72())
+            {
+                return position;
+            }
+
+            // Rounding only on the transformed path, so a position that was already Lambert 72 is stored
+            // exactly as persisted. The transform is accurate to the centimetre positions are kept at.
+            return position
+                .EnsureLambert72()
+                .RoundCoordinates(PositionCoordinateDecimals);
+        }
 
 
         private static void UpdateVersionTimestamp(AddressWfsV2Item addressWfsItem, Instant versionTimestamp)

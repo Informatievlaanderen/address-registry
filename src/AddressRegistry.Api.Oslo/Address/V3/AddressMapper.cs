@@ -4,8 +4,6 @@ namespace AddressRegistry.Api.Oslo.Address.V3
     using System.Collections.Generic;
     using System.Linq;
     using AddressRegistry.Infrastructure.Elastic;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo.Adres;
@@ -106,17 +104,16 @@ namespace AddressRegistry.Api.Oslo.Address.V3
             GeometryMethod? method,
             GeometrySpecification? specification)
         {
-            var geometry = WKBReaderFactory.CreateForLegacy().Read(point);
+            var geometry = WKBReaderFactory.CreateForEwkb(point).Read(point);
             var gmls = new List<string>();
 
-            if(point.TryReadSrid(out var srid))
+            // Version 3 answers in the reference system the position is persisted in, preceded by its
+            // Lambert 72 equivalent for as long as that is not Lambert 72 itself. See ADR 0004.
+            if (!geometry.IsLambert72())
             {
-                if (srid == SystemReferenceId.SridLambert2008)
-                {
-                    var transformFromLambert08To72 = geometry.TransformFromLambert08To72();
-                    gmls.Add(GeometryExtensions.ConvertToGml(transformFromLambert08To72, false));
-                }
+                gmls.Add(GeometryExtensions.ConvertToGml(geometry.EnsureLambert72(), false));
             }
+
             gmls.Add(GeometryExtensions.ConvertToGml(geometry, false));
 
             var positieSpecificatie = ConvertFromGeometrySpecification(specification);

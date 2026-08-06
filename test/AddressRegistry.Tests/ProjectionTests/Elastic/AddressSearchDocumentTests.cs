@@ -152,7 +152,7 @@
                 fixture.Create<GeometrySpecification>()
             );
 
-            document.AddressPosition.GeometryAsWkt.Should().Be("POINT (73862.07 211634.58)");
+            document.AddressPosition.GeometryAsWkt.Should().Be("SRID=31370;POINT (73862.07 211634.58)");
             document.AddressPosition.GeometryAsWgs84.Should().Be("3.277957970797176, 51.20937520963882");
         }
     }

@@ -26,7 +26,8 @@ namespace AddressRegistry.Api.Oslo.Address.V2.Sync
             IOptions<ResponseOptionsV2> responseOptions,
             AtomFormatter formatter,
             string category,
-            AddressSyndicationQueryResult address)
+            AddressSyndicationQueryResult address,
+            int objectSrid)
         {
             var item = new SyndicationItem
             {
@@ -34,7 +35,7 @@ namespace AddressRegistry.Api.Oslo.Address.V2.Sync
                 Title = $"{address.ChangeType}-{address.Position}",
                 Published = address.RecordCreatedAt.ToBelgianDateTimeOffset(),
                 LastUpdated = address.LastChangedOn.ToBelgianDateTimeOffset(),
-                Description = BuildDescription(address, responseOptions.Value.Naamruimte)
+                Description = BuildDescription(address, responseOptions.Value.Naamruimte, objectSrid)
             };
 
             if (address.PersistentLocalId.HasValue)
@@ -74,7 +75,7 @@ namespace AddressRegistry.Api.Oslo.Address.V2.Sync
             await writer.Write(item);
         }
 
-        private static string BuildDescription(AddressSyndicationQueryResult address, string naamruimte)
+        private static string BuildDescription(AddressSyndicationQueryResult address, string naamruimte, int objectSrid)
         {
             if (!address.ContainsEvent && !address.ContainsObject)
                 return "No data embedded";
@@ -89,7 +90,7 @@ namespace AddressRegistry.Api.Oslo.Address.V2.Sync
                     address.HouseNumber,
                     address.BoxNumber,
                     address.PostalCode,
-                    address.PointPosition == null ? (Point?)null : AddressMapper.GetAddressPoint(address.PointPosition),
+                    address.PointPosition == null ? (Point?)null : AddressMapper.GetAddressPoint(address.PointPosition, objectSrid),
                     address.GeometryMethod == null ? (PositieGeometrieMethode?)null : AddressMapper.ConvertFromGeometryMethod(address.GeometryMethod.Value),
                     address.GeometrySpecification == null ? (PositieSpecificatie?)null : AddressMapper.ConvertFromGeometrySpecification(address.GeometrySpecification.Value),
                     address.Status.ConvertFromAddressStatus(),

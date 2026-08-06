@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo.Adres;
     using Consumer.Read.Municipality;
     using Consumer.Read.StreetName;
@@ -68,12 +69,12 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
             var homonymAdditionsV2 = AddressMapper.GetHomonymAdditions(streetNameV2);
 
             var gemeenteV2 = new AdresHeeftGemeentenaam(
-                municipalityV2.NisCode,
+                OsloNamespaces.Gemeente.ToPuri(municipalityV2.NisCode.ToString()),
                 string.Format(_responseOptions.Value.GemeenteDetailUrl, municipalityV2.NisCode),
                 municipalityNamesV2.ToList());
 
             var straatV2 = new AdresHeeftStraatnaam(
-                streetNameV2.PersistentLocalId.ToString(),
+                OsloNamespaces.StraatNaam.ToPuri(streetNameV2.PersistentLocalId.ToString()),
                 string.Format(_responseOptions.Value.StraatnaamDetailUrl, streetNameV2.PersistentLocalId),
                 streetNameNamesV2.ToList(),
                 homonymAdditionsV2?.ToList());
@@ -81,7 +82,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
             var postInfoV2 = string.IsNullOrEmpty(addressV2.PostalCode)
                 ? null
                 : new AdresHeeftPostinfo(
-                    addressV2.PostalCode,
+                    OsloNamespaces.Postinfo.ToPuri(addressV2.PostalCode),
                     string.Format(_responseOptions.Value.PostInfoDetailUrl, addressV2.PostalCode));
 
             return new AddressDetailOsloV3Response(

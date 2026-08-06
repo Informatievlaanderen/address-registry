@@ -208,13 +208,13 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
             foreach (var straatNaam in straatnaam.Straatnaam)
             {
                 var taal = straatNaam.Taal;
-                var gemeenteNaam = gemeente.Gemeentenaam.Gemeentenamen.FirstOrDefault(x => x.Taal == taal);
+                var gemeenteNaam = gemeente.Gemeentenamen.FirstOrDefault(x => x.Taal == taal);
 
                 VolledigAdres.Add(straatNaam.Spelling,
                     huisnummer,
                     busnummer,
                     postcode,
-                    gemeenteNaam?.Spelling ?? gemeente.Gemeentenaam.Gemeentenamen.First().Spelling,
+                    gemeenteNaam?.Spelling ?? gemeente.Gemeentenamen.First().Spelling,
                     taal);
             }
         }
@@ -263,11 +263,11 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
             var addressPosition = new AddressPositionV3([new PointGeometrie(gml1972), new PointGeometrie(gml2008)],
                 PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Gebouw);
             var adresDetailHuisnummer = new AdresIsDeelVan(59, string.Format(_responseOptions.DetailUrl, 59));
-            var gemeente = new AdresHeeftGemeentenaam("9000", string.Format(_responseOptions.GemeenteDetailUrl, "9000"),
+            var gemeente = new AdresHeeftGemeentenaam(OsloNamespaces.Gemeente.ToPuri("44021"), string.Format(_responseOptions.GemeenteDetailUrl, "44021"),
                 [new GeografischeNaam("Gent", Taal.Nl)]);
-            var straat = new AdresHeeftStraatnaam("748", string.Format(_responseOptions.StraatnaamDetailUrl, "748"),
+            var straat = new AdresHeeftStraatnaam(OsloNamespaces.StraatNaam.ToPuri("748"), string.Format(_responseOptions.StraatnaamDetailUrl, "748"),
                 [new GeografischeNaam("Teststraat", Taal.Nl)], [new GeografischeNaam("UK", Taal.Nl)]);
-            var postInfo = new AdresHeeftPostinfo("9000", string.Format(_responseOptions.PostInfoDetailUrl, "9000"));
+            var postInfo = new AdresHeeftPostinfo(OsloNamespaces.Postinfo.ToPuri("9000"), string.Format(_responseOptions.PostInfoDetailUrl, "9000"));
 
             return new AddressDetailOsloV3Response(
                 _responseOptions.ContextUrlDetail,

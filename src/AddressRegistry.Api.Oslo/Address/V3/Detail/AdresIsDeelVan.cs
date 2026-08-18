@@ -1,5 +1,6 @@
 ﻿namespace AddressRegistry.Api.Oslo.Address.V3.Detail
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
     using Newtonsoft.Json;
 
@@ -21,9 +22,9 @@
         /// De URL die de details van de meest recente versie van het huisnummer waaraan het busnummer is gekoppeld weergeeft.
         /// </summary>
         [JsonProperty(PropertyName = "detail", Order = 2, Required = Required.DisallowNull)]
-        public string Detail { get; set; }
+        public Uri Detail { get; set; }
 
-        public AdresIsDeelVan(int objectId, string detail)
+        public AdresIsDeelVan(int objectId, Uri detail)
         {
             Id = OsloNamespaces.Adres.ToPuri(objectId.ToString());
             Detail = detail;

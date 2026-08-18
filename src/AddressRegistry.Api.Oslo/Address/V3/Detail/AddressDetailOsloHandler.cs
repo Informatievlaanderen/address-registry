@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.Oslo.Address.V3.Detail
 {
+    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -55,7 +56,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
             var adresDetailHuisnummerObject = addressV2.ParentAddressPersistentLocalId.HasValue
                 ? new AdresIsDeelVan(
                     addressV2.ParentAddressPersistentLocalId.Value,
-                    string.Format(_responseOptions.Value.DetailUrl, addressV2.ParentAddressPersistentLocalId.Value))
+                    new Uri(string.Format(_responseOptions.Value.DetailUrl, addressV2.ParentAddressPersistentLocalId.Value)))
                 : null;
 
             var streetNameV2 =
@@ -70,12 +71,12 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
 
             var gemeenteV2 = new AdresHeeftGemeentenaam(
                 OsloNamespaces.Gemeente.ToPuri(municipalityV2.NisCode.ToString()),
-                string.Format(_responseOptions.Value.GemeenteDetailUrl, municipalityV2.NisCode),
+                new Uri(string.Format(_responseOptions.Value.GemeenteDetailUrl, municipalityV2.NisCode)),
                 municipalityNamesV2.ToList());
 
             var straatV2 = new AdresHeeftStraatnaam(
                 OsloNamespaces.StraatNaam.ToPuri(streetNameV2.PersistentLocalId.ToString()),
-                string.Format(_responseOptions.Value.StraatnaamDetailUrl, streetNameV2.PersistentLocalId),
+                new Uri(string.Format(_responseOptions.Value.StraatnaamDetailUrl, streetNameV2.PersistentLocalId)),
                 streetNameNamesV2.ToList(),
                 homonymAdditionsV2?.ToList());
 
@@ -83,7 +84,7 @@ namespace AddressRegistry.Api.Oslo.Address.V3.Detail
                 ? null
                 : new AdresHeeftPostinfo(
                     OsloNamespaces.Postinfo.ToPuri(addressV2.PostalCode),
-                    string.Format(_responseOptions.Value.PostInfoDetailUrl, addressV2.PostalCode));
+                    new Uri(string.Format(_responseOptions.Value.PostInfoDetailUrl, addressV2.PostalCode)));
 
             return new AddressDetailOsloV3Response(
                 _responseOptions.Value.ContextUrlDetail,

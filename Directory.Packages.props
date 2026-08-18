@@ -76,17 +76,17 @@
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit" Version="16.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Projector" Version="17.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Crab" Version="5.1.0" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed" Version="25.8.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Common" Version="25.8.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Contracts" Version="25.8.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" Version="25.8.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Edit" Version="25.8.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Legacy" Version="25.8.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Notifications" Version="25.8.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Oslo" Version="25.8.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Provenance" Version="25.8.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm" Version="25.8.2" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Extracts" Version="25.8.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed" Version="25.9.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Common" Version="25.9.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Contracts" Version="25.9.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" Version="25.9.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Edit" Version="25.9.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Legacy" Version="25.9.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Notifications" Version="25.9.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Oslo" Version="25.9.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Provenance" Version="25.9.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm" Version="25.9.2" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Extracts" Version="25.9.2" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Shaperon" Version="11.1.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.TicketingService.Abstractions" Version="4.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy" Version="4.0.0" />

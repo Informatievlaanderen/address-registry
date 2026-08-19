@@ -29,7 +29,8 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
     public class AddressWfsV2ProjectionTests : AddressWfsItemV2ProjectionTest
     {
         private readonly Fixture _fixture;
-        private readonly WKBReader _wkbReader;
+        /// <summary>Deliberately a Lambert 72 reader: the expectations are independent of what the projection does.</summary>
+        private readonly WKBReader _wkbReader = WKBReaderFactory.CreateForLegacy();
         private readonly Mock<IHouseNumberLabelUpdater> _houseNumberLabelUpdaterMock;
 
         public AddressWfsV2ProjectionTests()
@@ -43,12 +44,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
             _fixture.Customize(new WithExtendedWkbGeometry());
             _fixture.Customize(new InfrastructureCustomization());
 
-            _wkbReader = WKBReaderFactory.Create();
             _houseNumberLabelUpdaterMock = new Mock<IHouseNumberLabelUpdater>();
         }
 
         protected override AddressWfsV2Projections CreateProjection()
-            =>  new AddressWfsV2Projections(_wkbReader, _houseNumberLabelUpdaterMock.Object);
+            =>  new AddressWfsV2Projections(_houseNumberLabelUpdaterMock.Object);
 
         [Fact]
         public async Task WhenAddressWasMigratedToStreetName_HouseNumber()

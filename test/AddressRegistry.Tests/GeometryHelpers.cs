@@ -82,10 +82,20 @@ namespace AddressRegistry.Tests
         }
 
         public static AddressRegistry.StreetName.ExtendedWkbGeometry CreateEwkbFromWkt(string wkt)
+            => CreateEwkbFromWkt(wkt, SpatialReferenceSystemId.Lambert72);
+
+        public static AddressRegistry.StreetName.ExtendedWkbGeometry CreateEwkbFromWkt(string wkt, int srid)
         {
-            var geometry = new WKTReader { DefaultSRID = SpatialReferenceSystemId.Lambert72 }.Read(wkt);
+            var geometry = new WKTReader { DefaultSRID = srid }.Read(wkt);
+            geometry.SRID = srid;
             return new StreetName.ExtendedWkbGeometry(WkbWriter.Write(geometry));
         }
+
+        /// <summary>
+        /// A position without an SRID, as the event store held them before it wrote EWKB.
+        /// </summary>
+        public static byte[] CreateWkbWithoutSridFromWkt(string wkt)
+            => new WKTReader().Read(wkt).AsBinary();
 
         public static GMLReader CreateGmlReader() =>
             new GMLReader(

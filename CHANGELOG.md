@@ -1,3 +1,11 @@
+## [6.2.2](https://github.com/informatievlaanderen/address-registry/compare/v6.2.1...v6.2.2) (2026-08-19)
+
+
+### Bug Fixes
+
+* **oslo:** bump common packages ([d412e94](https://github.com/informatievlaanderen/address-registry/commit/d412e940ac8e2c2d188fe01414af6f0c3dd5bbe5))
+* **oslo:** concept/pref label ([3ac77e5](https://github.com/informatievlaanderen/address-registry/commit/3ac77e5a10baaebf0b04a2c33a0ae1e25b9d1814))
+
 ## [6.2.1](https://github.com/informatievlaanderen/address-registry/compare/v6.2.0...v6.2.1) (2026-08-06)
 
 

@@ -984,7 +984,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 message.Metadata["CommandId"].ToString()!);
 
             addressFeedItem.CloudEventAsString = _changeFeedService.SerializeCloudEvent(cloudEvent);
-            await CheckToUpdateCache(page, context);
+            await MarkCompletedPage(page, context);
         }
 
         private async Task<string> GetNisCodeByStreetNamePersistentLocalId(int streetNamePersistentLocalId)
@@ -1040,20 +1040,17 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 message.Metadata["CommandId"].ToString()!);
 
             addressFeedItem.CloudEventAsString = _changeFeedService.SerializeCloudEvent(cloudEvent);
-            await CheckToUpdateCache(page, context);
+            await MarkCompletedPage(page, context);
         }
 
-        private async Task CheckToUpdateCache(int page, FeedContext context)
+        private async Task MarkCompletedPage(int page, FeedContext context)
         {
-            await _changeFeedService.CheckToUpdateCacheAsync(
+            await _changeFeedService.MarkCompletedPageAsync(
                 page,
-                context,
-                async p =>
-                {
-                    var localCount = context.AddressFeed.Local
-                        .Count(x => x.Page == page && context.Entry(x).State == EntityState.Added);
-                    return await context.AddressFeed.CountAsync(x => x.Page == p) + localCount - 1; //exclude current item
-                });
+                // Committed rows only. Rows that are merely tracked as added on the context must not be
+                // counted here, or the cache record can be published for a page that is not yet complete
+                // in the database.
+                async p => await context.AddressFeed.CountAsync(x => x.Page == p));
         }
 
         private List<BaseRegistriesCloudEventAttribute> UpdateBaseRegistriesCloudEventAttributes(

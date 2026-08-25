@@ -1,3 +1,22 @@
+# [6.3.0](https://github.com/informatievlaanderen/address-registry/compare/v6.2.2...v6.3.0) (2026-08-25)
+
+
+### Bug Fixes
+
+* **feed:** concurrency in feed projections ([10b5958](https://github.com/informatievlaanderen/address-registry/commit/10b5958f0cfdc364cc1e4afa3cd26601f0fcb090))
+
+
+### Features
+
+* **elastic:** prepare for lambert2008 ([2d22563](https://github.com/informatievlaanderen/address-registry/commit/2d22563e6769c4c97616bcc4e1e11b59e10bc0f7))
+* **extract:** prepare for lambert2008 ([261e3e3](https://github.com/informatievlaanderen/address-registry/commit/261e3e3b4ee9e76f96faff0e8a46fe82741a5b38))
+* **integration:** prepare for lambert2008 ([9de4900](https://github.com/informatievlaanderen/address-registry/commit/9de490038d798f57d4daa993ccae0658c200ae99))
+* **projections:** addressmatch prepare lambert2008 ([9304786](https://github.com/informatievlaanderen/address-registry/commit/9304786779a56fad0a9c4deb6373f78bf03df1df))
+* **projections:** prepare for lambert2008 ([9601be6](https://github.com/informatievlaanderen/address-registry/commit/9601be6937f34f863db99e968981681d1c2e64fb))
+* **sync:** add objectcrs parameter ([1b854ff](https://github.com/informatievlaanderen/address-registry/commit/1b854ff9e2772e1a5bcd70101142b52fc9df3e47))
+* **wfs:** prepare for lambert2008 ([a7a00ea](https://github.com/informatievlaanderen/address-registry/commit/a7a00eadf4eaf18e9a5aab06adf366484e277629))
+* **wms:** prepare for lambert2008 ([182edef](https://github.com/informatievlaanderen/address-registry/commit/182edeff48bcbbbf0442ad58919df61a8c67f419))
+
 ## [6.2.2](https://github.com/informatievlaanderen/address-registry/compare/v6.2.1...v6.2.2) (2026-08-19)
 
 

@@ -73,6 +73,7 @@ namespace AddressRegistry.StreetName
             Register<AddressDeregulationWasCorrected>(When);
             Register<AddressRemovalWasCorrected>(When);
             Register<AddressPositionWasChanged>(When);
+            Register<AddressPositionCrsWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
             Register<AddressWasRejectedBecauseStreetNameWasRejected>(When);
@@ -240,6 +241,16 @@ namespace AddressRegistry.StreetName
         {
             IsOfficiallyAssigned = false;
             Status = AddressStatus.Current;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressPositionCrsWasChanged @event)
+        {
+            Geometry = new AddressGeometry(
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
 
             _lastEvent = @event;
         }

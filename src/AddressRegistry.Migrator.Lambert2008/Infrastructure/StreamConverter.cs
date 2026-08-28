@@ -266,7 +266,7 @@ namespace AddressRegistry.Migrator.Lambert2008.Infrastructure
 
             var dispatchStarted = Stopwatch.GetTimestamp();
 
-            var command = new ConvertAddressPositionsToLambert2008(
+            var command = new TransformToLambert2008(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
                 CreateProvenance());
 

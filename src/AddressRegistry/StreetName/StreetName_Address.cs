@@ -465,6 +465,23 @@ namespace AddressRegistry.StreetName
                 .ChangePosition(geometryMethod, geometrySpecification, position);
         }
 
+        /// <summary>
+        /// Transforms every position this street name holds to Lambert 2008 (EPSG 3812) for the one-off event store
+        /// transformation, see ADR 0004.
+        /// </summary>
+        /// <remarks>
+        /// No street name status guard, and no filtering of the addresses: a retired or removed street name holds
+        /// positions like any other, and leaving them in Lambert 72 would keep the event store mixed indefinitely.
+        /// Addresses already in Lambert 2008 apply nothing, so this is idempotent per stream.
+        /// </remarks>
+        public void TransformToLambert2008()
+        {
+            foreach (var address in StreetNameAddresses)
+            {
+                address.TransformPositionToLambert2008();
+            }
+        }
+
         public void ChangeAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode)
         {
             GuardStreetNameStatusForChangeAndCorrection();

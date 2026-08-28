@@ -5,6 +5,7 @@ namespace AddressRegistry.StreetName
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
 
     public class ExtendedWkbGeometry : ByteArrayValueObject<ExtendedWkbGeometry>
@@ -18,6 +19,13 @@ namespace AddressRegistry.StreetName
         public ExtendedWkbGeometry(string ewkbBytesHex) : base(ewkbBytesHex.ToByteArray()) { }
 
         public override string ToString() => Value.ToHexString();
+
+        /// <summary>
+        /// Wraps a geometry that has already been read and transformed, keeping the SRID it carries. The
+        /// EWKB writer lives here, so this is the only place that decides how a position is serialized.
+        /// </summary>
+        public static ExtendedWkbGeometry Create(Geometry geometry)
+            => new ExtendedWkbGeometry(WkbWriter.Write(geometry));
 
         public static ExtendedWkbGeometry? CreateEWkb(byte[]? wkb, int useSrid = SridLambert72)
         {

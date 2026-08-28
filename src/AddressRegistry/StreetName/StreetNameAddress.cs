@@ -4,8 +4,15 @@ namespace AddressRegistry.StreetName
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
+    using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Events;
     using Exceptions;
+    // Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology declares a WKBReaderFactory of its own, and a using
+    // directive here outranks AddressRegistry.WKBReaderFactory from the enclosing namespace. Aliasing it makes
+    // the SRID-less fallback the one that is actually used — GrAr's CreateForEwkb throws on those bytes.
+    using WKBReaderFactory = AddressRegistry.WKBReaderFactory;
 
     public partial class StreetNameAddress : Entity
     {
@@ -637,6 +644,42 @@ namespace AddressRegistry.StreetName
                 AddressPersistentLocalId,
                 boxNumbers,
                 postalCode));
+        }
+
+        /// <summary>
+        /// Re-expresses the position in Lambert 2008 (EPSG 3812) for the one-off event store transformation,
+        /// see ADR 0004.
+        /// </summary>
+        /// <remarks>
+        /// Deliberately unguarded: unlike <see cref="ChangePosition"/> and <see cref="CorrectPosition"/> this is not
+        /// an edit of the address but a change of the reference system its position is expressed in, and it has to
+        /// reach every address the stream holds — removed, rejected and retired ones included — or the event store
+        /// would be left holding both reference systems forever.
+        ///
+        /// A position that is already Lambert 2008 applies nothing, which is what makes re-running the
+        /// transformation over a stream a no-op instead of a double transform.
+        /// </remarks>
+        public void TransformPositionToLambert2008()
+        {
+            var extendedWkb = Geometry.Geometry.ToString().ToByteArray();
+            var position = WKBReaderFactory.CreateForEwkb(extendedWkb).Read(extendedWkb);
+
+            if (position.SRID == SystemReferenceId.SridLambert2008)
+            {
+                return;
+            }
+
+            // The explicit transform rather than EnsureLambert08: that one relabels geometries falling outside
+            // Flanders instead of transforming them, which would silently corrupt any position this touches.
+            // Rounded to 2 decimals, the centimetre precision positions are persisted at.
+            var transformed = position.TransformFromLambert72To08(roundingPrecision: 2);
+
+            Apply(new AddressPositionCrsWasChanged(
+                _streetNamePersistentLocalId,
+                AddressPersistentLocalId,
+                Geometry.GeometryMethod,
+                Geometry.GeometrySpecification,
+                ExtendedWkbGeometry.Create(transformed)));
         }
 
         private void GuardAddressStatus(params AddressStatus[] validStatuses)

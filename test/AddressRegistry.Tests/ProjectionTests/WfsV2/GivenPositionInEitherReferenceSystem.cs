@@ -114,6 +114,32 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                 });
         }
 
+
+        /// <summary>
+        /// Positions written before the event store recorded an SRID carry none at all. They are Lambert 72
+        /// by definition (ADR 0004), and this is the path that would break first if the projection read them
+        /// through a reader that rejects SRID-less EWKB rather than falling back.
+        /// </summary>
+        [Fact]
+        public async Task WhenPositionHasNoSrid_ThenItIsReadAsLambert72()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(
+                    GeometryHelpers.CreateWkbWithoutSridFromWkt(Lambert72Point)));
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var addressWfsItem = await ct.AddressWfsV2Items.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
+
+                    addressWfsItem.Should().NotBeNull();
+                    addressWfsItem!.Position.SRID.Should().Be(SystemReferenceId.SridLambert72);
+                    addressWfsItem.Position.X.Should().Be(103671.37);
+                    addressWfsItem.Position.Y.Should().Be(192046.71);
+                });
+        }
+
         protected override AddressWfsV2Projections CreateProjection()
             => new AddressWfsV2Projections(_houseNumberLabelUpdaterMock.Object);
     }

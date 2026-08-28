@@ -351,4 +351,6 @@ asserting the stored bounding box is Lambert 72 for events in either reference s
   five more views; the geoserver team moves over at its own pace and the old versions are deleted once
   nobody reads them.
 - Still to do for the conversion: the lambda's `GmlHelpers.ToExtendedWkbGeometry()` per ADR 0003, and the
-  event store conversion itself. `Projections.Feed` already handled both directions before this ADR.
+  event store conversion itself — both covered by
+  [ADR 0005](0005-lambert2008-event-store-transformation.md), which also records what each projection does
+  with the transformation event. `Projections.Feed` already handled both directions before this ADR.

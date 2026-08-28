@@ -13,7 +13,10 @@ namespace AddressRegistry.Api.Oslo.Address.V3
     using Projections.Elastic.AddressList;
     using StreetName;
     using GeometryExtensions = Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology.GeometryExtensions;
-    using WKBReaderFactory = WKBReaderFactory;
+    // Spelled out: AddressRegistry's reader falls back to Lambert 72 for EWKB without an SRID, where
+    // GrAr's throws. A bare `using WKBReaderFactory = WKBReaderFactory;` resolved to the right one only
+    // by accident of which namespaces this file happens to import.
+    using WKBReaderFactory = AddressRegistry.WKBReaderFactory;
 
     public static class AddressMapper
     {

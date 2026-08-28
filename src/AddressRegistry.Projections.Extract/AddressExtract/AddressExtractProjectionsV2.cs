@@ -434,6 +434,20 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressPositionCrsWasChanged>>(async (context, message, ct) =>
+            {
+                // The reprojection does not change the address, so the version is deliberately
+                // left as it was. See ADR 0004.
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record =>
+                {
+                    record.posgeommet.Value = Map(message.Message.GeometryMethod);
+                    record.posspec.Value = Map(message.Message.GeometrySpecification);
+
+                    UpdateShape(item, message.Message.ExtendedWkbGeometry);
+                });
+            });
+
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);

@@ -1103,6 +1103,46 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                 });
         }
 
+        /// <summary>
+        /// A reprojection does not change the address, so the document follows the event store's reference
+        /// system but no cloud event is produced and the document's version stays put. See ADR 0004.
+        /// </summary>
+        [Fact]
+        public async Task WhenAddressPositionCrsWasChanged_ThenDocumentIsUpdatedWithoutACloudEvent()
+        {
+            _fixture.Register(() => GeometryMethod.DerivedFromObject);
+            _fixture.Register(() => GeometrySpecification.Municipality);
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+
+            _fixture.Register(() => GeometryMethod.AppointedByAdministrator);
+            _fixture.Register(() => GeometrySpecification.Entry);
+            var addressPositionCrsWasChanged = _fixture.Create<AddressPositionCrsWasChanged>();
+
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(addressWasProposedV2, position),
+                    CreateEnvelope(addressPositionCrsWasChanged, position + 1))
+                .Then(async context =>
+                {
+                    var document = await context.AddressDocuments.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
+                    document.Should().NotBeNull();
+
+                    // The position follows the event store.
+                    document!.Document.ExtendedWkbGeometry.Should().Be(addressPositionCrsWasChanged.ExtendedWkbGeometry);
+                    document.Document.PositionAsGml.Should().NotBeNullOrEmpty();
+                    document.Document.PositionGeometryMethod.Should().Be(PositieGeometrieMethode.AangeduidDoorBeheerder);
+                    document.Document.PositionSpecification.Should().Be(PositieSpecificatie.Ingang);
+
+                    // The version does not.
+                    document.LastChangedOn.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(addressWasProposedV2.Provenance.Timestamp.ToBelgianDateTimeOffset());
+
+                    // Only the proposal produced one.
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Once);
+                });
+        }
+
         [Fact]
         public async Task WhenAddressPositionWasCorrectedV2_ThenFeedItemIsAdded()
         {

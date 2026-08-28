@@ -90,6 +90,30 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                 });
         }
 
+        [Theory]
+        [InlineData(SystemReferenceId.SridLambert72, Lambert72Point)]
+        [InlineData(SystemReferenceId.SridLambert2008, Lambert2008Point)]
+        public async Task WhenAddressPositionCrsWasChanged_ThenThePositionIsStoredInLambert72(int eventSrid, string eventPoint)
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var addressPositionCrsWasChanged = _fixture.Create<AddressPositionCrsWasChanged>()
+                .WithExtendedWkbGeometry(GeometryHelpers.CreateEwkbFromWkt(eventPoint, eventSrid));
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, new Dictionary<string, object>())),
+                    new Envelope<AddressPositionCrsWasChanged>(new Envelope(addressPositionCrsWasChanged, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var addressWfsItem = await ct.AddressWfsV2Items.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
+
+                    addressWfsItem.Should().NotBeNull();
+                    addressWfsItem!.Position.SRID.Should().Be(SystemReferenceId.SridLambert72);
+                    addressWfsItem.Position.X.Should().Be(103671.37);
+                    addressWfsItem.Position.Y.Should().Be(192046.71);
+                });
+        }
+
         protected override AddressWfsV2Projections CreateProjection()
             => new AddressWfsV2Projections(_houseNumberLabelUpdaterMock.Object);
     }

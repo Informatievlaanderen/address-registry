@@ -112,5 +112,28 @@ namespace AddressRegistry.Tests.ProjectionTests.Extract
                     item.MinimumY.Should().Be(192046.71);
                 });
         }
+
+        [Theory]
+        [InlineData(SystemReferenceId.SridLambert72, Lambert72Point)]
+        [InlineData(SystemReferenceId.SridLambert2008, Lambert2008Point)]
+        public async Task WhenAddressPositionCrsWasChanged_ThenTheShapeHoldsLambert72Coordinates(int eventSrid, string eventPoint)
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var addressPositionCrsWasChanged = _fixture.Create<AddressPositionCrsWasChanged>()
+                .WithExtendedWkbGeometry(GeometryHelpers.CreateEwkbFromWkt(eventPoint, eventSrid));
+
+            await _sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, new Dictionary<string, object>())),
+                    new Envelope<AddressPositionCrsWasChanged>(new Envelope(addressPositionCrsWasChanged, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var item = await ct.AddressExtractV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
+
+                    item.Should().NotBeNull();
+                    item!.MinimumX.Should().Be(103671.37);
+                    item.MinimumY.Should().Be(192046.71);
+                });
+        }
     }
 }

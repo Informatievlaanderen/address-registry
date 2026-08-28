@@ -96,6 +96,39 @@ namespace AddressRegistry.Tests.ProjectionTests.AddressMatch
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressPositionCrsWasChanged_ThenPositionKeepsItsLambert2008Srid()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressPositionCrsWasChanged = _fixture.Create<AddressPositionCrsWasChanged>();
+            var positionChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressPositionCrsWasChanged.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressPositionCrsWasChanged>(new Envelope(addressPositionCrsWasChanged, positionChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 =
+                        await ct.AddressDetailV2WithParent.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
+
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2!.Position.Should()
+                        .BeEquivalentTo(addressPositionCrsWasChanged.ExtendedWkbGeometry.ToByteArray());
+
+                    addressDetailItemV2.Position.TryReadSrid(out var srid).Should().BeTrue();
+                    srid.Should().Be(SystemReferenceId.SridLambert2008);
+                });
+        }
+
         protected override AddressDetailProjectionsV2WithParent CreateProjection()
             => new AddressDetailProjectionsV2WithParent();
     }

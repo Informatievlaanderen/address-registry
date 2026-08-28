@@ -504,6 +504,22 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                     ct);
             });
 
+            When<Envelope<AddressPositionCrsWasChanged>>(async (_, message, ct) =>
+            {
+                await searchElasticClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    // The reprojection does not change the address, so the document keeps the version
+                    // it already holds. See ADR 0004.
+                    new AddressSearchPartialDocument()
+                    {
+                        AddressPosition = AddressPosition(
+                            message.Message.ExtendedWkbGeometry.ToByteArray(),
+                            message.Message.GeometryMethod,
+                            message.Message.GeometrySpecification)
+                    },
+                    ct);
+            });
+
             When<Envelope<AddressPositionWasCorrectedV2>>(async (_, message, ct) =>
             {
                 await searchElasticClient.PartialUpdateDocument(

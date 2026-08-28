@@ -597,6 +597,24 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 await AddCloudEvent(message, document, context, attributes);
             });
 
+            // A reprojection does not change the address: the document is updated so the feed keeps serving
+            // the position in the reference system the event store holds, but it produces no cloud event and
+            // the document's version is left as it was. See ADR 0004.
+            When<Envelope<AddressPositionCrsWasChanged>>(async (context, message, ct) =>
+            {
+                var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);
+
+                var newGeometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
+                document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
+                document.Document.PositionAsGml = newGeometry.ConvertToGml(false);
+                document.Document.PositionGeometryMethod = MapGeometryMethod(message.Message.GeometryMethod);
+                document.Document.PositionSpecification = MapGeometrySpecification(message.Message.GeometrySpecification);
+
+                // AddCloudEvent does this for every other handler; the Document column is not change-tracked,
+                // so without it the update would be silently dropped.
+                context.Entry(document).Property(x => x.Document).IsModified = true;
+            });
+
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.AddressPersistentLocalId, ct);

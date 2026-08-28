@@ -1127,6 +1127,58 @@
         }
 
         [Fact]
+        public async Task WhenAddressPositionCrsWasChanged()
+        {
+            var addressPositionCrsWasChanged = _fixture.Create<AddressPositionCrsWasChanged>();
+
+            var position = _fixture.Create<long>();
+
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithExtendedWkbGeometry(GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry())
+                .WithGeometryMethod(GeometryMethod.AppointedByAdministrator)
+                .WithGeometrySpecification(GeometrySpecification.Entry);
+
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
+                { Envelope.PositionMetadataKey, position }
+            };
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position + 1 }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressPositionCrsWasChanged>(new Envelope(addressPositionCrsWasChanged,
+                        metadata)))
+                .Then(async ct =>
+                {
+                    var expectedLatestItem =
+                        await ct.AddressLatestItemsV2.FindAsync(addressPositionCrsWasChanged.AddressPersistentLocalId);
+                    expectedLatestItem.Should().NotBeNull();
+                    expectedLatestItem!.StreetNamePersistentLocalId.Should()
+                        .Be(addressPositionCrsWasChanged.StreetNamePersistentLocalId);
+                    expectedLatestItem.Removed.Should().BeFalse();
+                    expectedLatestItem.PositionMethod.Should().Be(addressPositionCrsWasChanged.GeometryMethod);
+                    expectedLatestItem.OsloPositionMethod.Should().Be(addressPositionCrsWasChanged.GeometryMethod.ToPositieGeometrieMethode());
+                    expectedLatestItem.PositionSpecification.Should()
+                        .Be(addressPositionCrsWasChanged.GeometrySpecification);
+                   expectedLatestItem.OsloPositionSpecification.Should()
+                        .Be(addressPositionCrsWasChanged.GeometrySpecification.ToPositieSpecificatie());
+                    var geometry = WKBReaderFactory.CreateForLegacy().Read(addressPositionCrsWasChanged.ExtendedWkbGeometry.ToByteArray());
+                    expectedLatestItem.Geometry.Should().BeEquivalentTo(geometry);
+
+                    expectedLatestItem.Namespace.Should().Be(Namespace);
+                    expectedLatestItem.PuriId.Should().Be($"{Namespace}/{addressPositionCrsWasChanged.AddressPersistentLocalId}");
+                    // The reprojection leaves the version alone, so it is still the one the address was proposed with.
+                    expectedLatestItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressPositionWasCorrectedV2()
         {
             var addressPositionWasCorrectedV2 = _fixture.Create<AddressPositionWasCorrectedV2>();

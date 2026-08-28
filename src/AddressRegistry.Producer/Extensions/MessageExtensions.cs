@@ -205,6 +205,15 @@ namespace AddressRegistry.Producer.Extensions
                 message.ExtendedWkbGeometry,
                 message.Provenance.ToContract());
 
+        public static Contracts.AddressPositionCrsWasChanged ToContract(this StreetNameAggregate.AddressPositionCrsWasChanged message) =>
+            new Contracts.AddressPositionCrsWasChanged(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.GeometryMethod.ToString(),
+                message.GeometrySpecification.ToString(),
+                message.ExtendedWkbGeometry,
+                message.Provenance.ToContract());
+
         public static Contracts.AddressPositionWasCorrectedV2 ToContract(this StreetNameAggregate.AddressPositionWasCorrectedV2 message) =>
             new Contracts.AddressPositionWasCorrectedV2(
                 message.StreetNamePersistentLocalId,

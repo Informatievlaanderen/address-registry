@@ -8,7 +8,13 @@
 
     public class AddressSearchPartialDocument
     {
-        public DateTimeOffset VersionTimestamp { get; set; }
+        /// <summary>
+        /// Left unset by an update that does not change the object itself — the Lambert 2008
+        /// reprojection — so the field is omitted from the partial update and Elastic keeps the
+        /// version it already holds.
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public DateTimeOffset? VersionTimestamp { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public AddressStatus? Status { get; set; }
@@ -34,6 +40,11 @@
         public AddressSearchPartialDocument(DateTimeOffset versionTimestamp)
         {
             VersionTimestamp = versionTimestamp;
+        }
+
+        /// <summary>An update that must not touch the document's version.</summary>
+        public AddressSearchPartialDocument()
+        {
         }
     }
 }

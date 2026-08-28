@@ -1327,6 +1327,43 @@
         }
 
         [Fact]
+        public async Task WhenAddressPositionCrsWasChanged()
+        {
+            var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
+            var expectedPoint = (Point)WKBReaderFactory.CreateForEwkb(expectedPosition).Read(expectedPosition);
+            var pointAsWgs84 = CoordinateTransformer.ToWgs84Text(expectedPoint);
+            var @event = _fixture.Create<AddressPositionCrsWasChanged>()
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressPositionCrsWasChanged>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
+                        @event.AddressPersistentLocalId,
+                        It.Is<AddressSearchPartialDocument>(doc =>
+                            doc.AddressPosition!.GeometryMethod == @event.GeometryMethod
+                            && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
+                            && doc.AddressPosition.GeometryAsWkt == expectedPoint.ToEwkt()
+                            && doc.AddressPosition.GeometryAsWgs84 == pointAsWgs84
+                            // Omitted from the partial update, so Elastic keeps the version it already holds.
+                            && doc.VersionTimestamp == null
+                            && doc.OfficiallyAssigned == null
+                            && doc.Status == null
+                            && doc.Active == null
+                        ),
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressPositionWasCorrectedV2()
         {
             var expectedPosition = GeometryHelpers.ExampleExtendedWkb;

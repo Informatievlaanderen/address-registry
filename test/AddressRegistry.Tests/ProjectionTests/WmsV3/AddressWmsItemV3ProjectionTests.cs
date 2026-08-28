@@ -1362,6 +1362,49 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
         }
 
         [Fact]
+        public async Task WhenAddressPositionCrsWasChanged()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressPositionCrsWasChanged = _fixture.Create<AddressPositionCrsWasChanged>();
+            var positionChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressPositionCrsWasChanged.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressPositionCrsWasChanged>(new Envelope(addressPositionCrsWasChanged, positionChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItemsV3.FindAsync(addressPositionCrsWasChanged.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.PositionMethod.Should().Be(AddressWmsItemV3Projections.ConvertGeometryMethodToString(addressPositionCrsWasChanged.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemV3Projections.ConvertGeometrySpecificationToString(addressPositionCrsWasChanged.GeometrySpecification));
+                    addressWmsItem.Position.Should().Be((Point) _wkbReader.Read(addressPositionCrsWasChanged.ExtendedWkbGeometry.ToByteArray()));
+                    // The reprojection leaves the version alone, so it is still the one the address was proposed with.
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
+        }
+
+        [Fact]
         public async Task WithBoxNumber_WhenAddressPositionWasChanged()
         {
             var addressWasMigrated = _fixture.Create<AddressWasMigratedToStreetName>()
@@ -1407,6 +1450,76 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     new Envelope<AddressWasProposedV2>(new Envelope(boxNumberWasProposed, boxNumberWasProposedMetadata)),
                     new Envelope<AddressPositionWasChanged>(new Envelope(houseNumberPositionWasChanged, houseNumberPositionWasChangedMetadata)),
                     new Envelope<AddressPositionWasChanged>(new Envelope(boxNumberPositionWasChanged, boxNumberPositionWasChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var houseNumberWmsItem = await ct.AddressWmsItemsV3.FindAsync(addressWasMigrated.AddressPersistentLocalId);
+                    houseNumberWmsItem.Should().NotBeNull();
+                    houseNumberWmsItem!.Position.Should().Be((Point)_wkbReader.Read(houseNumberPositionWasChanged.ExtendedWkbGeometry.ToByteArray()));
+
+                    var boxNumberWmsItem = await ct.AddressWmsItemsV3.FindAsync(boxNumberWasProposed.AddressPersistentLocalId);
+                    boxNumberWmsItem.Should().NotBeNull();
+                    boxNumberWmsItem!.Position.Should().Be(houseNumberWmsItem.Position);
+                });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(4));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task WithBoxNumber_WhenAddressPositionCrsWasChanged()
+        {
+            var addressWasMigrated = _fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress()
+                .WithPosition(GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+
+            var boxNumberWasProposed = _fixture.Create<AddressWasProposedV2>()
+                .AsBoxNumberAddress(new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId + 1))
+                .WithExtendedWkbGeometry(GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
+
+            var houseNumberPositionWasChanged = _fixture.Create<AddressPositionCrsWasChanged>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId))
+                .WithExtendedWkbGeometry(GeometryHelpers.ThirdGmlPointGeometry.ToExtendedWkbGeometry());
+
+            var boxNumberPositionWasChanged = _fixture.Create<AddressPositionCrsWasChanged>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(boxNumberWasProposed.AddressPersistentLocalId))
+                .WithExtendedWkbGeometry(GeometryHelpers.ThirdGmlPointGeometry.ToExtendedWkbGeometry());
+
+            var addressWasMigratedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasMigrated.GetHash() }
+            };
+
+            var boxNumberWasProposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, boxNumberWasProposed.GetHash() }
+            };
+
+            var houseNumberPositionWasChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, houseNumberPositionWasChanged.GetHash() }
+            };
+
+            var boxNumberPositionWasChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, boxNumberPositionWasChanged.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(addressWasMigrated, addressWasMigratedMetadata)),
+                    new Envelope<AddressWasProposedV2>(new Envelope(boxNumberWasProposed, boxNumberWasProposedMetadata)),
+                    new Envelope<AddressPositionCrsWasChanged>(new Envelope(houseNumberPositionWasChanged, houseNumberPositionWasChangedMetadata)),
+                    new Envelope<AddressPositionCrsWasChanged>(new Envelope(boxNumberPositionWasChanged, boxNumberPositionWasChangedMetadata)))
                 .Then(async ct =>
                 {
                     var houseNumberWmsItem = await ct.AddressWmsItemsV3.FindAsync(addressWasMigrated.AddressPersistentLocalId);

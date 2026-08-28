@@ -4,6 +4,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Extract
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
+    using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.EventHandling;
@@ -135,5 +136,30 @@ namespace AddressRegistry.Tests.ProjectionTests.Extract
                     item.MinimumY.Should().Be(192046.71);
                 });
         }
+
+        /// <summary>
+        /// Positions written before the event store recorded an SRID carry none at all. They are Lambert 72
+        /// by definition (ADR 0004), and this is the path that would break first if the projection read them
+        /// through a reader that rejects SRID-less EWKB rather than falling back.
+        /// </summary>
+        [Fact]
+        public async Task WhenPositionHasNoSrid_ThenTheShapeHoldsLambert72Coordinates()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(
+                    GeometryHelpers.CreateWkbWithoutSridFromWkt(Lambert72Point)));
+
+            await _sut
+                .Given(new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var item = await ct.AddressExtractV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
+
+                    item.Should().NotBeNull();
+                    item!.MinimumX.Should().Be(103671.37);
+                    item.MinimumY.Should().Be(192046.71);
+                });
+        }
+
     }
 }

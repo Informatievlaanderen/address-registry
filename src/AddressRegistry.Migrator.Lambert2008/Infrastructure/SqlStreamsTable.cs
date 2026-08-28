@@ -33,17 +33,18 @@ namespace AddressRegistry.Migrator.Lambert2008.Infrastructure
         {
             await using var connection = new SqlConnection(_connectionString);
 
-            return await connection.QueryAsync<(int, string)>($@"
-select top ({_pageSize})
-    [IdInternal]
-    ,[IdOriginal]
-from
-    [{Schema.Default}].[Streams]
-where
-    IdOriginal like 'streetname-%'
-    and IdInternal > {lastCursorPosition}
-order by
-    IdInternal", commandTimeout: 60);
+            return await connection.QueryAsync<(int, string)>($"""
+                                                               select top (@PageSize)
+                                                                   [IdInternal]
+                                                                   ,[IdOriginal]
+                                                               from
+                                                                   [{Schema.Default}].[Streams]
+                                                               where
+                                                                   IdOriginal like 'streetname-%'
+                                                                   and IdInternal > @LastCursorPosition
+                                                               order by
+                                                                   IdInternal
+                                                               """, new { PageSize = _pageSize, LastCursorPosition = lastCursorPosition }, commandTimeout: 60);
         }
 
         /// <summary>

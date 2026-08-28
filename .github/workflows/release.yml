@@ -262,15 +262,15 @@ jobs:
       prerestore-script: ./pre-restore.sh
     secrets: inherit
 
-  build-migrator-lambert2008:
-    name: Build Migrator Lambert 2008
+  build-migrator-lambert:
+    name: Build Migrator Lambert
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
       registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address
-      image-file: ar-migrator-lambert2008-image.tar
-      image-name: migrator-lambert2008
+      image-file: ar-migrator-lambert-image.tar
+      image-name: migrator-lambert
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Migrator.Lambert2008
       semver: ${{ needs.set-release-version.outputs.version }}
@@ -378,7 +378,7 @@ jobs:
       build-cache-warmer,
       build-lambda-backoffice,
       build-snapshot-verifier,
-      build-migrator-lambert2008 ]
+      build-migrator-lambert ]
     outputs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
@@ -536,7 +536,7 @@ jobs:
           , 'producer-snapshot-oslo'
           , 'cache-warmer'
           , 'snapshot-verifier'
-          , 'migrator-lambert2008'
+          , 'migrator-lambert'
           , 'lambda-sqsbackofficefunction'
         ]
     steps:

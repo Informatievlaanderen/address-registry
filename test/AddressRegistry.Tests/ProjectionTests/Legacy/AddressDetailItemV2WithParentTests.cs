@@ -948,6 +948,38 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressPositionCrsWasChanged()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressPositionCrsWasChanged = _fixture.Create<AddressPositionCrsWasChanged>();
+            var positionChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressPositionCrsWasChanged.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressPositionCrsWasChanged>(new Envelope(addressPositionCrsWasChanged, positionChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2WithParent.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2.Position.Should().BeEquivalentTo(addressPositionCrsWasChanged.ExtendedWkbGeometry.ToByteArray());
+                    addressDetailItemV2.PositionMethod.Should().Be(addressPositionCrsWasChanged.GeometryMethod);
+                    addressDetailItemV2.PositionSpecification.Should().Be(addressPositionCrsWasChanged.GeometrySpecification);
+                    // The reprojection leaves the version alone, so it is still the one the address was proposed with.
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressPositionCrsWasChanged.GetHash());
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressPositionWasCorrectedV2()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

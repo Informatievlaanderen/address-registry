@@ -624,6 +624,40 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV4
                 }
             });
 
+            When<Envelope<AddressPositionCrsWasChanged>>(async (context, message, ct) =>
+            {
+                // The reprojection does not change the address, so the version is deliberately
+                // left as it was. See ADR 0004.
+                await context.FindAndUpdateAddressDetailV4(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod);
+                        address.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification);
+                        address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true,
+                    allowUpdateRemovedAddress: true, ct: ct);
+
+                var wmsItemV4 = await context.FindAddressDetailV4(message.Message.AddressPersistentLocalId, ct);
+
+                if (wmsItemV4.ParentAddressPersistentLocalId.HasValue)
+                {
+                    var parent = await context.FindAddressDetailV4(wmsItemV4.ParentAddressPersistentLocalId.Value, ct);
+                    if (parent.Position == wmsItemV4.Position)
+                    {
+                        await context.FindAndUpdateAddressDetailV4(
+                            wmsItemV4.ParentAddressPersistentLocalId.Value,
+                            address => { },
+                            houseNumberLabelUpdater,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                    }
+                }
+            });
+
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetailV4(

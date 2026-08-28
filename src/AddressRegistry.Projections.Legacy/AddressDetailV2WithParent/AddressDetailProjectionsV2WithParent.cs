@@ -545,6 +545,23 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2WithParent
                 UpdateHash(item, message);
             });
 
+            When<Envelope<AddressPositionCrsWasChanged>>(async (context, message, ct) =>
+            {
+                // The reprojection does not change the address, so the version is deliberately
+                // left as it was. See ADR 0004.
+                var item = await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.PositionMethod = message.Message.GeometryMethod;
+                        item.PositionSpecification = message.Message.GeometrySpecification;
+                        item.Position = message.Message.ExtendedWkbGeometry.ToByteArray();
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetailV2(

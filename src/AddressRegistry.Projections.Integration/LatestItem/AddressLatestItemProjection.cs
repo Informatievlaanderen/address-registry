@@ -541,6 +541,26 @@
                     ct);
             });
 
+            When<Envelope<AddressPositionCrsWasChanged>>(async (context, message, ct) =>
+            {
+                // The reprojection does not change the address, so the version is deliberately
+                // left as it was. See ADR 0004.
+                var geometry = PositionReader.ReadPosition(message.Message.ExtendedWkbGeometry);
+
+                await context.FindAndUpdateAddressLatestItem(
+                    message.Message.AddressPersistentLocalId,
+                    message.Position,
+                    item =>
+                    {
+                        item.PositionMethod = message.Message.GeometryMethod;
+                        item.OsloPositionMethod = message.Message.GeometryMethod.ToPositieGeometrieMethode();
+                        item.PositionSpecification = message.Message.GeometrySpecification;
+                        item.OsloPositionSpecification = message.Message.GeometrySpecification.ToPositieSpecificatie();
+                        item.Geometry = geometry;
+                    },
+                    ct);
+            });
+
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
                 var geometry = PositionReader.ReadPosition(message.Message.ExtendedWkbGeometry);

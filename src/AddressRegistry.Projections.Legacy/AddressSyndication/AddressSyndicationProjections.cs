@@ -861,6 +861,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            // A reprojection does not change the address, so it produces no new version in the syndication feed.
+            // See ADR 0004.
+            When<Envelope<AddressPositionCrsWasChanged>>(DoNothing);
+
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

@@ -602,6 +602,38 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                 }
             });
 
+            When<Envelope<AddressPositionCrsWasChanged>>(async (context, message, ct) =>
+            {
+                // The reprojection does not change the address, so the version is deliberately
+                // left as it was. See ADR 0004.
+                await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod);
+                        address.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification);
+                        address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true,
+                    allowUpdateRemovedAddress: true, ct: ct);
+
+                var wfsItem = await context.FindAddressDetail(message.Message.AddressPersistentLocalId, ct);
+                if (wfsItem.ParentAddressPersistentLocalId.HasValue)
+                {
+                    var parent = await context.FindAddressDetail(wfsItem.ParentAddressPersistentLocalId.Value, ct);
+                    if (parent.Position == wfsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetail(
+                            wfsItem.ParentAddressPersistentLocalId.Value,
+                            _ => { },
+                            houseNumberLabelUpdater,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                    }
+                }
+            });
+
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,

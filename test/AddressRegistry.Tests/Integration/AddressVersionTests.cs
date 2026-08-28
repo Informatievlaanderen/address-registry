@@ -1363,6 +1363,60 @@
         }
 
         [Fact]
+        public async Task WhenAddressPositionCrsWasChanged()
+        {
+            var addressPositionCrsWasChanged = _fixture.Create<AddressPositionCrsWasChanged>();
+
+            var position = _fixture.Create<long>();
+
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(addressPositionCrsWasChanged.AddressPersistentLocalId)
+                .WithExtendedWkbGeometry(GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry())
+                .WithGeometryMethod(GeometryMethod.AppointedByAdministrator)
+                .WithGeometrySpecification(GeometrySpecification.Entry);
+
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
+            };
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressPositionCrsWasChanged>(new Envelope(addressPositionCrsWasChanged,
+                        metadata)))
+                .Then(async ct =>
+                {
+                    var expectedVersion =
+                        await ct.AddressVersions.FindAsync(position + 1, addressPositionCrsWasChanged.AddressPersistentLocalId);
+                    expectedVersion.Should().NotBeNull();
+                    expectedVersion!.StreetNamePersistentLocalId.Should()
+                        .Be(addressPositionCrsWasChanged.StreetNamePersistentLocalId);
+                    expectedVersion.Removed.Should().BeFalse();
+                    expectedVersion.PositionMethod.Should().Be(addressPositionCrsWasChanged.GeometryMethod);
+                    expectedVersion.OsloPositionMethod.Should().Be(addressPositionCrsWasChanged.GeometryMethod.ToPositieGeometrieMethode());
+                    expectedVersion.PositionSpecification.Should()
+                        .Be(addressPositionCrsWasChanged.GeometrySpecification);
+                    expectedVersion.OsloPositionSpecification.Should()
+                        .Be(addressPositionCrsWasChanged.GeometrySpecification.ToPositieSpecificatie());
+                    var geometry = WKBReaderFactory.CreateForLegacy().Read(addressPositionCrsWasChanged.ExtendedWkbGeometry.ToByteArray());
+                    expectedVersion.Geometry.Should().BeEquivalentTo(geometry);
+                    expectedVersion.Type.Should().Be("EventName");
+                    expectedVersion.Namespace.Should().Be(Namespace);
+                    expectedVersion.PuriId.Should().Be($"{Namespace}/{addressPositionCrsWasChanged.AddressPersistentLocalId}");
+                    expectedVersion.VersionTimestamp.Should().Be(addressPositionCrsWasChanged.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressPositionWasCorrectedV2()
         {
             var addressPositionWasCorrectedV2 = _fixture.Create<AddressPositionWasCorrectedV2>();

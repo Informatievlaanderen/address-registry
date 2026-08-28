@@ -14,7 +14,7 @@ namespace AddressRegistry.Infrastructure
         public const string ConsumerReadMunicipality = "AddressRegistryConsumerReadMunicipality";
         public const string ConsumerReadStreetName = "AddressRegistryConsumerReadStreetName";
         public const string ConsumerReadPostal = "AddressRegistryConsumerReadPostal";
-        public const string MigrateAddress = "AddressRegistryMigration";
+        public const string MigrateLambert2008 = "AddressRegistryLambert2008Migration";
         public const string BackOffice = "AddressRegistryBackOffice";
         public const string BackOfficeProjections = "AddressRegistryBackOfficeProjections";
         public const string Wfs = "wfs.address";

@@ -1,3 +1,17 @@
+# [6.4.0](https://github.com/informatievlaanderen/address-registry/compare/v6.3.0...v6.4.0) (2026-09-01)
+
+
+### Bug Fixes
+
+* **feed:** only output position when changed ([f12b045](https://github.com/informatievlaanderen/address-registry/commit/f12b045f3cf46128564184d46afb2b25d246dc0a))
+
+
+### Features
+
+* add migrator lambert2008 ([146124f](https://github.com/informatievlaanderen/address-registry/commit/146124f5bd964ca40e36793a797c6056ca8d5512))
+* **domain:** add domain lambert2008 conversion ([b03816f](https://github.com/informatievlaanderen/address-registry/commit/b03816f5c260778aa0d1e4cdb160c7526eb7daa3))
+* projections handle crswaschanged event ([a6ff0a6](https://github.com/informatievlaanderen/address-registry/commit/a6ff0a613ba806e886215b917c17feb785539c3a))
+
 # [6.3.0](https://github.com/informatievlaanderen/address-registry/compare/v6.2.2...v6.3.0) (2026-08-25)
 
 

@@ -1059,7 +1059,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
             _fixture.Register(() => geometryMethod);
             _fixture.Register(() => geometrySpecification);
-            var addressPositionWasChanged = _fixture.Create<AddressPositionWasChanged>();
+            var addressPositionWasChanged = _fixture.Create<AddressPositionWasChanged>()
+                .WithExtendedWkbGeometry(GeometryHelpers.CreateEwkbFromWkt("POINT (103672.37 192046.71)"));
 
             var position = 1L;
 
@@ -1108,7 +1109,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
             _fixture.Register(() => GeometryMethod.DerivedFromObject);
             _fixture.Register(() =>GeometrySpecification.BuildingUnit);
-            var addressPositionWasCorrectedV2 = _fixture.Create<AddressPositionWasCorrectedV2>();
+            var addressPositionWasCorrectedV2 = _fixture.Create<AddressPositionWasCorrectedV2>()
+                .WithExtendedWkbGeometry(GeometryHelpers.CreateEwkbFromWkt("POINT (103672.37 192046.71)"));
 
             var position = 1L;
 
@@ -1142,6 +1144,84 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                         Times.Once);
 
                     ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Exactly(2));
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressPositionWasChangedWithUnchangedPosition_ThenPositionIsNotAddedAsAttribute()
+        {
+            _fixture.Register(() => GeometryMethod.AppointedByAdministrator);
+            _fixture.Register(() => GeometrySpecification.Parcel);
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            _fixture.Register(() => GeometryMethod.DerivedFromObject);
+            _fixture.Register(() => GeometrySpecification.BuildingUnit);
+            var addressPositionWasChanged = _fixture.Create<AddressPositionWasChanged>()
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(addressWasProposedV2.ExtendedWkbGeometry));
+
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(addressWasProposedV2, position),
+                    CreateEnvelope(addressPositionWasChanged, position + 1))
+                .Then(async context =>
+                {
+                    var document = await context.AddressDocuments.FindAsync(addressPositionWasChanged.AddressPersistentLocalId);
+                    document.Should().NotBeNull();
+                    document!.Document.ExtendedWkbGeometry.Should().Be(addressWasProposedV2.ExtendedWkbGeometry);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressPositionWasChanged.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            addressPositionWasChanged.AddressPersistentLocalId.ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod)
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification)
+                                && attrs.All(a => a.Name != AddressAttributeNames.Position)),
+                            AddressPositionWasChanged.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressPositionWasCorrectedV2WithUnchangedPosition_ThenPositionIsNotAddedAsAttribute()
+        {
+            _fixture.Register(() => GeometryMethod.AppointedByAdministrator);
+            _fixture.Register(() => GeometrySpecification.Parcel);
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            _fixture.Register(() => GeometryMethod.DerivedFromObject);
+            _fixture.Register(() => GeometrySpecification.BuildingUnit);
+            var addressPositionWasCorrectedV2 = _fixture.Create<AddressPositionWasCorrectedV2>()
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(addressWasProposedV2.ExtendedWkbGeometry));
+
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(addressWasProposedV2, position),
+                    CreateEnvelope(addressPositionWasCorrectedV2, position + 1))
+                .Then(async context =>
+                {
+                    var document = await context.AddressDocuments.FindAsync(addressPositionWasCorrectedV2.AddressPersistentLocalId);
+                    document.Should().NotBeNull();
+                    document!.Document.ExtendedWkbGeometry.Should().Be(addressWasProposedV2.ExtendedWkbGeometry);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            addressPositionWasCorrectedV2.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            addressPositionWasCorrectedV2.AddressPersistentLocalId.ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(l => l.Contains(NisCode)),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == AddressAttributeNames.PositionGeometryMethod)
+                                && attrs.Any(a => a.Name == AddressAttributeNames.PositionSpecification)
+                                && attrs.All(a => a.Name != AddressAttributeNames.Position)),
+                            AddressPositionWasCorrectedV2.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
                 });
         }
 

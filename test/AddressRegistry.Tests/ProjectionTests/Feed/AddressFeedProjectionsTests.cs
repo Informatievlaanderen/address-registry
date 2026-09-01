@@ -1532,8 +1532,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             addressPersistentLocalId.ToString(),
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(NisCode) && t.NisCodes.Contains(newNisCode)
-                                && t.TransformValues.First().From.Contains(addressPersistentLocalId.ToString())
-                                && t.TransformValues.First().To.Contains(newAddressPersistentLocalId.ToString())),
+                                && t.TransformValues.First().From == ToAdresPuri(addressPersistentLocalId)
+                                && t.TransformValues.First().To == ToAdresPuri(newAddressPersistentLocalId)),
                             It.IsAny<Uri>(),
                             AddressWasRejectedBecauseOfMunicipalityMerger.EventName,
                             It.IsAny<string>()),
@@ -1635,8 +1635,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             addressPersistentLocalId.ToString(),
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(NisCode) && t.NisCodes.Contains(newNisCode)
-                                    && t.TransformValues.First().From.Contains(addressPersistentLocalId.ToString())
-                                    && t.TransformValues.First().To.Contains(newAddressPersistentLocalId.ToString())),
+                                    && t.TransformValues.First().From == ToAdresPuri(addressPersistentLocalId)
+                                    && t.TransformValues.First().To == ToAdresPuri(newAddressPersistentLocalId)),
                             It.IsAny<Uri>(),
                             AddressWasRetiredBecauseOfMunicipalityMerger.EventName,
                             It.IsAny<string>()),
@@ -1773,11 +1773,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(NisCode)
                                 && t.TransformValues.Any(v =>
-                                    v.From == sourceHouseNumberId.ToString()
-                                    && v.To == destinationHouseNumberId.ToString())
+                                    v.From == ToAdresPuri(sourceHouseNumberId)
+                                    && v.To == ToAdresPuri(destinationHouseNumberId))
                                 && t.TransformValues.Any(v =>
-                                    v.From == sourceBoxNumberId.ToString()
-                                    && v.To == destinationBoxNumberId.ToString())),
+                                    v.From == ToAdresPuri(sourceBoxNumberId)
+                                    && v.To == ToAdresPuri(destinationBoxNumberId))),
                             It.IsAny<Uri>(),
                             StreetNameWasReaddressed.EventName,
                             It.IsAny<string>()),
@@ -1903,8 +1903,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(importedReaddressNisCode)
                                 && t.TransformValues.Count == importedReaddressExpectedCloudEventCount
-                                && t.TransformValues.Any(v => v.From == importedReaddressSourceAddressPersistentLocalId.ToString() && v.To == importedReaddressTargetAddressPersistentLocalId.ToString())
-                                && t.TransformValues.Any(v => v.From == importedReaddressSecondSourceAddressPersistentLocalId.ToString() && v.To == importedReaddressSecondTargetAddressPersistentLocalId.ToString())),
+                                && t.TransformValues.Any(v => v.From == ToAdresPuri(importedReaddressSourceAddressPersistentLocalId) && v.To == ToAdresPuri(importedReaddressTargetAddressPersistentLocalId))
+                                && t.TransformValues.Any(v => v.From == ToAdresPuri(importedReaddressSecondSourceAddressPersistentLocalId) && v.To == ToAdresPuri(importedReaddressSecondTargetAddressPersistentLocalId))),
                             It.IsAny<Uri>(),
                             StreetNameWasReaddressed.EventName,
                             It.IsAny<string>()),
@@ -2115,6 +2115,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
 
             throw new FileNotFoundException("Could not locate housenumberwasreaddressed-case.csv from the test output directory.");
         }
+
+        private static string ToAdresPuri(int addressPersistentLocalId)
+            => OsloNamespaces.Adres.ToPuri(addressPersistentLocalId.ToString());
 
         private static string ToGeometrieMethodePuri(PositieGeometrieMethode positieGeometrieMethode)
             => OsloNamespaces.AdresGeometrieMethode.ToPuri(NamingStrategy.GetPropertyName(positieGeometrieMethode.ToString(), false));

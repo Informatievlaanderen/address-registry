@@ -332,8 +332,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                         [
                             new AddressCloudTransformEventValue
                             {
-                                From = document.PersistentLocalId.ToString(),
-                                To = message.Message.NewAddressPersistentLocalId.Value.ToString()
+                                From = OsloNamespaces.Adres.ToPuri(document.PersistentLocalId.ToString()),
+                                To = OsloNamespaces.Adres.ToPuri(message.Message.NewAddressPersistentLocalId.Value.ToString())
                             }
                         ],
                         NisCodes = [
@@ -430,8 +430,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                         [
                             new AddressCloudTransformEventValue
                             {
-                                From = document.PersistentLocalId.ToString(),
-                                To = message.Message.NewAddressPersistentLocalId.Value.ToString()
+                                From = OsloNamespaces.Adres.ToPuri(document.PersistentLocalId.ToString()),
+                                To = OsloNamespaces.Adres.ToPuri(message.Message.NewAddressPersistentLocalId.Value.ToString())
                             }
                         ],
                         NisCodes = [
@@ -914,8 +914,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 var readdressed = readdressedHouseNumber.ReaddressedHouseNumber;
                 transformValues.Add(new AddressCloudTransformEventValue
                 {
-                    From = readdressed.SourceAddressPersistentLocalId.ToString(),
-                    To = readdressed.DestinationAddressPersistentLocalId.ToString()
+                    From = OsloNamespaces.Adres.ToPuri(readdressed.SourceAddressPersistentLocalId.ToString()),
+                    To = OsloNamespaces.Adres.ToPuri(readdressed.DestinationAddressPersistentLocalId.ToString())
                 });
                 addressPersistentLocalIds.Add(readdressed.SourceAddressPersistentLocalId);
                 addressPersistentLocalIds.Add(readdressed.DestinationAddressPersistentLocalId);
@@ -924,8 +924,8 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 {
                     transformValues.Add(new AddressCloudTransformEventValue
                     {
-                        From = readdressedBoxNumber.SourceAddressPersistentLocalId.ToString(),
-                        To = readdressedBoxNumber.DestinationAddressPersistentLocalId.ToString()
+                        From = OsloNamespaces.Adres.ToPuri(readdressedBoxNumber.SourceAddressPersistentLocalId.ToString()),
+                        To = OsloNamespaces.Adres.ToPuri(readdressedBoxNumber.DestinationAddressPersistentLocalId.ToString())
                     });
                     addressPersistentLocalIds.Add(readdressedBoxNumber.SourceAddressPersistentLocalId);
                     addressPersistentLocalIds.Add(readdressedBoxNumber.DestinationAddressPersistentLocalId);

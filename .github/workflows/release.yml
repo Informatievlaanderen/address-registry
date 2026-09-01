@@ -614,7 +614,8 @@ jobs:
           'projections-backoffice',
           'last-changed-list',
           'cache-warmer',
-          'snapshot-verifier'
+          'snapshot-verifier',
+          'migrator-lambert'
         ]
     with:
       environment: 'test'
@@ -699,7 +700,8 @@ jobs:
           'projections-backoffice',
           'last-changed-list',
           'cache-warmer',
-          'snapshot-verifier'
+          'snapshot-verifier',
+          'migrator-lambert'
         ]
     with:
       environment: 'stg'

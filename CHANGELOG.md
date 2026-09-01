@@ -1,3 +1,11 @@
+## [6.4.2](https://github.com/informatievlaanderen/address-registry/compare/v6.4.1...v6.4.2) (2026-09-01)
+
+
+### Bug Fixes
+
+* add connectionstring snapshot to migrator ([76ab574](https://github.com/informatievlaanderen/address-registry/commit/76ab574f32c8d7457d02a58bd99abc3052600358))
+* **lambert:** migrator startup DI ([bd470f4](https://github.com/informatievlaanderen/address-registry/commit/bd470f4f5dc7b946578d18c4b87c7e7ead1456f9))
+
 ## [6.4.1](https://github.com/informatievlaanderen/address-registry/compare/v6.4.0...v6.4.1) (2026-09-01)
 
 

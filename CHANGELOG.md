@@ -1,3 +1,10 @@
+## [6.4.1](https://github.com/informatievlaanderen/address-registry/compare/v6.4.0...v6.4.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **feed:** puri for transform id's ([b4d79c1](https://github.com/informatievlaanderen/address-registry/commit/b4d79c102ec3d5375073932b0727c4c2f3a6ec23))
+
 # [6.4.0](https://github.com/informatievlaanderen/address-registry/compare/v6.3.0...v6.4.0) (2026-09-01)
 
 

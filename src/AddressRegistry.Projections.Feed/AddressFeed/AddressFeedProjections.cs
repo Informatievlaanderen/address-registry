@@ -588,8 +588,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 if (oldSpecification != document.Document.PositionSpecification)
                     attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, ToGeometrieSpecificatiePuri(oldSpecification), ToGeometrieSpecificatiePuri(document.Document.PositionSpecification)));
 
-                var oldPositionValues = oldEwkb is not null ? CreatePositionValues(GmlHelpers.ParseGeometry(oldEwkb)) : null;
-                attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, oldPositionValues, CreatePositionValues(newGeometry)));
+                if (oldEwkb != document.Document.ExtendedWkbGeometry)
+                {
+                    var oldPositionValues = oldEwkb is not null ? CreatePositionValues(GmlHelpers.ParseGeometry(oldEwkb)) : null;
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, oldPositionValues, CreatePositionValues(newGeometry)));
+                }
 
                 await AddCloudEvent(message, document, context, attributes);
             });
@@ -616,8 +619,11 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 if (oldSpecification != document.Document.PositionSpecification)
                     attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PositionSpecification, ToGeometrieSpecificatiePuri(oldSpecification), ToGeometrieSpecificatiePuri(document.Document.PositionSpecification)));
 
-                var oldPositionValues = oldEwkb is not null ? CreatePositionValues(GmlHelpers.ParseGeometry(oldEwkb)) : null;
-                attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, oldPositionValues, CreatePositionValues(newGeometry)));
+                if (oldEwkb != document.Document.ExtendedWkbGeometry)
+                {
+                    var oldPositionValues = oldEwkb is not null ? CreatePositionValues(GmlHelpers.ParseGeometry(oldEwkb)) : null;
+                    attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.Position, oldPositionValues, CreatePositionValues(newGeometry)));
+                }
 
                 await AddCloudEvent(message, document, context, attributes);
             });

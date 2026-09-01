@@ -27,7 +27,8 @@ namespace AddressRegistry.Migrator.Lambert2008.Infrastructure.Modules
         protected override void Load(ContainerBuilder builder)
         {
             builder
-                .RegisterModule(new CommandHandlingModule(_configuration));
+                .RegisterModule(new CommandHandlingModule(_configuration))
+                .RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory));
 
             builder.RegisterSnapshotModule(_configuration);
 

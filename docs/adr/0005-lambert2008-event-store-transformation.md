@@ -90,7 +90,7 @@ changed" reacts.
 | LastChangedList (v1, v3) | — | bumped |
 | Producers (v3, v4, readdress-fix, Oslo snapshot) | — | produced |
 
-Four of those need their reasoning written down.
+Five of those need their reasoning written down.
 
 **`LastEventHash` is still updated** on the two detail projections, even though the version is not. It is
 not a version: Api.Oslo serves it as the ETag and the BackOffice checks the caller's ETag against the
@@ -119,9 +119,38 @@ other event — so the entry appears in the feed, carrying the transformed `Poin
 `AddressPositionCrsWasChanged` as its `ChangeType` — and then puts `LastChangedOn` back to the value the
 address's last real change gave it. Consumers reading the feed sequentially therefore see the
 transformation and the new position; consumers keying on the version see no new version, which is the same
-rule the rest of the table follows. It also updates `AddressBoxNumberSyndicationHelper`: that row is what
-a box number address's next item is cloned from, so leaving it in Lambert 72 would resurrect the old
-position on that address's next real change.
+rule the rest of the table follows.
+
+**A removed address is not published at all.** Consumers were told it was removed; the transformation is
+not something to tell them about, least of all for that address. The syndication item carries no removed
+flag, so the projection reads the address's latest entry and treats a removal `ChangeType` as the signal.
+That is reliable rather than a guess: every event that can follow a removal either un-removes the address
+— `AddressRemovalWasCorrected`, which produces an entry of its own — or is guarded against removed
+addresses in the aggregate, and the transformation, the one exception, is what this skips. It is also the
+only option that works on the table as it stands: a new column would read false for every address removed
+before it was introduced, which is exactly the set that has to be recognised, and the feed is far too
+large to rebuild for it.
+
+`AddressBoxNumberSyndicationHelper` is updated even for a removed address. It is not published — it is the
+row a box number address's next item is cloned from, including after an `AddressRemovalWasCorrected` — so
+leaving it in Lambert 72 would resurrect the old position.
+
+**Every handler has to survive a removed address.** This is the only position event that reaches them —
+`ChangePosition` and `CorrectPosition` both guard removal — so a projection's position handlers were
+written on the assumption that the address is still there, and three groups of them broke on it:
+
+- **WFS V2 / V3, WMS V3 / V4** keep the row and mark it `Removed`, but `FindAddressDetail*` excludes
+  removed addresses by default and *throws* rather than returning null. The handler updated the row
+  through `allowUpdateRemovedAddress: true` and then looked the same address up again without it. They now
+  pass `allowRemovedAddress: true` and return before the house number label work: a removed address is not
+  part of any label, so there is no parent to refresh.
+- **Extract** deletes the record on removal, so there is no row at all. Nothing to reproject; the handler
+  returns.
+- **Elastic list and search** delete the document, and a partial update against a missing document is a
+  404. `PartialUpdateDocumentIfExists` treats that as nothing-to-do and still throws on anything else.
+
+The projections that keep a row and flag it — legacy detail, address match, feed, integration latest item
+— need nothing, and the append-only ones (integration version, syndication) never had the problem.
 
 **No projection needs a rebuild.** Every one of them handles the event, so each converges on its own as
 the transformation runs. That is a property worth keeping rather than a coincidence.

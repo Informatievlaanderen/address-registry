@@ -863,14 +863,32 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
             // The event is published in the feed, carrying the position the event store now holds, but the
             // transformation is not a change to the address: LastChangedOn keeps the value the address's last
-            // real change gave it. See ADR 0005.
+            // real change gave it. A removed address is not published at all. See ADR 0005.
             When<Envelope<AddressPositionCrsWasChanged>>(async (context, message, ct) =>
             {
-                // Read up front so the version can be carried over: CloneAndApplyEventInfo sets LastChangedOn
-                // to the event's timestamp and the edit below is what puts it back. A missing item is reported
-                // by CreateNewAddressSyndicationItem, which is why this is only dereferenced inside the edit.
+                // Updated even for a removed address: the helper is not published, it is the row a box number
+                // address's next item is cloned from — including after AddressRemovalWasCorrected — so leaving
+                // it in Lambert 72 would resurrect the old position.
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x =>
+                    {
+                        x.PositionMethod = message.Message.GeometryMethod;
+                        x.PositionSpecification = message.Message.GeometrySpecification;
+                        x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
+                    },
+                    ct);
+
+                // Read up front for two things: whether the address is still in the feed, and the version to
+                // carry over — CloneAndApplyEventInfo sets LastChangedOn to the event's timestamp and the edit
+                // below is what puts it back.
                 var previous = await context.AddressSyndication.LatestPosition(
                     message.Message.AddressPersistentLocalId, ct);
+
+                if (previous is null || IsRemovedInFeed(previous))
+                {
+                    return;
+                }
 
                 await context.CreateNewAddressSyndicationItem(
                     message.Message.AddressPersistentLocalId,
@@ -880,19 +898,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                         x.PositionMethod = message.Message.GeometryMethod;
                         x.PositionSpecification = message.Message.GeometrySpecification;
                         x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
-                        x.LastChangedOn = previous!.LastChangedOn;
-                    },
-                    ct);
-
-                // The helper carries the position a box number address is cloned from, so leaving it in
-                // Lambert 72 would resurrect the old position on that address's next real change.
-                await context.UpdateAddressBoxNumberSyndicationHelper(
-                    message.Message.AddressPersistentLocalId,
-                    x =>
-                    {
-                        x.PositionMethod = message.Message.GeometryMethod;
-                        x.PositionSpecification = message.Message.GeometrySpecification;
-                        x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
+                        x.LastChangedOn = previous.LastChangedOn;
                     },
                     ct);
             });
@@ -1123,6 +1129,26 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
         }
+
+        /// <summary>
+        /// Whether the address's latest entry in the feed says it was removed.
+        /// </summary>
+        /// <remarks>
+        /// The item carries no removed flag, so the entry's own <see cref="AddressSyndicationItem.ChangeType"/>
+        /// is the signal the table has — and it is a reliable one: every event that can follow a removal
+        /// either un-removes the address (<c>AddressRemovalWasCorrected</c>, which produces an entry of its
+        /// own) or is guarded against removed addresses in the aggregate. The Lambert 2008 transformation is
+        /// the single exception, and it is what this guards, so it cannot mask a removal either.
+        ///
+        /// Deriving it beats adding a column: a new flag would read false for every address removed before it
+        /// was introduced, which is exactly the set this has to recognise, and the feed is far too large to
+        /// rebuild for it. See ADR 0005.
+        /// </remarks>
+        private static bool IsRemovedInFeed(AddressSyndicationItem item)
+            => item.ChangeType is nameof(AddressWasRemoved)
+                or nameof(AddressWasRemovedV2)
+                or nameof(AddressWasRemovedBecauseStreetNameWasRemoved)
+                or nameof(AddressWasRemovedBecauseHouseNumberWasRemoved);
 
         private static Task DoNothing<T>(LegacyContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }

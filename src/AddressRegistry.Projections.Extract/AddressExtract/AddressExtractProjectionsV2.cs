@@ -439,6 +439,15 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 // The reprojection does not change the address, so the version is deliberately
                 // left as it was. See ADR 0004.
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+
+                // Unlike every other position event, this one reaches removed addresses — and a removed
+                // address has no extract record, because AddressWasRemovedV2 deletes it. Nothing to
+                // reproject. See ADR 0005.
+                if (item is null)
+                {
+                    return;
+                }
+
                 UpdateDbaseRecordField(item, record =>
                 {
                     record.posgeommet.Value = Map(message.Message.GeometryMethod);

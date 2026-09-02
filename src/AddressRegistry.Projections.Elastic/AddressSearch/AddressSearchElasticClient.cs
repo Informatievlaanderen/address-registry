@@ -13,6 +13,7 @@
         Task<ICollection<AddressSearchDocument>> GetDocuments(IEnumerable<int> addressPersistentLocalIds, CancellationToken ct);
         Task UpdateDocument(AddressSearchDocument document, CancellationToken ct);
         Task PartialUpdateDocument(int addressPersistentLocalId, AddressSearchPartialDocument document, CancellationToken ct);
+        Task PartialUpdateDocumentIfExists(int addressPersistentLocalId, AddressSearchPartialDocument document, CancellationToken ct);
         Task DeleteDocument(int addressPersistentLocalId, CancellationToken ct);
     }
 
@@ -95,6 +96,29 @@
             {
                 throw new ElasticsearchClientException("Failed trying to do a partial document update", response.ElasticsearchServerError, response.DebugInformation);
             }
+        }
+
+        /// <summary>
+        /// Partially updates a document that may no longer be in the index.
+        /// </summary>
+        /// <remarks>
+        /// Removed addresses have their document deleted, and the Lambert 2008 transformation is the one
+        /// position event that reaches removed addresses — for those there is nothing to update, which is
+        /// not a failure. Every other error still throws. See ADR 0005.
+        /// </remarks>
+        public async Task PartialUpdateDocumentIfExists(int addressPersistentLocalId, AddressSearchPartialDocument document, CancellationToken ct)
+        {
+            var response = await _elasticClient.UpdateAsync<AddressSearchDocument, AddressSearchPartialDocument>(
+                _indexName,
+                new Id(addressPersistentLocalId),
+                updateRequestDescriptor => { updateRequestDescriptor.Doc(document); }, ct);
+
+            if (response.IsValidResponse || response.ApiCallDetails.HttpStatusCode == 404)
+            {
+                return;
+            }
+
+            throw new ElasticsearchClientException("Failed trying to do a partial document update", response.ElasticsearchServerError, response.DebugInformation);
         }
 
         public async Task DeleteDocument(int addressPersistentLocalId, CancellationToken ct)

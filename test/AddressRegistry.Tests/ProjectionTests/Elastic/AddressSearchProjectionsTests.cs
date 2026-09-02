@@ -1344,7 +1344,7 @@
                 .Given(new Envelope<AddressPositionCrsWasChanged>(new Envelope(@event, eventMetadata)))
                 .Then(_ =>
                 {
-                    _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
+                    _elasticSearchClient.Verify(x => x.PartialUpdateDocumentIfExists(
                         @event.AddressPersistentLocalId,
                         It.Is<AddressSearchPartialDocument>(doc =>
                             doc.AddressPosition!.GeometryMethod == @event.GeometryMethod

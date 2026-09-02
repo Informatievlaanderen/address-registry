@@ -641,11 +641,22 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV4
                     updateHouseNumberLabelsAfterAddressUpdate: true,
                     allowUpdateRemovedAddress: true, ct: ct);
 
-                var wmsItemV4 = await context.FindAddressDetailV4(message.Message.AddressPersistentLocalId, ct);
+                // Unlike every other position event, this one reaches removed addresses, and the lookup
+                // excludes them by default — it throws rather than returning null. See ADR 0005.
+                var wmsItemV4 = await context.FindAddressDetailV4(
+                    message.Message.AddressPersistentLocalId, ct, allowRemovedAddress: true);
+
+                // A removed address keeps its row and its position follows the event store, but it is not
+                // part of any house number label, so there is no parent label to refresh for it.
+                if (wmsItemV4.Removed)
+                {
+                    return;
+                }
 
                 if (wmsItemV4.ParentAddressPersistentLocalId.HasValue)
                 {
-                    var parent = await context.FindAddressDetailV4(wmsItemV4.ParentAddressPersistentLocalId.Value, ct);
+                    var parent = await context.FindAddressDetailV4(
+                        wmsItemV4.ParentAddressPersistentLocalId.Value, ct, allowRemovedAddress: true);
                     if (parent.Position == wmsItemV4.Position)
                     {
                         await context.FindAndUpdateAddressDetailV4(

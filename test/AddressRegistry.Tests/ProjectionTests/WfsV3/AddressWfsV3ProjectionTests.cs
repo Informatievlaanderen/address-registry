@@ -1416,6 +1416,46 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV3
                 false), Times.Once);
         }
 
+        /// <summary>
+        /// The transformation reaches removed addresses, unlike every other position event. The row is kept
+        /// and its position follows the event store — but the lookups this handler does to refresh house
+        /// number labels exclude removed addresses and throw rather than return null. See ADR 0005.
+        /// </summary>
+        [Fact]
+        public async Task WhenAddressPositionCrsWasChangedForRemovedAddress()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRemoved = _fixture.Create<AddressWasRemovedV2>();
+            var removedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRemoved.GetHash() }
+            };
+
+            var addressPositionCrsWasChanged = _fixture.Create<AddressPositionCrsWasChanged>();
+            var positionChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressPositionCrsWasChanged.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRemovedV2>(new Envelope(addressWasRemoved, removedMetadata)),
+                    new Envelope<AddressPositionCrsWasChanged>(new Envelope(addressPositionCrsWasChanged, positionChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWfsItem = await ct.AddressWfsV3Items.FindAsync(addressPositionCrsWasChanged.AddressPersistentLocalId);
+                    addressWfsItem.Should().NotBeNull();
+                    addressWfsItem!.Removed.Should().BeTrue();
+                    addressWfsItem.Position.Should().Be((Point) _wkbReader.Read(addressPositionCrsWasChanged.ExtendedWkbGeometry.ToByteArray()));
+                });
+        }
+
         [Fact]
         public async Task WithBoxNumber_WhenAddressPositionWasChanged()
         {

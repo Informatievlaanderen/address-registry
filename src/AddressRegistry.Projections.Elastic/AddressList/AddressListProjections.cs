@@ -506,7 +506,7 @@ namespace AddressRegistry.Projections.Elastic.AddressList
 
             When<Envelope<AddressPositionCrsWasChanged>>(async (_, message, ct) =>
             {
-                await searchElasticClient.PartialUpdateDocument(
+                await searchElasticClient.PartialUpdateDocumentIfExists(
                     message.Message.AddressPersistentLocalId,
                     // The reprojection does not change the address, so the document keeps the version
                     // it already holds. See ADR 0004.

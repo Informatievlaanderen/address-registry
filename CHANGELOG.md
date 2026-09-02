@@ -1,3 +1,12 @@
+## [6.4.3](https://github.com/informatievlaanderen/address-registry/compare/v6.4.2...v6.4.3) (2026-09-02)
+
+
+### Bug Fixes
+
+* **migrator:** correct containerid in init.sh ([50f8ef9](https://github.com/informatievlaanderen/address-registry/commit/50f8ef9525a9bb42e27cd12d87edf54d133a785e))
+* **migrator:** review fixes ([25761c8](https://github.com/informatievlaanderen/address-registry/commit/25761c8800ed8edf5cae293e107d3b2d364bc9d7))
+* **syndication:** add CrsWasChanged to syndication ([6094627](https://github.com/informatievlaanderen/address-registry/commit/6094627037bf351318b46d08081918949e6326e1))
+
 ## [6.4.2](https://github.com/informatievlaanderen/address-registry/compare/v6.4.1...v6.4.2) (2026-09-01)
 
 

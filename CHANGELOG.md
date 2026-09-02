@@ -1,3 +1,10 @@
+## [6.4.4](https://github.com/informatievlaanderen/address-registry/compare/v6.4.3...v6.4.4) (2026-09-02)
+
+
+### Bug Fixes
+
+* **lambert:** projections handle crsevent with removed addresses ([f42812f](https://github.com/informatievlaanderen/address-registry/commit/f42812fc336a149aad72fc46c69d662f10f5f3b8))
+
 ## [6.4.3](https://github.com/informatievlaanderen/address-registry/compare/v6.4.2...v6.4.3) (2026-09-02)
 
 

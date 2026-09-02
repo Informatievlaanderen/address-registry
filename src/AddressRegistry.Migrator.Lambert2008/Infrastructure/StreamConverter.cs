@@ -13,7 +13,6 @@ namespace AddressRegistry.Migrator.Lambert2008.Infrastructure
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using NodaTime;
@@ -54,10 +53,11 @@ namespace AddressRegistry.Migrator.Lambert2008.Infrastructure
             var connectionString = configuration.GetConnectionString("Events")!;
             var pageSize = configuration.GetValue<int?>("PageSize") ?? 500;
 
-            _processedStreamsTable = new ProcessedStreamsTable(connectionString, loggerFactory);
+            _dryRun = configuration.GetValue<bool?>("DryRun") ?? true;
+
+            _processedStreamsTable = new ProcessedStreamsTable(connectionString, _dryRun, loggerFactory);
             _sqlStreamsTable = new SqlStreamsTable(connectionString, pageSize);
 
-            _dryRun = configuration.GetValue<bool?>("DryRun") ?? true;
             _maxDegreeOfParallelism = configuration.GetValue<int?>("MaxDegreeOfParallelism") ?? 1;
             _slowStreamThreshold = TimeSpan.FromSeconds(
                 configuration.GetValue<double?>("SlowStreamThresholdInSeconds") ?? 10);
@@ -411,7 +411,7 @@ namespace AddressRegistry.Migrator.Lambert2008.Infrastructure
                 _dispatchDurations.Describe());
 
         private static bool IsLambert2008(ExtendedWkbGeometry position)
-            => position.ToString().ToByteArray().TryReadSrid(out var srid) && srid == SystemReferenceId.SridLambert2008;
+            => position.ToByteArray().TryReadSrid(out var srid) && srid == SystemReferenceId.SridLambert2008;
 
         private static int ParseStreetNamePersistentLocalId(string streamId)
         {

@@ -146,6 +146,11 @@ Its operating model is *stop and evaluate*, not one long run, which drives most 
 - **`DryRun` defaults to `true`**, so the job cannot transform by accident. A dry run loads and measures
   every stream and reports how many addresses would be transformed, but dispatch timings are not recorded
   at all rather than recorded as zero.
+- **A dry run's bookkeeping is its own.** Rows carry `IsDryRun` and every read filters on it. A dry run
+  dispatches nothing, so letting it advance the watermark would make the real run that follows skip every
+  stream it measured and transform nothing — the failure mode being an apparently successful run that did
+  not happen. Keeping both in one table also keeps both sets of timings queryable, which is what the table
+  is for; the primary key is `(Id, IsDryRun)`.
 
 Idempotency at the aggregate covers what the bookkeeping cannot: a stream dispatched but not recorded is
 re-dispatched on the next run and applies nothing.

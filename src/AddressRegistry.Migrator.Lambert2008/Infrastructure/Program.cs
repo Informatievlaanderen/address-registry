@@ -31,7 +31,15 @@ namespace AddressRegistry.Migrator.Lambert2008.Infrastructure
 
             var closing = new AutoResetEvent(false);
             ct.Register(() => closing.Set());
-            Console.CancelKeyPress += (_, _) => cancellationTokenSource.Cancel();
+
+            // Cancel = true keeps the process alive so the run stops where the bookkeeping expects it to: the
+            // streams of the current page are recorded, the page is deliberately left incomplete, and the logs
+            // are flushed. Without it Ctrl-C terminates immediately, mid-page.
+            Console.CancelKeyPress += (_, eventArgs) =>
+            {
+                eventArgs.Cancel = true;
+                cancellationTokenSource.Cancel();
+            };
 
             AppDomain.CurrentDomain.FirstChanceException += (_, eventArgs) =>
                 Log.Debug(

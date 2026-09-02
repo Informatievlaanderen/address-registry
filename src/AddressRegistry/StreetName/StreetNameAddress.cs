@@ -6,7 +6,6 @@ namespace AddressRegistry.StreetName
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
-    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Events;
     using Exceptions;
     // Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology declares a WKBReaderFactory of its own, and a using
@@ -661,7 +660,7 @@ namespace AddressRegistry.StreetName
         /// </remarks>
         public void TransformPositionToLambert2008()
         {
-            var extendedWkb = Geometry.Geometry.ToString().ToByteArray();
+            var extendedWkb = Geometry.Geometry.ToByteArray();
             var position = WKBReaderFactory.CreateForEwkb(extendedWkb).Read(extendedWkb);
 
             if (position.SRID == SystemReferenceId.SridLambert2008)

@@ -15,17 +15,24 @@ namespace AddressRegistry.Migrator.Lambert2008.Infrastructure
     /// starting over. Lives in its own schema next to the event store, in the same database, so a stream
     /// and its bookkeeping cannot drift apart across databases.
     /// </summary>
+    /// <remarks>
+    /// A dry run records its own rows and reads only its own: it dispatches nothing, so letting it advance
+    /// the watermark a real run resumes from would make that run skip every stream the dry run measured and
+    /// transform nothing. Both modes still keep their timings, which is what the table is for.
+    /// </remarks>
     internal sealed class ProcessedStreamsTable
     {
         private const string TableName = "ProcessedStreams";
         private const string Table = $"[{Schema.MigrateLambert2008}].[{TableName}]";
 
         private readonly string _connectionString;
+        private readonly bool _dryRun;
         private readonly ILogger<ProcessedStreamsTable> _logger;
 
-        public ProcessedStreamsTable(string connectionString, ILoggerFactory loggerFactory)
+        public ProcessedStreamsTable(string connectionString, bool dryRun, ILoggerFactory loggerFactory)
         {
             _connectionString = connectionString;
+            _dryRun = dryRun;
             _logger = loggerFactory.CreateLogger<ProcessedStreamsTable>();
         }
 
@@ -36,9 +43,10 @@ namespace AddressRegistry.Migrator.Lambert2008.Infrastructure
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = N'{Schema.MigrateLambert2008}')
     EXEC('CREATE SCHEMA [{Schema.MigrateLambert2008}]');
 
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = '{TableName}' and xtype = 'U')
+IF OBJECT_ID(N'{Table}', N'U') IS NULL
 CREATE TABLE {Table}(
     [Id] [int] NOT NULL,
+    [IsDryRun] [bit] NOT NULL,
     [StreetNamePersistentLocalId] [int] NOT NULL,
     [AddressCount] [int] NOT NULL,
     [ConvertedAddresses] [int] NOT NULL,
@@ -46,7 +54,7 @@ CREATE TABLE {Table}(
     [DispatchMilliseconds] [int] NOT NULL,
     [IsPageCompleted] [bit] NOT NULL DEFAULT 0,
     [ProcessedAt] [datetimeoffset](7) NOT NULL,
-    CONSTRAINT [PK_Lambert2008ProcessedStreams] PRIMARY KEY CLUSTERED ([Id] ASC)
+    CONSTRAINT [PK_Lambert2008ProcessedStreams] PRIMARY KEY CLUSTERED ([Id] ASC, [IsDryRun] ASC)
 )", cancellationToken: ct));
         }
 
@@ -68,11 +76,12 @@ CREATE TABLE {Table}(
             {
                 await using var connection = new SqlConnection(_connectionString);
                 await connection.ExecuteAsync(
-                    $@"INSERT INTO {Table} (Id, StreetNamePersistentLocalId, AddressCount, ConvertedAddresses, LoadMilliseconds, DispatchMilliseconds, IsPageCompleted, ProcessedAt)
-                       VALUES (@Id, @StreetNamePersistentLocalId, @AddressCount, @ConvertedAddresses, @LoadMilliseconds, @DispatchMilliseconds, 0, SYSDATETIMEOFFSET())",
+                    $@"INSERT INTO {Table} (Id, IsDryRun, StreetNamePersistentLocalId, AddressCount, ConvertedAddresses, LoadMilliseconds, DispatchMilliseconds, IsPageCompleted, ProcessedAt)
+                       VALUES (@Id, @IsDryRun, @StreetNamePersistentLocalId, @AddressCount, @ConvertedAddresses, @LoadMilliseconds, @DispatchMilliseconds, 0, SYSDATETIMEOFFSET())",
                     new
                     {
                         Id = internalId,
+                        IsDryRun = _dryRun,
                         StreetNamePersistentLocalId = streetNamePersistentLocalId,
                         result.AddressCount,
                         result.ConvertedAddresses,
@@ -96,25 +105,27 @@ CREATE TABLE {Table}(
         {
             await using var connection = new SqlConnection(_connectionString);
             await connection.ExecuteAsync(
-                $"UPDATE {Table} SET IsPageCompleted = 1 WHERE Id IN @internalIds",
-                new { internalIds = internalIds.ToArray() });
+                $"UPDATE {Table} SET IsPageCompleted = 1 WHERE Id IN @internalIds AND IsDryRun = @IsDryRun",
+                new { internalIds = internalIds.ToArray(), IsDryRun = _dryRun });
         }
 
-        /// <summary>How many streams earlier runs already recorded, so progress is reported over the whole job.</summary>
+        /// <summary>How many streams earlier runs in this mode already recorded, so progress is reported over the whole job.</summary>
         public async Task<int> GetProcessedCount(CancellationToken ct)
         {
             await using var connection = new SqlConnection(_connectionString);
             return await connection.ExecuteScalarAsync<int>(new CommandDefinition(
-                $"SELECT COUNT(*) FROM {Table}",
+                $"SELECT COUNT(*) FROM {Table} WHERE IsDryRun = @IsDryRun",
+                new { IsDryRun = _dryRun },
                 cancellationToken: ct));
         }
 
-        /// <summary>The highest internal id below which every stream is known to be done.</summary>
+        /// <summary>The highest internal id below which every stream is known to be done in this mode.</summary>
         public async Task<int> GetResumeCursor(CancellationToken ct)
         {
             await using var connection = new SqlConnection(_connectionString);
             return await connection.ExecuteScalarAsync<int?>(new CommandDefinition(
-                $"SELECT MAX(Id) FROM {Table} WHERE IsPageCompleted = 1",
+                $"SELECT MAX(Id) FROM {Table} WHERE IsPageCompleted = 1 AND IsDryRun = @IsDryRun",
+                new { IsDryRun = _dryRun },
                 cancellationToken: ct)) ?? 0;
         }
 
@@ -126,8 +137,8 @@ CREATE TABLE {Table}(
         {
             await using var connection = new SqlConnection(_connectionString);
             return await connection.QueryAsync<int>(new CommandDefinition(
-                $"SELECT Id FROM {Table} WHERE Id > @cursor",
-                new { cursor },
+                $"SELECT Id FROM {Table} WHERE Id > @cursor AND IsDryRun = @IsDryRun",
+                new { cursor, IsDryRun = _dryRun },
                 cancellationToken: ct));
         }
     }

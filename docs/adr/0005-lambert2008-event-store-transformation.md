@@ -85,7 +85,7 @@ changed" reacts.
 | WFS V2 / V3, WMS V3 / V4 | updated | **not** bumped |
 | Elastic list, search | updated | field omitted from the partial update |
 | Feed | document updated | no cloud event, version untouched |
-| Legacy syndication | — | `DoNothing` |
+| Legacy syndication | new item, position updated | **not** bumped |
 | Integration version | new version row | — |
 | LastChangedList (v1, v3) | — | bumped |
 | Producers (v3, v4, readdress-fix, Oslo snapshot) | — | produced |
@@ -114,11 +114,14 @@ the write is silently dropped.
 does change: Api.Oslo version 3 goes from one `geometrie` entry to two once the position it reads is
 Lambert 2008 (see ADR 0004), and version 2 can shift by rounding. The caches have to be invalidated.
 
-**Legacy syndication does nothing**, pending a decision with the analysts. The consequence is that the
-syndication item keeps its Lambert 72 `PointPosition` indefinitely. Output stays correct either way,
-because the `objectCrs` filter reprojects on read (ADR 0004), but the syndication table and the detail
-table will disagree on SRID after the transformation. If that is not wanted, the fix is the same shape as
-the feed's: update the row in place instead of cloning a new version.
+**Legacy syndication publishes the event but not a version.** It clones a new item as it does for every
+other event — so the entry appears in the feed, carrying the transformed `PointPosition` and
+`AddressPositionCrsWasChanged` as its `ChangeType` — and then puts `LastChangedOn` back to the value the
+address's last real change gave it. Consumers reading the feed sequentially therefore see the
+transformation and the new position; consumers keying on the version see no new version, which is the same
+rule the rest of the table follows. It also updates `AddressBoxNumberSyndicationHelper`: that row is what
+a box number address's next item is cloned from, so leaving it in Lambert 72 would resurrect the old
+position on that address's next real change.
 
 **No projection needs a rebuild.** Every one of them handles the event, so each converges on its own as
 the transformation runs. That is a property worth keeping rather than a coincidence.
@@ -176,7 +179,9 @@ expires — which is exactly what the stop-and-evaluate loop does repeatedly.
 - Kafka consumers receive an `AddressPositionCrsWasChanged` message per address. The feed does not carry
   one, so a consumer reading the feed rather than Kafka sees the new coordinates only on the address's next
   real change.
-- The syndication feed's stored position stays Lambert 72 until the open question above is settled.
+- The syndication feed carries an entry per transformed address, so a consumer replaying it sees ~10^6
+  entries whose only change is the reference system. Their `LastChangedOn` is unchanged, so a consumer
+  keying on the version sees nothing new.
 - Versions and `VersionTimestamp`s do not move for ~10^6 addresses, so anything downstream that polls "what
   changed since" will not see the transformation. That is the intent, and it is the reason
   LastChangedList is the one exception.

@@ -861,9 +861,41 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
-            // A reprojection does not change the address, so it produces no new version in the syndication feed.
-            // See ADR 0004.
-            When<Envelope<AddressPositionCrsWasChanged>>(DoNothing);
+            // The event is published in the feed, carrying the position the event store now holds, but the
+            // transformation is not a change to the address: LastChangedOn keeps the value the address's last
+            // real change gave it. See ADR 0005.
+            When<Envelope<AddressPositionCrsWasChanged>>(async (context, message, ct) =>
+            {
+                // Read up front so the version can be carried over: CloneAndApplyEventInfo sets LastChangedOn
+                // to the event's timestamp and the edit below is what puts it back. A missing item is reported
+                // by CreateNewAddressSyndicationItem, which is why this is only dereferenced inside the edit.
+                var previous = await context.AddressSyndication.LatestPosition(
+                    message.Message.AddressPersistentLocalId, ct);
+
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x =>
+                    {
+                        x.PositionMethod = message.Message.GeometryMethod;
+                        x.PositionSpecification = message.Message.GeometrySpecification;
+                        x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
+                        x.LastChangedOn = previous!.LastChangedOn;
+                    },
+                    ct);
+
+                // The helper carries the position a box number address is cloned from, so leaving it in
+                // Lambert 72 would resurrect the old position on that address's next real change.
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x =>
+                    {
+                        x.PositionMethod = message.Message.GeometryMethod;
+                        x.PositionSpecification = message.Message.GeometrySpecification;
+                        x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
+                    },
+                    ct);
+            });
 
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {

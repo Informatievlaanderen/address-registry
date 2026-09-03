@@ -527,6 +527,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
+                            matchOnHashOnly: true,
                             ct),
                         message.Position,
                         ct);

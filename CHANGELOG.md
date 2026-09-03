@@ -1,3 +1,10 @@
+## [6.4.5](https://github.com/informatievlaanderen/address-registry/compare/v6.4.4...v6.4.5) (2026-09-03)
+
+
+### Bug Fixes
+
+* **snapshot:** bump package and matchhash only for crswaschanged ([049211b](https://github.com/informatievlaanderen/address-registry/commit/049211b90b14266ae75f2041d0c56dc5fc6e1e9b))
+
 ## [6.4.4](https://github.com/informatievlaanderen/address-registry/compare/v6.4.3...v6.4.4) (2026-09-02)
 
 

@@ -21,8 +21,8 @@ Positions are persisted as EWKB, which carries its own SRID. So a reader never h
 reference system — it only has to stop hardcoding one.
 
 This ADR covers the read side: `Projections.Legacy`, `Projections.AddressMatch`, `Api.Oslo`,
-`Projections.Elastic`, `Projections.Integration`, `Projections.Wfs`, `Projections.Wms` and
-`Projections.Extract`.
+`Projections.Feed`, `Projections.Elastic`, `Projections.Integration`, `Projections.Wfs`,
+`Projections.Wms` and `Projections.Extract`.
 
 ## Decision
 
@@ -125,6 +125,76 @@ persisted. Two things changed, neither of them to the response:
 - it branches on `geometry.IsLambert72()` rather than re-parsing the raw bytes with `TryReadSrid` and
   comparing against `SystemReferenceId.SridLambert2008`, so the SRID is read once, from the geometry
   the response is built from.
+
+### Projections.Feed
+
+Unchanged, and the only read-side projection that already handled both reference systems, in both
+directions, before this ADR. It gets a section anyway: that is a property to keep rather than a
+coincidence, and the feed is the second place — after the version 2 syndication object — where the
+reference system cannot be decided downstream.
+
+`Api.Oslo` version 3's change feed serves `AddressFeedItem.CloudEventAsString` verbatim: a JSON string
+the projection rendered when it handled the event. Nothing between the projection and the consumer
+parses a coordinate, so whichever reference systems a cloud event was written in are the ones it keeps
+forever. The decision is made once, at projection time, and is not revisited on read the way every other
+consumer here revisits it.
+
+#### `GmlHelpers.ParseGeometry` decides "no SRID means Lambert 72" a second time
+
+Events reach this projection as EWKB *hex strings* rather than bytes, so instead of calling
+`AddressRegistry.WKBReaderFactory.CreateForEwkb` it checks `TryReadSrid` itself, rebuilds the hex through
+`ExtendedWkbGeometry.CreateEWkb` — which stamps Lambert 72 — when there is none, and reads the result
+with GrAr's `WKBReaderFactory.CreateForEwkbAsHex`. Same rule, reached by a different route. It is the one
+place outside `WKBReaderFactory` that encodes the fallback, so a change to that rule has to be made in
+both.
+
+#### `CreatePositionValues` always emits both, Lambert 72 first
+
+It branches on the geometry's SRID and transforms the other one: a Lambert 72 position is passed through
+and followed by its `TransformFromLambert72To08(roundingPrecision: 2)` equivalent, a Lambert 2008 one is
+preceded by its `TransformFromLambert08To72()` equivalent and then passed through.
+
+So the `Position` attribute of a cloud event carries two `PointGeometrie` entries today and two after the
+conversion — unlike Api.Oslo version 3, which goes from one to two. All that changes is which of the two
+was stored and which was derived, and a consumer cannot see even that: the entries are GML with an
+`srsName`, and `ConvertToGml(false)` formats coordinates as `F2` (see ADR 0003), so the asymmetric
+rounding — 2 decimals on the 72 → 08 transform, none on 08 → 72 — never reaches the output.
+
+An SRID that is neither throws `ArgumentOutOfRangeException`. That is the right failure here rather than
+a fallback: a position in a third reference system is a bug, and this is the one projection where a wrong
+value is frozen into a served document instead of being recomputed on the next read.
+
+#### Removed addresses need no guard
+
+The feed is on ADR 0005's list of projections that needed nothing for the transformation event, and this
+is why. `AddressWasMigratedToStreetName` writes the document — position included — and only *then*
+returns without a cloud event when `IsRemoved`; the three removal handlers flag the document and leave it
+in place; `FindDocument` does not filter on the flag. So the `AddressPositionCrsWasChanged` handler finds
+a row for a removed address exactly as it does for any other, where WFS and WMS had to start passing
+`allowRemovedAddress: true`.
+
+Reprojecting a removed document keeps the stored state honest rather than being something a later event
+depends on: `AddressRemovalWasCorrected` rebuilds the position from its own payload, so an un-removed
+address ends up correct either way.
+
+What the handler does *beyond* reading the position — no cloud event, no version bump, and the manual
+`context.Entry(document).Property(x => x.Document).IsModified = true` that goes with skipping
+`AddCloudEvent` — belongs to [ADR 0005](0005-lambert2008-event-store-transformation.md).
+
+#### `PositionAsGml` and the test gap
+
+`PositionAsGml` on the document is the position as persisted, in whichever reference system that is. Every
+position handler writes it and nothing reads it, which makes it the feed's equivalent of Elastic's
+`GeometryAsWkt` — except that it does carry an `srsName`, so unlike the pre-EWKT `GeometryAsWkt` it says
+which system it is in. `ExtendedWkbGeometry`, stored next to it, is the field the projection itself
+compares against to decide whether a position actually changed.
+
+The feed has no `GivenPositionInEitherReferenceSystem` of its own. `AddressFeedProjectionsTests` drives
+every handler from the Lambert 72 `WithExtendedWkbGeometry` fixture, and `AssertPositionList` does pin
+that both `srsName`s are present and that one entry equals the stored `PositionAsGml` — which is the
+assertion that would hold in either direction. But no test stores a Lambert 2008 position and then emits
+a cloud event from it, so the `SridLambert2008` branch of `CreatePositionValues` is not covered. That is
+the one gap this section leaves open.
 
 ### Projections.Elastic
 
@@ -338,6 +408,10 @@ asserting the stored bounding box is Lambert 72 for events in either reference s
   but it does mean the array length changes for consumers that assumed one entry.
 - Consumers reading `GeometryAsWkt` — none today — must handle the EWKT prefix, and get to see the
   reference system instead of guessing it.
+- The change feed's cloud events are unaffected in shape, before or after the conversion: the `Position`
+  attribute has always carried both reference systems, and the GML is `F2`-formatted either way. Cloud
+  events written before the conversion keep the pair computed at the time, which is what they should say —
+  they record what was served then.
 - **Geo search moves by ~90 m per address as the conversion progresses.** Addresses already reprojected
   from Lambert 2008 get their accurate WGS84 position; those not yet reprojected keep the ~90 m error
   described above. During the conversion the index therefore holds both, and two neighbouring addresses
@@ -353,4 +427,4 @@ asserting the stored bounding box is Lambert 72 for events in either reference s
 - Still to do for the conversion: the lambda's `GmlHelpers.ToExtendedWkbGeometry()` per ADR 0003, and the
   event store conversion itself — both covered by
   [ADR 0005](0005-lambert2008-event-store-transformation.md), which also records what each projection does
-  with the transformation event. `Projections.Feed` already handled both directions before this ADR.
+  with the transformation event.

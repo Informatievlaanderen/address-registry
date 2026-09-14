@@ -70,7 +70,7 @@ the reader.
 
 | Component | Project                                      | Responsibility |
 |---|----------------------------------------------|---|
-| `TryReadSridGml` / `ReadGeometry` | `Grar.Common` / `Api.BackOffice.Abstractions | Read the `srsName` attribute and map it to a SRID. Accepts 31370 and 3812, with either `http` or `https` scheme. |
+| `TryReadSridGml` / `ReadGeometry` | `Grar.Common` / `Api.BackOffice.Abstractions` | Read the `srsName` attribute and map it to a SRID. Accepts 31370 and 3812, with either `http` or `https` scheme. |
 | `GmlPointValidator.IsValidPoint` | `Api.BackOffice.Abstractions`                | Replaces `GrAr.Edit`'s `GmlPointValidator` for requests; validates a GML point in either supported reference system. |
 | `UseLambert2008EventStoreToggle` | `Api.BackOffice.Abstractions`                | Exposes `EventStoreSrid`. |
 | `GmlPositionNormalizer.ToEventStoreSrs` | `Api.BackOffice`                             | Converts the request's GML to `EventStoreSrid`. |

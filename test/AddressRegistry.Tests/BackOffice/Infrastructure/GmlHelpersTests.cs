@@ -23,6 +23,19 @@ namespace AddressRegistry.Tests.BackOffice.Infrastructure
             "<gml:Point xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
             "<gml:pos>103671.37 192046.71</gml:pos></gml:Point>";
 
+        /// <summary>
+        /// <see cref="GeometryHelpers.GmlPointGeometryLambert2008"/> with millimetres and finer on it. The
+        /// normalizer passes a position already in the event store's reference system through verbatim, so
+        /// this is what an over-precise request looks like by the time the lambda sees it.
+        /// </summary>
+        private const string OverPreciseGmlPointLambert2008 =
+            "<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/3812\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+            "<gml:pos>603668.8712345 692041.5087654</gml:pos></gml:Point>";
+
+        private const string OverPreciseGmlPointLambert72 =
+            "<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+            "<gml:pos>103671.3712345 192046.7087654</gml:pos></gml:Point>";
+
         private const string GmlPointInWgs84 =
             "<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
             "<gml:pos>4.35 51.21</gml:pos></gml:Point>";
@@ -65,6 +78,36 @@ namespace AddressRegistry.Tests.BackOffice.Infrastructure
                 .ToByteArray()
                 .TryReadSrid(out _)
                 .Should().BeTrue();
+        }
+
+        /// <summary>
+        /// The event store holds positions at centimetre precision and nothing finer gets in. A caller
+        /// cannot reproduce a millimetre from what the API serves — every reader rounds to centimetres — so
+        /// persisting one would mean that posting the position straight back reads as an edit and applies an
+        /// <c>AddressPositionWasCorrectedV2</c> for a correction that corrected nothing.
+        /// </summary>
+        [Fact]
+        public void GivenAPositionBeyondCentimetrePrecision_ThenItIsRoundedToCentimetres()
+        {
+            var position = ReadBack(OverPreciseGmlPointLambert2008);
+
+            position.X.Should().Be(603668.87);
+            position.Y.Should().Be(692041.51);
+        }
+
+        /// <summary>
+        /// And the rounded position is byte-identical to the one the same point sent at centimetre
+        /// precision produces, which is what makes the second edit a no-op instead of a second event.
+        /// </summary>
+        [Theory]
+        [InlineData(OverPreciseGmlPointLambert2008, GeometryHelpers.GmlPointGeometryLambert2008)]
+        [InlineData(OverPreciseGmlPointLambert72, GeometryHelpers.GmlPointGeometry)]
+        public void GivenAPositionBeyondCentimetrePrecision_ThenTheEwkbIsTheSameAsAtCentimetrePrecision(
+            string overPrecise,
+            string atCentimetrePrecision)
+        {
+            overPrecise.ToExtendedWkbGeometry()
+                .Should().Be(atCentimetrePrecision.ToExtendedWkbGeometry());
         }
 
         [Theory]

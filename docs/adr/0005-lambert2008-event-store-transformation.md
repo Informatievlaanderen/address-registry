@@ -58,6 +58,38 @@ address is. The transformation therefore uses `LambertTransformation.TransformFr
 `roundingPrecision: 2`, which transforms unconditionally, at the centimetre precision positions are
 persisted at.
 
+### Centimetres are enforced on the way in, not just on the way out
+
+`ExtendedWkbGeometry.Create` rounds to two decimals before it writes. Every path that writes a new or
+corrected position goes through it — the BackOffice lambda through `GmlHelpers.ToExtendedWkbGeometry`, and
+the transformation itself — so that makes centimetre precision a property of the event store rather than a
+convention the transformation happened to follow.
+
+`ExtendedWkbGeometry.CreateEWkb` also writes EWKB bytes, and deliberately does not round. It re-serializes
+a position the event store already holds, for the feed projection to read SRID-less legacy hex; rounding
+there would show coordinates that differ from what the event store actually has.
+
+The reason is the aggregate's no-op check. `CorrectPosition` and `ChangePosition` compare the EWKB *bytes*
+— `AddressGeometry` over `ExtendedWkbGeometry`, a `ByteArrayValueObject` — so two serializations of the
+same point read as a change. Every reader answers at centimetre precision, so a position persisted finer
+than that can never be posted back as it was stored: a caller who edits nothing sends the rounded position
+the API served them, the bytes differ, and the address gets an `AddressPositionWasCorrectedV2` recording a
+correction that corrected nothing. `GmlPositionNormalizer` passes a position already in the event store's
+reference system through verbatim, precision included, so without this the BackOffice had a direct route
+for one.
+
+This is the same failure the missing SRID caused. `GmlHelpers.ToExtendedWkbGeometry` used to write plain
+WKB (`geometry.AsBinary()`), so after a stream was transformed every correction arrived four bytes shorter
+than the position it was compared against and applied an event whatever the caller sent. Both are fixed at
+the writer; `AggregateTests/WhenCorrectingAddressPosition/GivenPositionWasTransformedToLambert2008` pins
+the round trip.
+
+What is left is not serialization. Version 2 answers in Lambert 72 whatever the event store holds, so a
+caller who edits nothing sends the position through 08 -> 72 -> 08 with a rounding at each end. Over a
+200 m grid of Flanders, 20 positions in 517 536 come back a centimetre off, which really is a different
+position and which the aggregate can only treat as one. Version 3 answers in the stored reference system
+and round-trips exactly.
+
 ### Reading the current position
 
 `AddressRegistry.WKBReaderFactory.CreateForEwkb` falls back to the Lambert 72 reader for bytes that carry

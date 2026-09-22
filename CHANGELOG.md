@@ -1,3 +1,11 @@
+## [6.4.6](https://github.com/informatievlaanderen/address-registry/compare/v6.4.5...v6.4.6) (2026-09-22)
+
+
+### Bug Fixes
+
+* **api:** update example address detail ([60449f0](https://github.com/informatievlaanderen/address-registry/commit/60449f01040835fdc12c586c2b586ff257772f33))
+* **backoffice:** sending more than 2 decimals gets rounded ([0e62766](https://github.com/informatievlaanderen/address-registry/commit/0e627668a16927f6de411d0ce8c4bdeea41490b6))
+
 ## [6.4.5](https://github.com/informatievlaanderen/address-registry/compare/v6.4.4...v6.4.5) (2026-09-03)
 
 

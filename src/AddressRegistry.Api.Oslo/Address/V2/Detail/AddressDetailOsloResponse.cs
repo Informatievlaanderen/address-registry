@@ -227,7 +227,7 @@ namespace AddressRegistry.Api.Oslo.Address.V2.Detail
             var addressPosition = new AddressPosition(new GmlJsonPoint(gml),
                 PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Gebouw);
             var adresDetailHuisnummer = new AdresDetailHuisnummerObject(59, string.Format(_responseOptions.DetailUrl, 59));
-            var gemeente = new AdresDetailGemeente("9000", string.Format(_responseOptions.GemeenteDetailUrl, "9000"),
+            var gemeente = new AdresDetailGemeente("44021", string.Format(_responseOptions.GemeenteDetailUrl, "44021"),
                 new GeografischeNaam("Gent", Taal.NL));
             var straat = new AdresDetailStraatnaam("748", string.Format(_responseOptions.StraatnaamDetailUrl, "748"),
                 new GeografischeNaam("Teststraat", Taal.NL));

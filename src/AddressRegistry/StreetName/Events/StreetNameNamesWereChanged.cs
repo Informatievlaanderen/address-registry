@@ -8,7 +8,7 @@
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
-    [EventTags(Tag.StreetName)]
+    [EventTags(Tag.StreetName, EventTag.For.Sync)]
     [EventName(EventName)]
     [EventDescription("De na(a)m(en) van de straatnaam (in een bepaalde taal) werd(en) gewijzigd.")]
     public class StreetNameNamesWereChanged : IStreetNameEvent

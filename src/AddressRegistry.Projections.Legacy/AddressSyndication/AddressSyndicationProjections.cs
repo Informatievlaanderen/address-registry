@@ -350,10 +350,40 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             When<Envelope<StreetNameWasRemoved>>(DoNothing);
             When<Envelope<StreetNameWasReaddressed>>(DoNothing);
             When<Envelope<StreetNameWasRenamed>>(DoNothing);
-            When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(DoNothing);
-            When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(DoNothing);
-            When<Envelope<StreetNameNamesWereChanged>>(DoNothing);
-            When<Envelope<StreetNameNamesWereCorrected>>(DoNothing);
+
+            // The street name is part of the address, so a change to its names or homonym additions is a new
+            // version of every (non-removed) address on it, even though no address field in the feed changes.
+            When<Envelope<StreetNameNamesWereChanged>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await context.CreateNewAddressSyndicationItem(addressPersistentLocalId, message, _ => { }, ct);
+                }
+            });
+
+            When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await context.CreateNewAddressSyndicationItem(addressPersistentLocalId, message, _ => { }, ct);
+                }
+            });
+
+            When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await context.CreateNewAddressSyndicationItem(addressPersistentLocalId, message, _ => { }, ct);
+                }
+            });
+
+            When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await context.CreateNewAddressSyndicationItem(addressPersistentLocalId, message, _ => { }, ct);
+                }
+            });
 
             #endregion
 

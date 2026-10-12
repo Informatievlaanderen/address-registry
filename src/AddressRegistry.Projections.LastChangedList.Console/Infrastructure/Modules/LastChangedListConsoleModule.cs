@@ -79,6 +79,11 @@ namespace AddressRegistry.Projections.LastChangedList.Console.Infrastructure.Mod
                         "AddressRegistry.Projections.Legacy.AddressDetailV2WithParent.AddressDetailProjectionsV2WithParent"))
                 .AsSelf();
 
+            // Retry transient failures (e.g. sql timeouts) before the projection gets stopped.
+            var projectionSettings = ConnectedProjectionSettings
+                .Configure(settings =>
+                    settings.ConfigureLinearBackoff<Exception>(_configuration, "LastChangedList"));
+
             builder
                 .RegisterProjectionMigrator<LastChangedListContextMigrationFactory>(
                     _configuration,
@@ -88,10 +93,10 @@ namespace AddressRegistry.Projections.LastChangedList.Console.Infrastructure.Mod
                     _loggerFactory)
                 .RegisterProjections<LastChangedListProjections, LastChangedListContext>(
                     context => new LastChangedListProjections(context.Resolve<LastChangedListAddressCacheValidator>()),
-                    ConnectedProjectionSettings.Default)
+                    projectionSettings)
                 .RegisterProjections<LastChangedListProjectionsV3, LastChangedListContext>(
                     context => new LastChangedListProjectionsV3(context.Resolve<LastChangedListAddressCacheValidator>()),
-                    ConnectedProjectionSettings.Default);
+                    projectionSettings);
         }
     }
 }

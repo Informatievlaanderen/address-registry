@@ -1,3 +1,10 @@
+## [6.4.8](https://github.com/informatievlaanderen/address-registry/compare/v6.4.7...v6.4.8) (2026-10-14)
+
+
+### Bug Fixes
+
+* **sync:** add streetname correction events to bump version ([706f04b](https://github.com/informatievlaanderen/address-registry/commit/706f04b105e5548f4a10f76e21d678526e691097))
+
 ## [6.4.7](https://github.com/informatievlaanderen/address-registry/compare/v6.4.6...v6.4.7) (2026-10-14)
 
 

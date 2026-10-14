@@ -1,3 +1,11 @@
+## [6.4.7](https://github.com/informatievlaanderen/address-registry/compare/v6.4.6...v6.4.7) (2026-10-14)
+
+
+### Bug Fixes
+
+* **feed:** remove subject from transform events ([94be837](https://github.com/informatievlaanderen/address-registry/commit/94be837c8e8e35074e63a088fd159f38d92e72a6))
+* **lastchanged:** add retry/recovery lastchangedlist ([5ae6c21](https://github.com/informatievlaanderen/address-registry/commit/5ae6c21c19ca77d0db0c2d1dd1ba0717d6be17ba))
+
 ## [6.4.6](https://github.com/informatievlaanderen/address-registry/compare/v6.4.5...v6.4.6) (2026-09-22)
 
 

@@ -343,7 +343,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     };
 
                     await AddTransformCloudEvent(message,
-                        document.PersistentLocalId,
                         [document.PersistentLocalId, message.Message.NewAddressPersistentLocalId.Value],
                         context, transformEvent);
                 }
@@ -441,7 +440,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                     };
 
                     await AddTransformCloudEvent(message,
-                        document.PersistentLocalId,
                         [document.PersistentLocalId, message.Message.NewAddressPersistentLocalId.Value],
                         context, transformEvent);
                 }
@@ -939,7 +937,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 NisCodes = [nisCode]
             };
 
-            await AddTransformCloudEvent(message, null, addressPersistentLocalIds.Distinct().ToList(), context, transformEvent);
+            await AddTransformCloudEvent(message, addressPersistentLocalIds.Distinct().ToList(), context, transformEvent);
 
             // update documents
             foreach (var readdressedHouseNumber in message.Message.ReaddressedHouseNumbers)
@@ -1028,7 +1026,6 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
 
         private async Task AddTransformCloudEvent<T>(
             Envelope<T> message,
-            int? addressPersistentLocalIdSubject,
             List<int> addressPersistentLocalIds,
             FeedContext context,
             AddressCloudTransformEvent transformEvent)
@@ -1057,7 +1054,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 addressFeedItem.Id,
                 message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset(),
                 AddressEventTypes.TransformV1,
-                addressPersistentLocalIdSubject?.ToString(),
+                null,
                 transformEvent,
                 _changeFeedService.DataSchemaUriTransform,
                 message.EventName,

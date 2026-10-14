@@ -1529,7 +1529,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<long>(),
                             addressWasRejectedBecauseOfMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset(),
                             AddressEventTypes.TransformV1,
-                            addressPersistentLocalId.ToString(),
+                            null,
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(NisCode) && t.NisCodes.Contains(newNisCode)
                                 && t.TransformValues.First().From == ToAdresPuri(addressPersistentLocalId)
@@ -1632,7 +1632,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<long>(),
                             addressWasRetiredBecauseOfMunicipalityMerger.Provenance.Timestamp.ToBelgianDateTimeOffset(),
                             AddressEventTypes.TransformV1,
-                            addressPersistentLocalId.ToString(),
+                            null,
                             It.Is<AddressCloudTransformEvent>(t =>
                                 t.NisCodes.Contains(NisCode) && t.NisCodes.Contains(newNisCode)
                                     && t.TransformValues.First().From == ToAdresPuri(addressPersistentLocalId)

@@ -4,11 +4,12 @@
     "net10.0": {
       "Elastic.Clients.Elasticsearch": {
         "type": "Direct",
-        "requested": "[8.17.4, )",
-        "resolved": "8.17.4",
-        "contentHash": "7zZ4xmQv96PlGZiQBfmuicgh3cUoAV9aZlY/vPdba02vWGz307XW+TbI3HaQrm4EPKrvD2PFNQmkJVBvhMZgxw==",
+        "requested": "[8.19.27, )",
+        "resolved": "8.19.27",
+        "contentHash": "p8u39YBvZQi3H+JpgoVgm6Us+57NoKO67UxLqmRURoB3+A59JWpGSmOYO4674UtVTupoNG2I5KH+s3stbf8I3Q==",
         "dependencies": {
-          "Elastic.Transport": "0.5.9"
+          "Elastic.Esql": "0.11.0",
+          "Elastic.Transport": "1.1.0"
         }
       },
       "Microsoft.Extensions.Configuration": {
@@ -33,10 +34,15 @@
         "resolved": "2.8.3",
         "contentHash": "Hv77AfKNDqSUH6MSGW1ZwKWFJ/CNKOe4FD6lpJGNYdSSQeEEsE2KyPlG1IgzA8+CJG8lDQV2vLS4OljHtHohsw=="
       },
+      "Elastic.Esql": {
+        "type": "Transitive",
+        "resolved": "0.11.0",
+        "contentHash": "frYrulxZxDLsAk5vBw6oVG4dOYcGFSOPBsJ+1EfLn/sEB/fS56zVEbEitdVxreY3xREdhZwS9dtUkAqsAt037g=="
+      },
       "Elastic.Transport": {
         "type": "Transitive",
-        "resolved": "0.5.9",
-        "contentHash": "RXoJAeXKaXq67SeLhyDMBPpvlkG940jqJWd5l+rKglMRLJn6X0dkLNlWehpDuouicNdwnYdcuADnqdSOiSvASw=="
+        "resolved": "1.1.0",
+        "contentHash": "ITDBefOt0yZWakd6IiYl8RIw6D978CVvVEpLZaHOG8NSVtiPCLP6GkX+Ieu99wCBoXCYqhz8QBak6xRpycodAg=="
       },
       "Microsoft.Extensions.Configuration.Abstractions": {
         "type": "Transitive",

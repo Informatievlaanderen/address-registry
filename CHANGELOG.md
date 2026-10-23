@@ -1,3 +1,10 @@
+## [6.4.9](https://github.com/informatievlaanderen/address-registry/compare/v6.4.8...v6.4.9) (2026-10-23)
+
+
+### Bug Fixes
+
+* **feed:** correct status only when changed in streetnamewasreaddressed ([2e65524](https://github.com/informatievlaanderen/address-registry/commit/2e655244cd2e8c77f18124c8623f4b52aa5acba5))
+
 ## [6.4.8](https://github.com/informatievlaanderen/address-registry/compare/v6.4.7...v6.4.8) (2026-10-14)
 
 

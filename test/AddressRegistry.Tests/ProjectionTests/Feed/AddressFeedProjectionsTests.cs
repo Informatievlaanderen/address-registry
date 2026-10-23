@@ -1834,6 +1834,74 @@ namespace AddressRegistry.Tests.ProjectionTests.Feed
         }
 
         [Fact]
+        public async Task WhenStreetNameWasReaddressedWithUnchangedStatus_ThenStatusIsNotInAttributes()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var sourceHouseNumberId = 100;
+            var destinationHouseNumberId = 200;
+
+            var sourceHouseProposed = _fixture.Create<AddressWasProposedV2>()
+                .WithStreetNamePersistentLocalId(streetNamePersistentLocalId)
+                .WithAddressPersistentLocalId(sourceHouseNumberId);
+
+            var destHouseProposed = _fixture.Create<AddressWasProposedV2>()
+                .WithStreetNamePersistentLocalId(streetNamePersistentLocalId)
+                .WithAddressPersistentLocalId(destinationHouseNumberId);
+
+            var readdressedHouseNumber = new ReaddressedAddressData(
+                new AddressPersistentLocalId(sourceHouseNumberId),
+                new AddressPersistentLocalId(destinationHouseNumberId),
+                isDestinationNewlyProposed: false,
+                AddressStatus.Proposed,
+                new HouseNumber("1"),
+                boxNumber: null,
+                new PostalCode("9000"),
+                new AddressGeometry(
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    new ExtendedWkbGeometry(sourceHouseProposed.ExtendedWkbGeometry)),
+                sourceIsOfficiallyAssigned: true);
+
+            var addressHouseNumberWasReaddressed = new AddressHouseNumberWasReaddressed(
+                streetNamePersistentLocalId,
+                new AddressPersistentLocalId(destinationHouseNumberId),
+                readdressedHouseNumber,
+                []);
+            ((ISetProvenance)addressHouseNumberWasReaddressed).SetProvenance(_fixture.Create<Provenance>());
+
+            var streetNameWasReaddressed = new StreetNameWasReaddressed(
+                streetNamePersistentLocalId,
+                [addressHouseNumberWasReaddressed]);
+            ((ISetProvenance)streetNameWasReaddressed).SetProvenance(_fixture.Create<Provenance>());
+
+            var position = 1L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(sourceHouseProposed, position),
+                    CreateEnvelope(destHouseProposed, position + 1),
+                    CreateEnvelope(streetNameWasReaddressed, position + 2))
+                .Then(_ =>
+                {
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            streetNameWasReaddressed.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            AddressEventTypes.UpdateV1,
+                            destinationHouseNumberId.ToString(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                !attrs.Any(a => a.Name == AddressAttributeNames.StatusName)),
+                            StreetNameWasReaddressed.EventName,
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressHouseNumberWasReaddressedFromImportedCase_ThenReaddressCloudEventsAreCreated()
         {
             const int importedReaddressExpectedCloudEventCount = 20;

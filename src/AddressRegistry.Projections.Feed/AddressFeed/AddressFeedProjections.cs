@@ -1106,7 +1106,7 @@ namespace AddressRegistry.Projections.Feed.AddressFeed
                 attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.BoxNumber, oldBoxNumber, addressDocument.Document.BoxNumber));
             if(oldPostalCode != addressDocument.Document.PostalCode)
                 attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.PostalCode, OsloNamespaces.Postinfo.ToPuri(oldPostalCode), OsloNamespaces.Postinfo.ToPuri(readdressed.SourcePostalCode)));
-            if(oldStatus != addressDocument.Document.Status)
+            if(oldStatus.Label != addressDocument.Document.Status.Label)
                 attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.StatusName, oldStatus.Id, addressDocument.Document.Status.Id));
             if(oldOfficiallyAssigned != addressDocument.Document.OfficiallyAssigned)
                 attributes.Add(new BaseRegistriesCloudEventAttribute(AddressAttributeNames.OfficiallyAssigned, oldOfficiallyAssigned, addressDocument.Document.OfficiallyAssigned));

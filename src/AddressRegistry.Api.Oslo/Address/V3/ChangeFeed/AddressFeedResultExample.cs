@@ -77,11 +77,11 @@
                                              "oudeWaarde": null,
                                              "nieuweWaarde": [
                                                  {
-                                                     "type": "Punt",
+                                                     "@type": "Punt",
                                                      "gml": "<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>73862.07 211634.58</gml:pos></gml:Point>"
                                                  },
                                                  {
-                                                     "type": "Punt",
+                                                     "@type": "Punt",
                                                      "gml": "<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/3812\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>573857.26 711625.49</gml:pos></gml:Point>"
                                                  }
                                              ]

@@ -1,3 +1,10 @@
+## [6.4.10](https://github.com/informatievlaanderen/address-registry/compare/v6.4.9...v6.4.10) (2026-11-12)
+
+
+### Bug Fixes
+
+* **api:** changefeed docs ([bd09451](https://github.com/informatievlaanderen/address-registry/commit/bd094519ca86fe1de127a6630ebd67f6ba090e66))
+
 ## [6.4.9](https://github.com/informatievlaanderen/address-registry/compare/v6.4.8...v6.4.9) (2026-10-23)
 
 

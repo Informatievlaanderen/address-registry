@@ -1,7 +1,7 @@
 namespace AddressRegistry.Projector.Infrastructure
 {
     using System;
-    using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -9,11 +9,16 @@ namespace AddressRegistry.Projector.Infrastructure
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
+    /// <summary>
+    /// Restarts projections that stopped unexpectedly (crash, timeout, ...) with an increasing backoff.
+    /// Only projections whose persisted user desired state is explicitly "Started" are restarted;
+    /// a projection that was stopped on request (desired state "Stopped") is never touched.
+    /// </summary>
     public sealed class ProjectionAutoRestartBackgroundService : BackgroundService
     {
+        private const string DesiredStateStarted = "Started";
+
         private static readonly TimeSpan CheckInterval = TimeSpan.FromMinutes(1);
-        private static readonly TimeSpan MaxBackoff = TimeSpan.FromHours(1);
-        private const int MaxRetryCount = 5;
 
         private static readonly TimeSpan[] BackoffIntervals =
         [
@@ -26,7 +31,7 @@ namespace AddressRegistry.Projector.Infrastructure
 
         private readonly IConnectedProjectionsManager _projectionsManager;
         private readonly ILogger<ProjectionAutoRestartBackgroundService> _logger;
-        private readonly ConcurrentDictionary<string, ProjectionRetryState> _retryStates = new();
+        private readonly Dictionary<string, ProjectionRetryState> _retryStates = new();
 
         public ProjectionAutoRestartBackgroundService(
             IConnectedProjectionsManager projectionsManager,
@@ -38,75 +43,92 @@ namespace AddressRegistry.Projector.Infrastructure
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("ProjectionAutoRestartBackgroundService started.");
+            _logger.LogInformation("{Service} started.", nameof(ProjectionAutoRestartBackgroundService));
 
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                try
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    await CheckAndRestartProjectionsAsync(stoppingToken);
+                    // Delay first: gives Resume() at application start the chance to start the projections
+                    // and guarantees we never spin in a tight loop when a check throws.
                     await Task.Delay(CheckInterval, stoppingToken);
-                }
-                catch (OperationCanceledException)
-                {
-                    // Graceful shutdown
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error while checking projections for auto-restart.");
+
+                    try
+                    {
+                        await CheckAndRestartProjectionsAsync(stoppingToken);
+                    }
+                    catch (Exception ex) when (ex is not OperationCanceledException)
+                    {
+                        _logger.LogError(ex, "Error while checking projections for auto-restart.");
+                    }
                 }
             }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                // Graceful shutdown
+            }
 
-            _logger.LogInformation("ProjectionAutoRestartBackgroundService stopped.");
+            _logger.LogInformation("{Service} stopped.", nameof(ProjectionAutoRestartBackgroundService));
         }
 
         private async Task CheckAndRestartProjectionsAsync(CancellationToken cancellationToken)
         {
-            var registeredProjections = _projectionsManager.GetRegisteredProjections().ToList();
-            var projectionStates = (await _projectionsManager.GetProjectionStates(cancellationToken)).ToList();
-
-            foreach (var projection in registeredProjections)
+            var stoppedProjectionIds = new List<string>();
+            foreach (var projection in _projectionsManager.GetRegisteredProjections())
             {
                 var projectionId = projection.Id.ToString();
+                if (projection.State == ConnectedProjectionState.Stopped)
+                    stoppedProjectionIds.Add(projectionId);
+                else
+                    _retryStates.Remove(projectionId); // running again, reset backoff
+            }
 
-                if (projection.State != ConnectedProjectionState.Stopped)
+            if (stoppedProjectionIds.Count == 0)
+                return;
+
+            var desiredStates = await GetDesiredStates(cancellationToken);
+
+            foreach (var projectionId in stoppedProjectionIds)
+            {
+                if (!IsDesiredStarted(desiredStates, projectionId))
                 {
-                    // Projection is running, reset retry state
-                    _retryStates.TryRemove(projectionId, out _);
+                    // Stopped on request (or never started): respect it and forget any backoff.
+                    _retryStates.Remove(projectionId);
                     continue;
                 }
 
-                var projectionState = projectionStates.SingleOrDefault(x => x.Name == projectionId);
-                if (projectionState?.DesiredState != "Started")
+                if (!_retryStates.TryGetValue(projectionId, out var retryState))
                 {
-                    continue;
+                    retryState = new ProjectionRetryState();
+                    _retryStates[projectionId] = retryState;
                 }
-
-                // Projection is stopped but desired state is "Started" - try to restart
-                var retryState = _retryStates.GetOrAdd(projectionId, _ => new ProjectionRetryState());
 
                 if (!retryState.ShouldRetry())
+                    continue;
+
+                // Re-read the desired state right before starting, so a stop request that came in
+                // during this check is not overruled.
+                if (!IsDesiredStarted(await GetDesiredStates(cancellationToken), projectionId)
+                    || _projectionsManager.GetRegisteredProjections()
+                        .SingleOrDefault(x => x.Id.ToString() == projectionId)?.State != ConnectedProjectionState.Stopped)
                 {
                     continue;
                 }
 
+                retryState.RecordAttempt();
+
                 _logger.LogWarning(
-                    "Projection '{ProjectionId}' is stopped but desired state is 'Started'. Attempting restart (attempt {AttemptNumber}).",
+                    "Projection '{ProjectionId}' is stopped but desired state is '{DesiredState}'. Attempting restart (attempt {AttemptNumber}).",
                     projectionId,
-                    retryState.RetryCount + 1);
+                    DesiredStateStarted,
+                    retryState.RetryCount);
 
                 try
                 {
                     await _projectionsManager.Start(projectionId, cancellationToken);
-                    retryState.RecordAttempt();
-
-                    _logger.LogWarning(
-                        "Restart command sent for projection '{ProjectionId}'.",
-                        projectionId);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is not OperationCanceledException)
                 {
-                    retryState.RecordAttempt();
                     _logger.LogError(
                         ex,
                         "Failed to restart projection '{ProjectionId}' (attempt {AttemptNumber}).",
@@ -116,17 +138,27 @@ namespace AddressRegistry.Projector.Infrastructure
             }
         }
 
+        private async Task<ILookup<string, string?>> GetDesiredStates(CancellationToken cancellationToken)
+            => (await _projectionsManager.GetProjectionStates(cancellationToken))
+                .ToLookup(x => x.Name, x => x.DesiredState, StringComparer.OrdinalIgnoreCase);
+
+        private static bool IsDesiredStarted(ILookup<string, string?> desiredStates, string projectionId)
+        {
+            // Only restart when every known desired state for this projection is explicitly "Started".
+            var states = desiredStates[projectionId].ToList();
+            return states.Count > 0
+                   && states.All(x => string.Equals(x, DesiredStateStarted, StringComparison.OrdinalIgnoreCase));
+        }
+
         private sealed class ProjectionRetryState
         {
-            public int RetryCount { get; private set; }
             private DateTimeOffset _lastAttempt = DateTimeOffset.MinValue;
+
+            public int RetryCount { get; private set; }
 
             public bool ShouldRetry()
             {
-                var backoff = RetryCount < MaxRetryCount
-                    ? BackoffIntervals[RetryCount]
-                    : MaxBackoff;
-
+                var backoff = BackoffIntervals[Math.Min(RetryCount, BackoffIntervals.Length - 1)];
                 return DateTimeOffset.UtcNow - _lastAttempt >= backoff;
             }
 

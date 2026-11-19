@@ -1,3 +1,11 @@
+## [6.4.11](https://github.com/informatievlaanderen/address-registry/compare/v6.4.10...v6.4.11) (2026-11-19)
+
+
+### Bug Fixes
+
+* **lambert:** add more logging in migrator ([d6ed58b](https://github.com/informatievlaanderen/address-registry/commit/d6ed58b2930fdb9c64b0f48cf6db5a68be9c231e))
+* **projector:** automatic restart of projections wait for startup ([7b7e3d6](https://github.com/informatievlaanderen/address-registry/commit/7b7e3d69506f7444ea5b612d7773b256eb46c71f))
+
 ## [6.4.10](https://github.com/informatievlaanderen/address-registry/compare/v6.4.9...v6.4.10) (2026-11-12)
 
 

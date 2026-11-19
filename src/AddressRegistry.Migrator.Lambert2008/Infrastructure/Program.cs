@@ -79,8 +79,13 @@ namespace AddressRegistry.Migrator.Lambert2008.Infrastructure
                             .WaitAndRetryAsync(
                                 20,
                                 _ => TimeSpan.FromSeconds(60),
-                                (_, timespan) => Log.Information(
-                                    "SqlException occurred, retrying after {Seconds} seconds.", timespan.Seconds))
+                                (exception, timespan, retryCount, _) => Log.Warning(
+                                    exception,
+                                    "SqlException {SqlErrorNumber} occurred (attempt {RetryCount} of 20), retrying after {Seconds} seconds: {Message}",
+                                    (exception as SqlException)?.Number,
+                                    retryCount,
+                                    timespan.TotalSeconds,
+                                    exception.Message))
                             .ExecuteAsync(async () => await converter.ProcessAsync(ct));
 
                         watch.Stop();

@@ -1,3 +1,10 @@
+## [6.4.12](https://github.com/informatievlaanderen/address-registry/compare/v6.4.11...v6.4.12) (2026-11-20)
+
+
+### Bug Fixes
+
+* **integration:** crswaschanged should not version bump ([9f0190f](https://github.com/informatievlaanderen/address-registry/commit/9f0190fb6c535f26bcc34a555cc1f52b9ebdbb85))
+
 ## [6.4.11](https://github.com/informatievlaanderen/address-registry/compare/v6.4.10...v6.4.11) (2026-11-19)
 
 

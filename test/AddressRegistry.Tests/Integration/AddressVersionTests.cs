@@ -1412,7 +1412,10 @@
                     expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressPositionCrsWasChanged.AddressPersistentLocalId}");
-                    expectedVersion.VersionTimestamp.Should().Be(addressPositionCrsWasChanged.Provenance.Timestamp);
+
+                    // The reprojection does not change the address, so the version is carried over. See ADR 0005.
+                    expectedVersion.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    expectedVersion.VersionTimestamp.Should().NotBe(addressPositionCrsWasChanged.Provenance.Timestamp);
                 });
         }
 

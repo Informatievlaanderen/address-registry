@@ -429,18 +429,23 @@
 
             When<Envelope<AddressPositionCrsWasChanged>>(async (context, message, ct) =>
             {
+                // The reprojection does not change the address: the new version row records the event and the
+                // new geometry, but carries the previous version timestamp over, which CloneAndApplyEventInfo
+                // would otherwise set to the event's. Legacy syndication does the same with LastChangedOn.
+                // See ADR 0005.
                 var geometry = PositionReader.ReadPosition(message.Message.ExtendedWkbGeometry);
 
                 await context.CreateNewAddressVersion(
                     new PersistentLocalId(message.Message.AddressPersistentLocalId),
                     message,
-                    item =>
+                    (previous, item) =>
                     {
                         item.PositionMethod = message.Message.GeometryMethod;
                         item.OsloPositionMethod = message.Message.GeometryMethod.ToPositieGeometrieMethode();
                         item.PositionSpecification =  message.Message.GeometrySpecification;
                         item.OsloPositionSpecification =  message.Message.GeometrySpecification.ToPositieSpecificatie();
                         item.Geometry = geometry;
+                        item.VersionTimestamp = previous.VersionTimestamp;
                     },
                     ct);
             });

@@ -118,11 +118,11 @@ changed" reacts.
 | Elastic list, search | updated | field omitted from the partial update |
 | Feed | document updated | no cloud event, version untouched |
 | Legacy syndication | new item, position updated | **not** bumped |
-| Integration version | new version row | — |
+| Integration version | new version row | **not** bumped |
 | LastChangedList (v1, v3) | — | bumped |
 | Producers (v3, v4, readdress-fix, Oslo snapshot) | — | produced |
 
-Five of those need their reasoning written down.
+Six of those need their reasoning written down.
 
 **`LastEventHash` is still updated** on the two detail projections, even though the version is not. It is
 not a version: Api.Oslo serves it as the ETag and the BackOffice checks the caller's ETag against the
@@ -152,6 +152,17 @@ other event — so the entry appears in the feed, carrying the transformed `Poin
 address's last real change gave it. Consumers reading the feed sequentially therefore see the
 transformation and the new position; consumers keying on the version see no new version, which is the same
 rule the rest of the table follows.
+
+**Integration version records the event but not a version**, for the same reason and in the same way as
+legacy syndication. The table is append-only, one row per event, so the transformation does get a row:
+updating the latest row in place would rewrite history, and skipping the event would leave the latest row —
+the template every later row is cloned from — in Lambert 72 until the address's next real position change.
+`CloneAndApplyEventInfo` sets `VersionTimestamp` to the event's timestamp, so the handler puts back the
+value the address's last real change gave it, through a `CreateNewAddressVersion` overload whose edit also
+receives the row it was cloned from. The row is still recognisable by its `type`, and a consumer keying on
+`version_timestamp` sees no new version. Building-registry's integration version projection already worked
+this way, since there every handler sets the version timestamp explicitly and the transformation handlers
+leave it out.
 
 **A removed address is not published at all.** Consumers were told it was removed; the transformation is
 not something to tell them about, least of all for that address. The syndication item carries no removed

@@ -18,6 +18,23 @@
             Envelope<T> message,
             Action<AddressVersion> applyEventInfoOn,
             CancellationToken ct) where T : IHasProvenance, IMessage
+            => await context.CreateNewAddressVersion(
+                persistentLocalId,
+                message,
+                (_, newVersion) => applyEventInfoOn(newVersion),
+                ct);
+
+        /// <summary>
+        /// As <see cref="CreateNewAddressVersion{T}(IntegrationContext, PersistentLocalId, Envelope{T}, Action{AddressVersion}, CancellationToken)"/>,
+        /// but the edit also receives the version the new one was cloned from — for a handler that has to carry
+        /// a value over which <see cref="AddressVersion.CloneAndApplyEventInfo"/> overwrites, such as the version timestamp.
+        /// </summary>
+        public static async Task CreateNewAddressVersion<T>(
+            this IntegrationContext context,
+            PersistentLocalId persistentLocalId,
+            Envelope<T> message,
+            Action<AddressVersion, AddressVersion> applyEventInfoOn,
+            CancellationToken ct) where T : IHasProvenance, IMessage
         {
             var addressVersion = await context.LatestPosition(persistentLocalId, ct);
 
@@ -32,7 +49,7 @@
                 message.Position,
                 message.EventName,
                 provenance.Timestamp,
-                applyEventInfoOn);
+                newVersion => applyEventInfoOn(addressVersion, newVersion));
 
             await context
                 .AddressVersions
